@@ -1,0 +1,30 @@
+; Author: Mark J Crane <markjcrane@fusionpbx.com>
+; cp /var/www/fusionpbx/app/messages/resources/service/debian-message_events.service /etc/systemd/system/message_events.service
+; systemctl enable message_events
+; systemctl start message_events
+; systemctl daemon-reload
+
+[Unit]
+Description=FusionPBX Message Events
+Wants=network-online.target
+Requires=network.target local-fs.target postgresql.service
+After=network.target network-online.target local-fs.target postgresql.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+;Type=forking
+PIDFile=/var/run/fusionpbx/message_events.pid
+WorkingDirectory=/var/www/fusionpbx
+;Environment="USER=www-data"
+;Environment="GROUP=www-data"
+;EnvironmentFile=-/etc/default/fusionpbx
+ExecStartPre=/bin/mkdir -p /var/run/fusionpbx
+;ExecStartPre=/bin/chown -R ${USER}:${GROUP} /var/www/fusionpbx
+ExecStart=/usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_events.php
+TimeoutSec=55s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Also=
