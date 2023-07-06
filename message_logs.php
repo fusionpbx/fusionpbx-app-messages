@@ -43,14 +43,14 @@
 	$text = $language->get();
 
 //get the http post data
-	if (is_array($_POST['messages'])) {
+	if (!empty($_POST) && is_array($_POST['messages'])) {
 		$action = $_POST['action'];
 		$search = $_POST['search'];
 		$messages = $_POST['messages'];
 	}
 
 //process the http post data by action
-	if ($action != '' && is_array($messages) && @sizeof($messages) != 0) {
+	if (!empty($action) && !empty($messages) && is_array($messages) && @sizeof($messages) != 0) {
 		switch ($action) {
 			case 'delete':
 				if (permission_exists('message_delete')) {
@@ -65,12 +65,12 @@
 	}
 
 //get variables used to control the order
-	$order_by = $_GET["order_by"];
-	$order = $_GET["order"];
+	$order_by = $_GET["order_by"] ?? null;
+	$order = $_GET["order"] ?? null;
 
 //add the search term
-	$search = strtolower($_GET["search"]);
-	if (strlen($search) > 0) {
+	$search = strtolower($_GET["search"] ?? '');
+	if (!empty($search)) {
 		$sql_search = " (";
 		$sql_search .= "lower(message_type) like :search ";
 		$sql_search .= "or lower(message_direction) like :search ";
@@ -83,7 +83,7 @@
 
 //prepare to page the results
 	$sql = "select count(*) from v_messages ";
-	if ($_GET['show'] == "all" && permission_exists('message_all')) {
+	if (!empty($_GET['show']) && $_GET['show'] == "all" && permission_exists('message_all')) {
 		if (isset($sql_search)) {
 			$sql .= "where ".$sql_search;
 		}
@@ -98,12 +98,12 @@
 		$parameters['domain_uuid'] = $domain_uuid;
 	}
 	$database = new database;
-	$num_rows = $database->select($sql, $parameters, 'column');
+	$num_rows = $database->select($sql, $parameters ?? null, 'column');
 
 //prepare to page the results
 	$rows_per_page = ($_SESSION['domain']['paging']['numeric'] != '') ? $_SESSION['domain']['paging']['numeric'] : 50;
 	$param = "&search=".$search;
-	if ($_GET['show'] == "all" && permission_exists('message_all')) {
+	if (!empty($_GET['show']) && $_GET['show'] == "all" && permission_exists('message_all')) {
 		$param .= "&show=all";
 	}
 	if (isset($_GET['page'])) {
@@ -116,9 +116,9 @@
 //get the list
 	$sql = str_replace('count(*)', '*', $sql);
 	$sql .= "order by message_date desc ";
-	$sql .= limit_offset($rows_per_page, $offset);
+	$sql .= limit_offset($rows_per_page, $offset ?? 0);
 	$database = new database;
-	$messages = $database->select($sql, $parameters, 'all');
+	$messages = $database->select($sql, $parameters ?? null, 'all');
 	unset($sql, $parameters);
 
 //create token
@@ -156,7 +156,7 @@
 	}
 	echo 		"<form id='form_search' class='inline' method='get'>\n";
 	if (permission_exists('message_all')) {
-		if ($_GET['show'] == 'all') {
+		if (!empty($_GET['show']) && $_GET['show'] == 'all') {
 			echo "		<input type='hidden' name='show' value='all'>\n";
 		}
 		else {
@@ -165,8 +165,8 @@
 	}
 	echo 		"<input type='text' class='txt list-search' name='search' id='search' value=\"".escape($search)."\" placeholder=\"".$text['label-search']."\" onkeydown='list_search_reset();'>";
 	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>($search != '' ? 'display: none;' : null)]);
-	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'messages_log.php','style'=>($search == '' ? 'display: none;' : null)]);
-	if ($paging_controls_mini != '') {
+	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'message_logs.php','style'=>($search == '' ? 'display: none;' : null)]);
+	if (!empty($paging_controls_mini)) {
 		echo 	"<span style='margin-left: 15px;'>".$paging_controls_mini."</span>\n";
 	}
 	echo "		</form>\n";
@@ -195,7 +195,7 @@
 	echo th_order_by('message_from', $text['label-message_from'], $order_by, $order);
 	echo th_order_by('message_to', $text['label-message_to'], $order_by, $order);
 	echo th_order_by('message_text', $text['label-message_text'], $order_by, $order, null, "class='pct-20 hide-xs'");
-	if (permission_exists('message_edit') && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
+	if (permission_exists('message_edit') && !empty($_SESSION['theme']['list_row_edit_button']['boolean']) && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
 		echo "	<td class='action-button'>&nbsp;</td>\n";
 	}
 	echo "</tr>\n";
@@ -252,7 +252,7 @@
 
 	echo "</table>\n";
 	echo "<br />\n";
-	echo "<div align='center'>".$paging_controls."</div>\n";
+	echo "<div align='center'>".($paging_controls ?? '')."</div>\n";
 	echo "<input type='hidden' name='".$token['name']."' value='".$token['hash']."'>\n";
 	echo "</form>\n";
 
