@@ -57,7 +57,7 @@
 	//}
 
 //send the message
-	if (count($_REQUEST) > 0 && strlen($_REQUEST["persistformvar"]) == 0) {
+	if (!empty($_REQUEST) && count($_REQUEST) > 0 && (empty($_REQUEST["persistformvar"]) || strlen($_REQUEST["persistformvar"]) == 0)) {
 		$message = new messages;
 		$message->send('sms', $message_from, $message_to, $message_text, $message_media);
 	}

@@ -111,7 +111,7 @@ if (!class_exists('messages')) {
 				}
 
 			//handle media (if any)
-				if (is_array($message_media) && @sizeof($message_media) != 0) {
+				if (!empty($message_media) && is_array($message_media) && @sizeof($message_media) != 0) {
 					// reorganize media array, ignore errored files
 					$f = 0;
 					foreach ($message_media['error'] as $index => $error) {
@@ -167,7 +167,7 @@ if (!class_exists('messages')) {
 				$sql .= "and provider_uuid is not null ";
 				$sql .= "and destination_enabled = 'true'; ";
 				$parameters['destination_number'] = $message_from;
-				if ($debug) {
+				if (!empty($debug)) {
 					file_put_contents($log_file, "sql: ".$sql."\n", FILE_APPEND);
 					//echo $sql."\n";
 					file_put_contents($log_file, print_r($parameters, true)."\n", FILE_APPEND);
@@ -181,7 +181,7 @@ if (!class_exists('messages')) {
 					$user_uuid = $row['user_uuid'];
 					unset($row);
 				}
-				//if ($debug) {
+				//if (!empty($debug)) {
 					view_array($row,false);
 					//file_put_contents($log_file, print_r($row, true)."\n", FILE_APPEND);
 				//}
