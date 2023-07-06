@@ -1,11 +1,31 @@
 <?php
+/*
+	FusionPBX
+	Version: MPL 1.1
 
-//set the include path
-	$conf = glob("{/usr/local/etc,/etc}/fusionpbx/config.conf", GLOB_BRACE);
-	set_include_path(parse_ini_file($conf[0])['document.root']);
+	The contents of this file are subject to the Mozilla Public License Version
+	1.1 (the "License"); you may not use this file except in compliance with
+	the License. You may obtain a copy of the License at
+	http://www.mozilla.org/MPL/
+
+	Software distributed under the License is distributed on an "AS IS" basis,
+	WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+	for the specific language governing rights and limitations under the
+	License.
+
+	The Original Code is FusionPBX
+
+	The Initial Developer of the Original Code is
+	Mark J Crane <markjcrane@fusionpbx.com>
+	Portions created by the Initial Developer are Copyright (C) 2023
+	the Initial Developer. All Rights Reserved.
+
+	Contributor(s):
+	Mark J Crane <markjcrane@fusionpbx.com>
+*/
 
 //includes files
-	require_once "resources/require.php";
+	require_once dirname(__DIR__, 2) . "/resources/require.php";
 	require_once "resources/check_auth.php";
 
 //check permissions
@@ -62,7 +82,7 @@
 		}
 	}
 	unset($sql, $parameters, $rows, $row);
-	$message_from = $destinations[0];
+	$message_from = $destinations[0] ?? null;
 	//view_array($destinations);
 
 //get the message to
@@ -206,7 +226,7 @@
 	echo "\n";
 
 	echo "	td.contact_selected {\n";
-	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] != '' ? $_SESSION['theme']['table_row_border_color']['text'] : '#c5d1e5').";\n";
+	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		}\n";
 	echo "\n";
 
@@ -215,7 +235,7 @@
 	echo "		width: 75px;\n";
 	echo "		height: 75px;\n";
 	echo "		margin: 3px 8px 3px 2px;\n";
-	echo "		border: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] != '' ? $_SESSION['theme']['table_row_border_color']['text'] : '#c5d1e5').";\n";
+	echo "		border: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		background-repeat: no-repeat;\n";
 	echo "		background-size: cover;\n";
 	echo "		background-position: center center;\n";
@@ -256,7 +276,7 @@
 	echo "		grid-area: contacts;\n";
 	//echo "		min-width: 120px;\n";
 	//echo "		height: 100%;\n";
-	echo "		background: ".$_SESSION['theme']['form_table_field_background_color']['text'].";\n";
+	echo "		background: ".($_SESSION['theme']['form_table_field_background_color']['text'] ?? '#fff').";\n";
 	echo "	}\n";
 	echo "\n";
 	echo ".messages { grid-area: messages; }\n";
@@ -276,7 +296,7 @@
 	echo "</style>\n";
 
 //cache self (primary contact attachment) image
-	if (is_array($_SESSION['tmp']['messages']['contact_me']) && sizeof($_SESSION['tmp']['messages']['contact_me']) != 0) {
+	if (!empty($_SESSION['tmp']) && is_array($_SESSION['tmp']['messages']['contact_me']) && !empty($_SESSION['tmp']['messages']['contact_me'])) {
 		$attachment_type = strtolower(pathinfo($_SESSION['tmp']['messages']['contact_me']['filename'], PATHINFO_EXTENSION));
 		echo "<img id='src_message-bubble-image-me' style='display: none;' src='data:image/".$attachment_type.";base64,".$_SESSION['tmp']['messages']['contact_me']['image']."'>\n";
 	}
@@ -295,7 +315,7 @@
 		echo "						<tr>\n";
 		echo "							<td class='vncell'>".$text['label-message_from']."</td>\n";
 		echo "							<td class='vtable'>\n";
-		if (is_array($destinations) && sizeof($destinations) != 0) {
+		if (!empty($destinations) && is_array($destinations) && sizeof($destinations) != 0) {
 			echo "							<select class='formfld' name='message_from' id='message_new_from' onchange=\"$('#message_new_to').focus();\">\n";
 			foreach ($destinations as $destination) {
 				echo "							<option value='".$destination."'>".format_phone($destination)."</option>\n";
@@ -376,7 +396,7 @@
 		echo "<input type='hidden' name='message_update' id='message_update' value='".$message_update."'>\n";
 
 		//echo "<div>\n";
-		if (count($destinations) > 1) {
+		if (!empty($destinations) && count($destinations) > 1) {
 			echo "	From <select class='formfld' name='message_from' id='message_from'\">\n";
 			foreach ($destinations as $destination) {
 				echo "		<option value='".$destination."'>".$destination."</option>\n";
@@ -385,10 +405,10 @@
 		}
 		else {
 			//echo "	From \n";
-			echo "	<input type='hidden' class='formfld' name='message_from' id='message_from' value='".urlencode($message_from)."'>\n";
+			echo "	<input type='hidden' class='formfld' name='message_from' id='message_from' value='".urlencode($message_from ?? '')."'>\n";
 		}
 		//echo "	To <div id='div_message_to'>".escape($message_to)."</div>\n";
-		echo "	<input type='hidden' class='formfld' name='message_to' id='message_to' value='".urlencode($message_to)."'>\n";
+		echo "	<input type='hidden' class='formfld' name='message_to' id='message_to' value='".urlencode($message_to ?? '')."'>\n";
 		//echo "</div>\n";
 
 		echo "<textarea class='formfld' id='message_text' name='message_text' style='width: 100%; max-width: 100%; min-height: 55px; border: 1px solid #cbcbcb; resize: vertical; padding: 5px 8px; margin-top: 10px; margin-bottom: 5px;' placeholder=\"".$text['description-enter_response']."\"></textarea>";

@@ -1,11 +1,31 @@
 <?php
+/*
+	FusionPBX
+	Version: MPL 1.1
 
-//set the include path
-	$conf = glob("{/usr/local/etc,/etc}/fusionpbx/config.conf", GLOB_BRACE);
-	set_include_path(parse_ini_file($conf[0])['document.root']);
+	The contents of this file are subject to the Mozilla Public License Version
+	1.1 (the "License"); you may not use this file except in compliance with
+	the License. You may obtain a copy of the License at
+	http://www.mozilla.org/MPL/
+
+	Software distributed under the License is distributed on an "AS IS" basis,
+	WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+	for the specific language governing rights and limitations under the
+	License.
+
+	The Original Code is FusionPBX
+
+	The Initial Developer of the Original Code is
+	Mark J Crane <markjcrane@fusionpbx.com>
+	Portions created by the Initial Developer are Copyright (C) 2023
+	the Initial Developer. All Rights Reserved.
+
+	Contributor(s):
+	Mark J Crane <markjcrane@fusionpbx.com>
+*/
 
 //includes files
-	require_once "resources/require.php";
+	require_once dirname(__DIR__, 2) . "/resources/require.php";
 	require_once "resources/check_auth.php";
 
 //check permissions
@@ -32,7 +52,7 @@
 	$group_uuids_in = "'".implode("','", $group_uuids)."'";
 
 //get the list of contacts
-	$sql .= "select *, \n";
+	$sql = "select *, \n";
 	$sql .= "(\n";
 	$sql .= "	(select effective_caller_id_name as name from v_extensions where n.number = extension limit 1)\n";
 	$sql .= "	union\n";
@@ -117,7 +137,7 @@
 
 	$parameters['domain_uuid'] = $domain_uuid;
 	$parameters['user_uuid'] = $_SESSION['user']['user_uuid'];
-	$parameters['number'] = $_SESSION['user']['contact_number'];
+	$parameters['number'] = $_SESSION['user']['contact_number'] ?? null;
 //echo "<pre>\n";
 //echo $sql;
 //echo "</pre>\n";
@@ -205,7 +225,7 @@
 	echo "\n";
 
 	echo "	td.contact_selected {\n";
-	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] != '' ? $_SESSION['theme']['table_row_border_color']['text'] : '#c5d1e5').";\n";
+	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		}\n";
 	echo "\n";
 
@@ -214,7 +234,7 @@
 	echo "		width: 75px;\n";
 	echo "		height: 75px;\n";
 	echo "		margin: 3px 8px 3px 2px;\n";
-	echo "		border: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] != '' ? $_SESSION['theme']['table_row_border_color']['text'] : '#c5d1e5').";\n";
+	echo "		border: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		background-repeat: no-repeat;\n";
 	echo "		background-size: cover;\n";
 	echo "		background-position: center center;\n";
@@ -223,10 +243,10 @@
 	echo "\n";
 
 	echo "	.row_style0 {\n";
-	echo "		border-bottom: 1px solid ".$_SESSION['theme']['table_row_border_color']['text'].";\n";
-	echo "		background: ".$_SESSION['theme']['form_table_label_background_color']['text'].";\n";
-	echo "		color: ".$_SESSION['theme']['body_text_color']['text'].";\n";
-	echo "		font-family: ".$_SESSION['theme']['body_text_font']['text'].";\n";
+	echo "		border-bottom: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
+	echo "		background: ".($_SESSION['theme']['form_table_label_background_color']['text'] ?? '#e5e9f0').";\n";
+	echo "		color: ".($_SESSION['theme']['body_text_color']['text'] ?? '#5f5f5f').";\n";
+	echo "		font-family: ".($_SESSION['theme']['body_text_font']['text'] ?? 'arial').";\n";
 	echo "		font-size: 12px;\n";
 	echo "		text-align: left;\n";
 	echo "		padding: 4px 7px;\n";
@@ -234,10 +254,10 @@
 	echo "\n";
 
 	echo "	.row_style1 {\n";
-	echo "		border-bottom: 1px solid ".$_SESSION['theme']['table_row_border_color']['text'].";\n";
+	echo "		border-bottom: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		/*background: #fff;*/\n";
-	echo "		color: ".$_SESSION['theme']['body_text_color']['text'].";\n";
-	echo "		font-family: ".$_SESSION['theme']['body_text_font']['text'].";\n";
+	echo "		color: ".($_SESSION['theme']['body_text_color']['text'] ?? '#5f5f5f').";\n";
+	echo "		font-family: ".($_SESSION['theme']['body_text_font']['text'] ?? 'arial').";\n";
 	echo "		font-size: 12px;\n";
 	echo "		text-align: left;\n";
 	echo "		padding: 4px 7px;\n";

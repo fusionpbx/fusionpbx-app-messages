@@ -871,4 +871,6 @@
 		$text['label-send_email']['sv-se'] = 'Send Email';
 		$text['label-send_email']['uk-ua'] = 'Send Email';
 
+// 		foreach ($text as $name => $langs) { echo $name.' - '.sizeof($langs).'<br>'; }
+
 ?>
