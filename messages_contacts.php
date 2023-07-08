@@ -39,7 +39,7 @@
 	$text = $language->get();
 
 //get selected number/contact
-	if (isset($_GET['number']) && strlen($_GET['number']) > 0) {
+	if (isset($_GET['number']) && !empty($_GET['number'])) {
 		$_SESSION['user']['contact_number'] = $_GET['number'];
 	}
 
@@ -277,7 +277,7 @@
 	echo "<body onload=''>\n";
 
 //contacts list
-	if (is_array($contacts) && @sizeof($contacts) != 0) {
+	if (!empty($contacts) && @sizeof($contacts) != 0) {
 		echo "<table class='tr_hover' width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 		foreach($contacts as $row) {
 			$number = $row['number'];
@@ -290,7 +290,7 @@
 			// $row['contact_uuid'];
 
 			//get the image file extension
-			if (strlen($row['contact_image_filename']) > 0) {
+			if (!empty($row['contact_image_filename'])) {
 				$contact_image_extension = pathinfo($row['contact_image_filename'], PATHINFO_EXTENSION);
 			}
 
@@ -304,7 +304,7 @@
 
 			//$contact_name = format_phone($row['number']);
 			$contact_name = $row['number'];
-			if (strlen($row['name']) > 0) {
+			if (!empty($row['name'])) {
 				$contact_name = escape($row['name']);
 			}
 			if ($_SESSION['user']['contact_number'] != '' && $_SESSION['user']['contact_number'] == $number) {
@@ -316,7 +316,7 @@
 				$selected = false;
 			}
 
-			if (strlen($row['contact_image_filename']) > 0) {
+			if (!empty($row['contact_image_filename'])) {
 				//echo "<img id='src_message-bubble-image-em_".$row['contact_uuid']."' style='display: none;' src='data:image/".$contact_image_extension.";base64,".$row['contact_image_content']."'>\n";
 				echo "<div class='contact_image' style='width: 50px; height: 50px; float: left; padding-right: 3px;'>\n";
 				echo "	<img id='src_message-bubble-image-em_".$row['contact_uuid']."' src=\"data:image/png;base64,".$row['contact_image_content']."\" style=\"width: 50px;\">\n";
@@ -324,7 +324,7 @@
 				//echo "<img id='contact_image_".$row['contact_uuid']."' class='contact_list_image' src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'>\n";
 			}
 			else {
-				if (is_numeric($contact_name)) {
+				if (!empty($contact_name) && is_numeric($contact_name)) {
 					//echo "<div style='width: 80px; height: 80px; border: 2px solid #c4cddd; border-radius: 50%; float: left; text-align: center; vertical-align: middle;'><span style='font-size: 150%; font-weight: 600; color: #c4cddd;'>".substr($contact_name, -1)."</span></div><span style='padding-left: 3px;'/>\n";
 					echo "<div class='contact_image' style='width: 50px; height: 50px; float: left; padding-right: 3px;'>\n";
 					echo "	<img src='resources/images/status_logged_out.png' style=\"width: 50px;\"/>\n";

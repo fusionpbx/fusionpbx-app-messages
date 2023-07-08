@@ -42,7 +42,7 @@
 	$text = $language->get();
 
 //action add or update
-	if (is_uuid($_REQUEST["id"])) {
+	if (!empty($_REQUEST["id"]) && is_uuid($_REQUEST["id"])) {
 		$action = "update";
 		$message_uuid = $_REQUEST["id"];
 	}
@@ -51,7 +51,7 @@
 	}
 
 //get http post variables and set them to php variables
-	if (is_array($_POST)) {
+	if (!empty($_POST)) {
 		$message_uuid = $_POST["message_uuid"];
 		$user_uuid = $_POST["user_uuid"];
 		$message_type = $_POST["message_type"];
@@ -67,7 +67,7 @@
 	}
 
 //process the user data and save it to the database
-	if (count($_POST) > 0 && strlen($_POST["persistformvar"]) == 0) {
+	if (!empty($_POST) && empty($_POST["persistformvar"])) {
 
 		//get the uuid from the POST
 			if ($action == "update") {
@@ -75,7 +75,7 @@
 			}
 
 		//process the http post data by submitted action
-			if ($_POST['action'] != '' && is_uuid($message_uuid)) {
+			if (!empty($_POST['action']) && isset($message_uuid) && is_uuid($message_uuid)) {
 				$array[0]['checked'] = 'true';
 				$array[0]['uuid'] = $message_uuid;
 
@@ -102,17 +102,17 @@
 
 		//check for all required data
 			$msg = '';
-			if (strlen($message_type) == 0) { $msg .= $text['message-required']." ".$text['label-message_type']."<br>\n"; }
-			if (strlen($message_direction) == 0) { $msg .= $text['message-required']." ".$text['label-message_direction']."<br>\n"; }
-			if (strlen($message_date) == 0) { $msg .= $text['message-required']." ".$text['label-message_date']."<br>\n"; }
-			if (strlen($message_from) == 0) { $msg .= $text['message-required']." ".$text['label-message_from']."<br>\n"; }
-			if (strlen($message_to) == 0) { $msg .= $text['message-required']." ".$text['label-message_to']."<br>\n"; }
-			//if (strlen($message_text) == 0) { $msg .= $text['message-required']." ".$text['label-message_text']."<br>\n"; }
-			//if (strlen($message_media_type) == 0) { $msg .= $text['message-required']." ".$text['label-message_media_type']."<br>\n"; }
-			//if (strlen($message_media_url) == 0) { $msg .= $text['message-required']." ".$text['label-message_media_url']."<br>\n"; }
-			//if (strlen($message_media_content) == 0) { $msg .= $text['message-required']." ".$text['label-message_media_content']."<br>\n"; }
-			//if (strlen($message_json) == 0) { $msg .= $text['message-required']." ".$text['label-message_json']."<br>\n"; }
-			if (strlen($msg) > 0 && strlen($_POST["persistformvar"]) == 0) {
+			if (empty($message_type)) { $msg .= $text['message-required']." ".$text['label-message_type']."<br>\n"; }
+			if (empty($message_direction)) { $msg .= $text['message-required']." ".$text['label-message_direction']."<br>\n"; }
+			if (empty($message_date)) { $msg .= $text['message-required']." ".$text['label-message_date']."<br>\n"; }
+			if (empty($message_from)) { $msg .= $text['message-required']." ".$text['label-message_from']."<br>\n"; }
+			if (empty($message_to)) { $msg .= $text['message-required']." ".$text['label-message_to']."<br>\n"; }
+			//if (empty($message_text)) { $msg .= $text['message-required']." ".$text['label-message_text']."<br>\n"; }
+			//if (empty($message_media_type)) { $msg .= $text['message-required']." ".$text['label-message_media_type']."<br>\n"; }
+			//if (empty($message_media_url)) { $msg .= $text['message-required']." ".$text['label-message_media_url']."<br>\n"; }
+			//if (empty($message_media_content)) { $msg .= $text['message-required']." ".$text['label-message_media_content']."<br>\n"; }
+			//if (empty($message_json)) { $msg .= $text['message-required']." ".$text['label-message_json']."<br>\n"; }
+			if (!empty($msg) && empty($_POST["persistformvar"])) {
 				require_once "resources/header.php";
 				require_once "resources/persist_form_var.php";
 				echo "<div align='center'>\n";
@@ -126,7 +126,7 @@
 			}
 
 		//add the message_uuid
-			if (!is_uuid($_POST["message_uuid"])) {
+			if (empty($_POST["message_uuid"]) || !is_uuid($_POST["message_uuid"])) {
 				$message_uuid = uuid();
 			}
 
@@ -162,14 +162,14 @@
 	}
 
 //pre-populate the form
-	if (is_array($_GET) && $_POST["persistformvar"] != "true") {
+	if (!empty($_GET["id"]) && empty($_POST["persistformvar"])) {
 		$message_uuid = $_GET["id"];
 		$sql = "select * from v_messages ";
 		$sql .= "where message_uuid = :message_uuid ";
 		$parameters['message_uuid'] = $message_uuid;
 		$database = new database;
 		$row = $database->select($sql, $parameters, 'row');
-		if (is_array($row) && @sizeof($row) != 0) {
+		if (!empty($row) && @sizeof($row) != 0) {
 			$user_uuid = $row["user_uuid"];
 			$message_type = $row["message_type"];
 			$message_direction = $row["message_direction"];
@@ -177,9 +177,9 @@
 			$message_from = $row["message_from"];
 			$message_to = $row["message_to"];
 			$message_text = $row["message_text"];
-			$message_media_type = $row["message_media_type"];
-			$message_media_url = $row["message_media_url"];
-			$message_media_content = $row["message_media_content"];
+			$message_media_type = $row["message_media_type"] ?? '';
+			$message_media_url = $row["message_media_url"] ?? '';
+			$message_media_content = $row["message_media_content"] ?? '';
 			$message_json = $row["message_json"];
 		}
 		unset($sql, $parameters);
@@ -231,8 +231,10 @@
 	echo "<td width='70%' class='vtable' style='position: relative;' align='left'>\n";
 	echo "	<select class='formfld' name='user_uuid'>\n";
 	echo "		<option value=''></option>\n";
-	foreach($users as $row) {
-		echo "		<option value='".escape($row['user_uuid'])."' ".($row['user_uuid'] == $user_uuid ? "selected='selected'" : null).">".escape($row['username'])."</option>\n";
+	if (!empty($users)) {
+		foreach($users as $row) {
+			echo "		<option value='".escape($row['user_uuid'])."' ".($row['user_uuid'] == $user_uuid ? "selected='selected'" : null).">".escape($row['username'])."</option>\n";
+		}
 	}
 	echo "	</select>\n";
 	echo "<br />\n";
@@ -313,7 +315,7 @@
 	echo "</td>\n";
 	echo "</tr>\n";
 
-	if (strlen($message_media_type) > 0) {
+	if (!empty($message_media_type)) {
 		echo "<tr>\n";
 		echo "<td class='vncell' valign='top' align='left' nowrap='nowrap'>\n";
 		echo "	&nbsp;\n";
@@ -326,7 +328,7 @@
 		echo "</tr>\n";
 	}
 
-	if ($_GET['debug'] == 'true') {
+	if (!empty($_GET['debug']) && $_GET['debug'] == 'true') {
 		echo "<tr>\n";
 		echo "<td class='vncell' valign='top' align='left' nowrap='nowrap'>\n";
 		echo "	".$text['label-message_media_type']."\n";

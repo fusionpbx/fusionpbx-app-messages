@@ -39,7 +39,7 @@
 	$text = $language->get();
 
 //get http post variables and set them to php variables
-	if (is_array($_REQUEST)) {
+	if (!empty($_REQUEST) && is_array($_REQUEST)) {
 		//$message_from = $_REQUEST["message_from"];
 		//$message_to = $_REQUEST["message_to"];
 		$message_from = urldecode($_REQUEST["message_from"]);

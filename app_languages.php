@@ -246,6 +246,27 @@
 		$text['label-messages']['sv-se'] = 'Messages';
 		$text['label-messages']['uk-ua'] = 'Messages';
 
+		$text['description-username']['en-us'] = '';
+		$text['description-username']['en-gb'] = '';
+		$text['description-username']['ar-eg'] = '';
+		$text['description-username']['de-at'] = '';
+		$text['description-username']['de-ch'] = '';
+		$text['description-username']['de-de'] = '';
+		$text['description-username']['es-cl'] = '';
+		$text['description-username']['es-mx'] = '';
+		$text['description-username']['fr-ca'] = '';
+		$text['description-username']['fr-fr'] = '';
+		$text['description-username']['he-il'] = '';
+		$text['description-username']['it-it'] = '';
+		$text['description-username']['nl-nl'] = '';
+		$text['description-username']['pl-pl'] = '';
+		$text['description-username']['pt-br'] = '';
+		$text['description-username']['pt-pt'] = '';
+		$text['description-username']['ro-ro'] = '';
+		$text['description-username']['ru-ru'] = '';
+		$text['description-username']['sv-se'] = '';
+		$text['description-username']['uk-ua'] = '';
+
 		$text['label-message_direction']['en-us'] = 'Direction';
 		$text['label-message_direction']['en-gb'] = 'Direction';
 		$text['label-message_direction']['ar-eg'] = 'Direction';

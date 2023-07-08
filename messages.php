@@ -86,7 +86,7 @@
 	//view_array($destinations);
 
 //get the message to
-	if (isset($_SESSION['user']['contact_number']) && strlen($_SESSION['user']['contact_number']) > 0) {
+	if (isset($_SESSION['user']['contact_number']) && !empty($_SESSION['user']['contact_number'])) {
 		$message_to = $_SESSION['user']['contact_number'];
 	}
 
@@ -315,7 +315,7 @@
 		echo "						<tr>\n";
 		echo "							<td class='vncell'>".$text['label-message_from']."</td>\n";
 		echo "							<td class='vtable'>\n";
-		if (!empty($destinations) && is_array($destinations) && sizeof($destinations) != 0) {
+		if (!empty($destinations) && is_array($destinations)) {
 			echo "							<select class='formfld' name='message_from' id='message_new_from' onchange=\"$('#message_new_to').focus();\">\n";
 			foreach ($destinations as $destination) {
 				echo "							<option value='".$destination."'>".format_phone($destination)."</option>\n";

@@ -76,7 +76,7 @@
 	$sql .= "contact_uuid, ";
 	$sql .= "message_type, ";
 	$sql .= "message_direction, ";
-	if ($_SESSION['domain']['time_zone']['name'] != '') {
+	if (!empty($_SESSION['domain']['time_zone']['name'])) {
 		$sql .= "message_date at time zone :time_zone as message_date, ";
 	}
 	else {
@@ -97,7 +97,7 @@
 	$sql .= "and (message_from = :message_number or message_to = :message_number) ";
 	$sql .= "order by message_date desc ";
 	$sql .= "limit :message_limit ";
-	if ($_SESSION['domain']['time_zone']['name'] != '') {
+	if (!empty($_SESSION['domain']['time_zone']['name'])) {
 		$parameters['time_zone'] = $_SESSION['domain']['time_zone']['name'];
 	}
 	$parameters['user_uuid'] = $_SESSION['user_uuid'];
@@ -274,7 +274,7 @@
 					echo "<span class='message-bubble message-bubble-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."'>";
 						//contact image em
 							if ($message['message_direction'] == 'inbound') {
-								if (is_array($_SESSION['tmp']['messages']['contact_em'][$contact_uuid]) && @sizeof($_SESSION['tmp']['messages']['contact_em'][$contact_uuid]) != 0) {
+								if (!empty($_SESSION['tmp']['messages']['contact_em'][$contact_uuid]) && @sizeof($_SESSION['tmp']['messages']['contact_em'][$contact_uuid]) != 0) {
 									echo "<div class='message-bubble-image-em'>\n";
 									echo "	<img class='message-bubble-image-em'><br />\n";
 									echo "</div>\n";
@@ -282,7 +282,7 @@
 							}
 						//contact image me
 							else {
-								if (is_array($_SESSION['tmp']['messages']['contact_me']) && @sizeof($_SESSION['tmp']['messages']['contact_me']) != 0) {
+								if (!empty($_SESSION['tmp']['messages']['contact_me']) && @sizeof($_SESSION['tmp']['messages']['contact_me']) != 0) {
 									echo "<div class='message-bubble-image-me'>\n";
 									echo "	<img class='message-bubble-image-me'><br />\n";
 									echo "</div>\n";
@@ -290,7 +290,7 @@
 							}
 						echo "<div style='display: table;'>\n";
 						//message
-							if ($message['message_text'] != '') {
+							if (!empty($message['message_text'])) {
 								$allowed = ['http', 'https'];
 								$scheme = parse_url($message['message_text'], PHP_URL_SCHEME);
 								if ($scheme === false) {
@@ -313,7 +313,7 @@
 								}
 							}
 						//attachments
-							if (is_array($message_media[$message['message_uuid']]) && @sizeof($message_media[$message['message_uuid']]) != 0) {
+							if (!empty($message_media[$message['message_uuid']]) && @sizeof($message_media[$message['message_uuid']]) != 0) {
 								foreach ($message_media[$message['message_uuid']] as $media) {
 									if ($media['type'] != 'txt') {
 										if ($media['type'] == 'jpg' || $media['type'] == 'jpeg' || $media['type'] == 'gif' || $media['type'] == 'png') {

@@ -43,14 +43,14 @@
 	$text = $language->get();
 
 //get the http post data
-	if (is_array($_POST['messages'])) {
+	if (!empty($_POST['messages'])) {
 		$action = $_POST['action'];
 		$search = $_POST['search'];
 		$messages = $_POST['messages'];
 	}
 
 //process the http post data by action
-	if ($action != '' && is_array($messages) && @sizeof($messages) != 0) {
+	if (!empty($action) && !empty($messages) && @sizeof($messages) != 0) {
 		switch ($action) {
 			case 'delete':
 				if (permission_exists('message_delete')) {
@@ -70,7 +70,7 @@
 
 //add the search term
 	$search = strtolower($_GET["search"]);
-	if (strlen($search) > 0) {
+	if (!empty($search)) {
 		$sql_search = " (";
 		$sql_search .= "lower(message_type) like :search ";
 		$sql_search .= "or lower(message_direction) like :search ";
@@ -83,7 +83,7 @@
 
 //prepare to page the results
 	$sql = "select count(*) from v_messages ";
-	if ($_GET['show'] == "all" && permission_exists('message_all')) {
+	if (!empty($_GET['show']) && $_GET['show'] == "all" && permission_exists('message_all')) {
 		if (isset($sql_search)) {
 			$sql .= "where ".$sql_search;
 		}
@@ -101,7 +101,7 @@
 	$num_rows = $database->select($sql, $parameters, 'column');
 
 //prepare to page the results
-	$rows_per_page = ($_SESSION['domain']['paging']['numeric'] != '') ? $_SESSION['domain']['paging']['numeric'] : 50;
+	$rows_per_page = (!empty($_SESSION['domain']['paging']['numeric'])) ? $_SESSION['domain']['paging']['numeric'] : 50;
 	$param = "&search=".$search;
 	if ($_GET['show'] == "all" && permission_exists('message_all')) {
 		$param .= "&show=all";
@@ -164,9 +164,9 @@
 		}
 	}
 	echo 		"<input type='text' class='txt list-search' name='search' id='search' value=\"".escape($search)."\" placeholder=\"".$text['label-search']."\" onkeydown='list_search_reset();'>";
-	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>($search != '' ? 'display: none;' : null)]);
-	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'messages_log.php','style'=>($search == '' ? 'display: none;' : null)]);
-	if ($paging_controls_mini != '') {
+	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>(!empty($search) ? 'display: none;' : null)]);
+	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'messages_log.php','style'=>(empty($search) ? 'display: none;' : null)]);
+	if (!empty($paging_controls_mini)) {
 		echo 	"<span style='margin-left: 15px;'>".$paging_controls_mini."</span>\n";
 	}
 	echo "		</form>\n";
@@ -200,7 +200,7 @@
 	}
 	echo "</tr>\n";
 
-	if (is_array($messages) && @sizeof($messages) != 0) {
+	if (!empty($messages) && @sizeof($messages) != 0) {
 		$x = 0;
 		foreach ($messages as $row) {
 			if (permission_exists('message_edit')) {

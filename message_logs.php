@@ -60,7 +60,7 @@
 				break;
 		}
 
-		header('Location: message_logs.php'.($search != '' ? '?search='.urlencode($search) : null));
+		header('Location: message_logs.php'.(!empty($search) ? '?search='.urlencode($search) : null));
 		exit;
 	}
 
@@ -101,13 +101,13 @@
 	$num_rows = $database->select($sql, $parameters ?? null, 'column');
 
 //prepare to page the results
-	$rows_per_page = ($_SESSION['domain']['paging']['numeric'] != '') ? $_SESSION['domain']['paging']['numeric'] : 50;
+	$rows_per_page = (!empty($_SESSION['domain']['paging']['numeric'])) ? $_SESSION['domain']['paging']['numeric'] : 50;
 	$param = "&search=".$search;
 	if (!empty($_GET['show']) && $_GET['show'] == "all" && permission_exists('message_all')) {
 		$param .= "&show=all";
 	}
 	if (isset($_GET['page'])) {
-		$page = is_numeric($_GET['page']) ? $_GET['page'] : 0;
+		$page = (!empty($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 0;
 		list($paging_controls, $rows_per_page) = paging($num_rows, $param, $rows_per_page);
 		list($paging_controls_mini, $rows_per_page) = paging($num_rows, $param, $rows_per_page, true);
 		$offset = $rows_per_page * $page;
@@ -164,7 +164,7 @@
 		}
 	}
 	echo 		"<input type='text' class='txt list-search' name='search' id='search' value=\"".escape($search)."\" placeholder=\"".$text['label-search']."\" onkeydown='list_search_reset();'>";
-	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>($search != '' ? 'display: none;' : null)]);
+	echo button::create(['label'=>$text['button-search'],'icon'=>$_SESSION['theme']['button_icon_search'],'type'=>'submit','id'=>'btn_search','style'=>(!empty($search) ? 'display: none;' : null)]);
 	echo button::create(['label'=>$text['button-reset'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'button','id'=>'btn_reset','link'=>'message_logs.php','style'=>($search == '' ? 'display: none;' : null)]);
 	if (!empty($paging_controls_mini)) {
 		echo 	"<span style='margin-left: 15px;'>".$paging_controls_mini."</span>\n";
@@ -174,7 +174,7 @@
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
 
-	if (permission_exists('message_delete') && $messages) {
+	if (permission_exists('message_delete') && !empty($messages)) {
 		echo modal::create(['id'=>'modal-delete','type'=>'delete','actions'=>button::create(['type'=>'button','label'=>$text['button-continue'],'icon'=>'check','id'=>'btn_delete','style'=>'float: right; margin-left: 15px;','collapse'=>'never','onclick'=>"modal_close(); list_action_set('delete'); list_form_submit('form_list');"])]);
 	}
 
@@ -186,7 +186,7 @@
 	echo "<tr class='list-header'>\n";
 	if (permission_exists('message_delete')) {
 		echo "	<th class='checkbox'>\n";
-		echo "		<input type='checkbox' id='checkbox_all' name='checkbox_all' onclick='list_all_toggle();' ".($messages ?: "style='visibility: hidden;'").">\n";
+		echo "		<input type='checkbox' id='checkbox_all' name='checkbox_all' onclick='list_all_toggle();' ".(!empty($messages) ?: "style='visibility: hidden;'").">\n";
 		echo "	</th>\n";
 	}
 	echo th_order_by('message_type', $text['label-message_type'], $order_by, $order);
@@ -200,7 +200,7 @@
 	}
 	echo "</tr>\n";
 
-	if (is_array($messages) && @sizeof($messages) != 0) {
+	if (!empty($messages) && @sizeof($messages) != 0) {
 		$x = 0;
 		foreach ($messages as $row) {
 			if (permission_exists('message_edit')) {
@@ -239,7 +239,7 @@
 			echo "	<td>".escape(format_phone($row['message_from']))."&nbsp;</td>\n";
 			echo "	<td>".escape(format_phone($row['message_to']))."&nbsp;</td>\n";
 			echo "	<td class='description overflow hide-xs'>".escape($row['message_text'])."&nbsp;</td>\n";
-			if (permission_exists('message_edit') && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
+			if (permission_exists('message_edit') && !empty($_SESSION['theme']['list_row_edit_button']['boolean']) && $_SESSION['theme']['list_row_edit_button']['boolean'] == 'true') {
 				echo "	<td class='action-button'>\n";
 				echo button::create(['type'=>'button','title'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'link'=>$list_row_url]);
 				echo "	</td>\n";
