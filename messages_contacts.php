@@ -307,7 +307,7 @@
 			if (!empty($row['name'])) {
 				$contact_name = escape($row['name']);
 			}
-			if ($_SESSION['user']['contact_number'] != '' && $_SESSION['user']['contact_number'] == $number) {
+			if (!empty($_SESSION['user']['contact_number']) && $_SESSION['user']['contact_number'] == $number) {
 				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='/app/messages/messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', '/app/messages/messages_thread.php?number=".urlencode($number)."');\"><td valign='top' class='row_style0 contact_selected' style='cursor: default;'>\n";
 				$selected = true;
 			}
