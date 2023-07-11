@@ -44,7 +44,7 @@
 		echo "	<div class='heading' style=\"text-align: center;\"><b>Missing Application</b></div>\n";
 		echo "	<div style=\"text-align: center;\">\n";
 		echo "	<br />\n";
-		echo "	This feature requires the <strong>provider</strong> member feature to be installed.<br />\n";
+		echo "	This feature requires the seperate <strong>Providers</strong> app to be installed.<br />\n";
 		echo "	Please install it using the <strong>Application Manager</strong>.\n";
 		echo "	</div>\n";
 		echo "	<div style='clear: both;'></div>\n";
@@ -116,8 +116,8 @@
 	require_once "resources/header.php";
 
 //add audio
-	echo "<audio id=\"message_audio\" >\n";
-	echo "	<source src=\"".$_SESSION['message']['notify_sound']['text']."\" type=\"audio/mpeg\">\n";
+	echo "<audio id='message_audio' >\n";
+	echo "	<source src=\"".$_SESSION['message']['notify_sound']['text']."\" type='audio/mpeg'>\n";
 	echo "</audio>\n";
 	echo "<script language='JavaScript' type='text/javascript'>\n";
 	echo "	var audio = document.getElementById('message_audio');\n";
@@ -137,7 +137,7 @@
 	echo "\n";
 	echo "function check_updates() {\n";
 	echo "	var xhttp = new XMLHttpRequest();\n";
-	echo "	xhttp.open('GET', '/app/messages/message_update.php?id=".$_SESSION['user']['user_uuid']."');\n";
+	echo "	xhttp.open('GET', 'message_update.php?id=".$_SESSION['user']['user_uuid']."');\n";
 	echo "	xhttp.send();\n";
 	echo "	xhttp.onreadystatechange = function() {\n";
 	//echo "		var time_now = date_now.getTime();\n";
@@ -149,14 +149,14 @@
 	//echo "				alert('update ajax: '+this.responseText+ ' input: '+document.getElementById('message_update').value);\n";
 	echo "				document.getElementById('message_update').value = this.responseText;\n";
 	echo "				message_to = document.getElementById('message_to').value;\n";
-	echo "				contacts_url = '/app/messages/messages_contacts.php';\n";
-	echo "				parent.document.getElementById('contacts_frame').src = contacts_url;\n";
-	echo "				parent.document.getElementById('contacts_frame').onload = function() {\n";
+	echo "				contacts_url = 'messages_contacts.php';\n";
+	echo "				document.getElementById('contacts_frame').src = contacts_url;\n";
+	echo "				document.getElementById('contacts_frame').onload = function() {\n";
 	echo "					scroll_to_bottom('messages_frame');\n";
 	echo "				}\n";
-	echo "				messages_url = '/app/messages/messages_thread.php?number='+message_to;\n";
-	echo "				parent.document.getElementById('messages_frame').src = messages_url;\n";
-	echo "				parent.document.getElementById('messages_frame').onload = function() {\n";
+	echo "				messages_url = 'messages_thread.php?number='+message_to;\n";
+	echo "				document.getElementById('messages_frame').src = messages_url;\n";
+	echo "				document.getElementById('messages_frame').onload = function() {\n";
 	echo "					scroll_to_bottom('messages_frame');\n";
 	echo "				}\n";
 	echo "				message_notify();\n";
@@ -169,7 +169,7 @@
 	echo "</script>\n";
 
 //body onload
-	echo "<body onLoad=\"scroll_to_bottom('messages_frame');\">\n";
+	echo "<body onload=\"scroll_to_bottom('messages_frame');\">\n";
 
 //resize thread window on window resize
 	echo "<script language='JavaScript' type='text/javascript'>\n";
@@ -194,7 +194,6 @@
 	echo "		text-align: center;\n";
 	echo "		vertical-align: middle;\n";
 	echo "		}\n";
-	echo "\n";
 
 	echo "	#message_new_container {\n";
 	echo "		display: block;\n";
@@ -211,7 +210,6 @@
 	echo "		-moz-box-shadow: 0px 1px 20px #888;\n";
 	echo "		box-shadow: 0px 1px 20px #888;\n";
 	echo "		}\n";
-	echo "\n";
 
 	echo "	#message_media_layer {\n";
 	echo "		z-index: 999999;\n";
@@ -223,12 +221,10 @@
 	echo "		text-align: center;\n";
 	echo "		vertical-align: middle;\n";
 	echo "		}\n";
-	echo "\n";
 
 	echo "	td.contact_selected {\n";
 	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		}\n";
-	echo "\n";
 
 	echo "	.contact_list_image {\n";
 	echo "		float: left;\n";
@@ -241,15 +237,16 @@
 	echo "		background-position: center center;\n";
 	echo "		border-radius: 11px;\n";
 	echo "		}\n";
-	echo "\n";
 
-	echo ".container {\n";
-	echo "	width: 100%;\n";
-	echo "	height: 75vh;\n";
-	echo "	max-width: 100%;\n";
+	echo "	div.container {\n";
+	echo "		width: 100%;\n";
+	echo "		height: 75vh;\n";
+	echo "		max-width: 100%;\n";
 	//echo "	max-height: 100%;\n";
 	//echo "	border:1px solid black;\n";
-	echo "  display: grid;\n";
+	echo "  	display: grid;\n";
+	echo "		padding-left: 0;\n";
+	echo "		padding-right: 0;\n";
 
 	//flex
 	//echo "	flex: 1;\n";
@@ -258,40 +255,54 @@
 	//echo "	justify-content: space-between;\n";
 
 	//echo "	display: inline-grid;\n";
-	echo "	grid-template-columns: minmax(120px, 1fr) minmax(200px, 3fr) 1fr;\n";
-	echo "	grid-template-rows: 1fr;\n";
-	echo "	gap: 10px 10px;\n";
-	//echo "  grid-auto-flow: row;\n";
+	if (!empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true') {
+		echo "	grid-template-columns: minmax(120px, 1fr) minmax(200px, 3fr) 1fr;\n";
+	}
+	else {
+		echo "	grid-template-columns: minmax(120px, 1fr) minmax(200px, 4fr);\n";
+	}
+	echo "		grid-template-rows: 1fr;\n";
+	echo "		gap: 10px 10px;\n";
+	//echo "  	grid-auto-flow: row;\n";
 
-	echo "	grid-template-areas:\n"; 
-	//echo "		\"contacts header header\"\n";
+	echo "		grid-template-areas:\n";
+	//echo "	\"contacts header header\"\n";
 	echo "		\"contacts messages details\"\n";
 	echo "		\"contacts send details\"\n";
-	//echo "		width: 100%;\n";
-	//echo "		height: 100%;\n";
-	echo "	}\n";
-	echo "\n";
+	//echo "	width: 100%;\n";
+	//echo "	height: 100%;\n";
+	echo "		}\n";
 
-	echo ".contacts {\n";
+	echo "	div.contacts {\n";
 	echo "		grid-area: contacts;\n";
-	//echo "		min-width: 120px;\n";
-	//echo "		height: 100%;\n";
+	//echo "	min-width: 120px;\n";
+	//echo "	height: 100%;\n";
 	echo "		background: ".($_SESSION['theme']['form_table_field_background_color']['text'] ?? '#fff').";\n";
+	echo "		border-right: 1px solid #ccc;\n";
 	echo "	}\n";
-	echo "\n";
-	echo ".messages { grid-area: messages; }\n";
-	//echo ".header { grid-area: header; }\n";
-	echo ".details { grid-area: details; }\n";
-	echo ".send { grid-area: send; }\n";
-	echo "\n";
 
-	echo "@media (max-width: 992px) {\n";
-	echo "		.container { grid-template-columns: 120px minmax(200px, 3fr); }\n";
-	echo "}\n";
+	echo "	div.messages {\n";
+	echo "		grid-area: messages;\n";
+	echo "		border-top: 1px dashed #ccc;\n";
+	echo "		border-bottom: 1px dashed #ccc;\n";
+	echo "		}\n";
 
-	echo "@media (max-width: 500px) {\n";
-	echo "		.attachment_image { display: none; }\n";
-	echo "}\n";
+	echo "	div.send {\n";
+	echo "		grid-area: send;\n";
+	echo "		margin: 4px;\n";
+	echo "		}\n";
+
+	echo "	div.details {\n";
+	echo "		min-width: 330px;\n";
+	echo "		grid-area: details;\n";
+	echo "		border-left: 1px solid #ccc;\n";
+	echo "		}\n";
+
+	echo "	@media (max-width: 992px) {\n";
+	echo "		div.container {\n";
+	echo "			grid-template-columns: 120px minmax(200px, 3fr);\n";
+	echo "			}\n";
+	echo "	}\n";
 
 	echo "</style>\n";
 
@@ -379,137 +390,135 @@
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
 
-	echo "<div class=\"container\">\n";
-	echo "	<div class=\"contacts\" style='border: 0px solid black;'>\n";
-	echo "		<iframe id=\"contacts_frame\" style=\"width: 100%; height: 100%;\" src=\"/app/messages/messages_contacts.php\" frameborder=\"0\"></iframe>\n";
+	echo "<div class='container'>\n";
+	echo "	<div class='contacts'>\n";
+	echo "		<iframe id='contacts_frame' style='width: 100%; height: 100%;' src='messages_contacts.php' frameborder='0'></iframe>\n";
 	echo "	</div>\n";
-	echo "	<div class=\"messages\" style='border: 0px solid black;'>\n";
-	echo "		<iframe id=\"messages_frame\" style=\"width: 100%; height: 100%;\" src=\"/app/messages/messages_thread.php\" frameborder=\"0\"></iframe>\n";
+	echo "	<div class='messages'>\n";
+	echo "		<iframe id='messages_frame' class='myautoscroll' style='width: 100%; height: 100%;' src='messages_thread.php' frameborder='0'></iframe>\n";
 	echo "	</div>\n";
-	echo "	<div class=\"send\">\n";
 
 	if (permission_exists('message_add')) {
-		//output input form
-		//echo "<iframe name=\"message_reply_frame\" style=\"display: none; width: 0px; height: 0px;\"></iframe>\n";
-		//echo "<form id='message_reply' method='post' onsubmit='document.getElementById(\"message_text\").value = \"\";' enctype='multipart/form-data' action='message_send.php' target='message_reply_frame'>\n";
-		echo "<form id='message_reply' method='post' onsubmit='' enctype='multipart/form-data' action='message_send.php'>\n";
-		echo "<input type='hidden' name='message_update' id='message_update' value='".$message_update."'>\n";
+		echo "	<div class='send'>\n";
+			//output input form
+			//echo "<iframe name=\"message_reply_frame\" style=\"display: none; width: 0px; height: 0px;\"></iframe>\n";
+			//echo "<form id='message_reply' method='post' onsubmit='document.getElementById(\"message_text\").value = \"\";' enctype='multipart/form-data' action='message_send.php' target='message_reply_frame'>\n";
+			echo "<form id='message_reply' method='post' onsubmit='' enctype='multipart/form-data' action='message_send.php'>\n";
+			echo "<input type='hidden' name='message_update' id='message_update' value='".$message_update."'>\n";
 
-		//echo "<div>\n";
-		if (!empty($destinations) && count($destinations) > 1) {
-			echo "	From <select class='formfld' name='message_from' id='message_from'\">\n";
-			foreach ($destinations as $destination) {
-				echo "		<option value='".$destination."'>".$destination."</option>\n";
+			//echo "<div>\n";
+			//echo "	To <div id='div_message_to'>".escape($message_to)."</div>\n";
+			echo "	<input type='hidden' class='formfld' name='message_to' id='message_to' value='".urlencode($message_to ?? '')."'>\n";
+			//echo "</div>\n";
+
+			echo "<textarea class='formfld' id='message_text' name='message_text' style='width: 100%; min-height: 55px; resize: vertical; padding: 5px 8px; margin: 3px 0 10px 0;' placeholder=\"".$text['description-enter_response']."\"></textarea>";
+			//echo "<input type='input' class='formfld' name='message_text' id='message_text' style='width: 90%; max-width: 100%;'>\n";
+// 			echo "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-top: 5px;'>\n";
+// 			echo "	<tr>\n";
+// 			echo "		<td class='attachment_image' style='width: 20px;'><img src='resources/images/attachment.png' style='min-width: 20px; height: 20px; border: none; padding-right: 5px;'></td>\n";
+// 			echo "		<td>\n";
+			echo "<input type='file' class='formfld' style='max-width: 170px;' multiple='multiple' name='message_media[]' id='message_new_media'>\n";
+// 			echo "		</td>\n";
+// 			echo "		<td style='text-align: right;'>\n";
+			echo button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane','class'=>'default d-none d-sm-inline-block','style'=>'float: right; margin-left: 10px; margin-right: 0;']);
+			if (!empty($destinations) && count($destinations) > 1) {
+				echo "<select class='formfld' name='message_from' id='message_from' style='float: right; padding: 0 5px 0 8px; margin-bottom: 10px;'>\n";
+				echo "	<option value='' disabled='disabled'>".$text['label-message_from']."...</option>\n";
+				foreach ($destinations as $destination) {
+					echo "<option value='".$destination."'>".format_phone($destination)."</option>\n";
+				}
+				echo "</select>\n";
 			}
-			echo "	</select>\n";
-		}
-		else {
-			//echo "	From \n";
-			echo "	<input type='hidden' class='formfld' name='message_from' id='message_from' value='".urlencode($message_from ?? '')."'>\n";
-		}
-		//echo "	To <div id='div_message_to'>".escape($message_to)."</div>\n";
-		echo "	<input type='hidden' class='formfld' name='message_to' id='message_to' value='".urlencode($message_to ?? '')."'>\n";
-		//echo "</div>\n";
+			else {
+				//echo "	From \n";
+				echo "<input type='hidden' class='formfld' name='message_from' id='message_from' value='".urlencode($message_from ?? '')."'>\n";
+			}
+// 			echo "		</td>\n";
+// 			echo "	</tr>\n";
+// 			echo "</table>\n";
+			echo button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane','class'=>'default d-block d-sm-none','style'=>'width: 100%; margin-left: 0;']);
+			//echo "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-top: 15px;'>\n";
+			//echo "	<tr>\n";
+			//echo "		<td align='left' width='50%'>";
+			//echo button::create(['label'=>$text['button-clear'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'reset','onclick'=>"$('#message_text').focus();"]);
+			//echo "		</td>\n";
+			//echo "		<td align='center'><span id='thread_refresh_state'><img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; cursor: pointer;' onclick=\"refresh_thread_stop('".$number."','".$contact_uuid."');\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span></td>\n";
+			//echo "		<td align='right' width='50%'>";
+			//echo button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane']);
+			//echo "		</td>\n";
+			//echo "	</tr>\n";
+			//echo "</table>\n";
+			echo "</form>\n";
 
-		echo "<textarea class='formfld' id='message_text' name='message_text' style='width: 100%; max-width: 100%; min-height: 55px; border: 1px solid #cbcbcb; resize: vertical; padding: 5px 8px; margin-top: 10px; margin-bottom: 5px;' placeholder=\"".$text['description-enter_response']."\"></textarea>";
-		//echo "<input type='input' class='formfld' name='message_text' id='message_text' style='width: 90%; max-width: 100%;'>\n";
-		echo "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-top: 5px;'>\n";
-		echo "	<tr>\n";
-		echo "		<td class='attachment_image' style='width: 20px;'><img src='resources/images/attachment.png' style='min-width: 20px; height: 20px; border: none; padding-right: 5px;'></td>\n";
-		echo "		<td>\n";
-		echo "			<input type='file' class='formfld' style='max-width: 170px;' multiple='multiple' name='message_media[]' id='message_new_media'>\n";
-		echo "		</td>\n";
-		echo "		<td style='text-align: right;'>\n";
-		echo "			".button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane']);
-		echo "		</td>\n";
-		echo "	</tr>\n";
-		//echo "	<tr>\n";
-		//echo "		<td align='left' width='50%'>";
-		//echo button::create(['label'=>$text['button-clear'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'reset','onclick'=>"$('#message_text').focus();"]);
-		//echo "		</td>\n";
-		//echo "		<td align='center'><span id='thread_refresh_state'><img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; cursor: pointer;' onclick=\"refresh_thread_stop('".$number."','".$contact_uuid."');\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span></td>\n";
-		//echo "		<td align='right' width='50%'>";
-		//echo button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane']);
-		//echo "		</td>\n";
-		//echo "	</tr>\n";
-		echo "</table>\n";
-		//echo "<table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-top: 15px;'>\n";
-		//echo "	<tr>\n";
-		//echo "		<td align='left' width='50%'>";
-		//echo button::create(['label'=>$text['button-clear'],'icon'=>$_SESSION['theme']['button_icon_reset'],'type'=>'reset','onclick'=>"$('#message_text').focus();"]);
-		//echo "		</td>\n";
-		//echo "		<td align='center'><span id='thread_refresh_state'><img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; cursor: pointer;' onclick=\"refresh_thread_stop('".$number."','".$contact_uuid."');\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span></td>\n";
-		//echo "		<td align='right' width='50%'>";
-		//echo button::create(['type'=>'submit','label'=>$text['button-send'],'title'=>$text['label-ctrl_enter'],'icon'=>'paper-plane']);
-		//echo "		</td>\n";
-		//echo "	</tr>\n";
-		//echo "</table>\n";
-		echo "</form>\n";
+			//js to load messages for clicked number
+			echo "<script>\n";
 
-		//js to load messages for clicked number
-		echo "<script>\n";
+			//scroll to the bottom
+			echo "	function scroll_to_bottom(id) {\n";
+			echo "		document.getElementById(id).contentWindow.scrollTo(0, 999999);\n";
+			echo "	}\n";
+			echo "\n";
 
-		//scroll to the bottom
-		echo "	function scroll_to_bottom(id) {\n";
-		echo "		document.getElementById(id).contentWindow.scrollTo(0, 999999);\n";
-		echo "	}\n";
-		echo "\n";
+			//update the url
+			echo "	function update_url(id, url) {\n";
+			echo "		document.getElementById(id).src = url;\n";
+			echo "	}\n";
 
-		//update the url
-		echo "	function update_url(id, url) {\n";
-		echo "		document.getElementById(id).src = url;\n";
-		echo "	}\n";
+			//define form submit function
+			echo "	$('#message_reply').submit(function(event) {\n";
+			echo "		event.preventDefault();\n";
+			echo "		$.ajax({\n";
+			echo "			url: $(this).attr('action'),\n";
+			echo "			type: $(this).attr('method'),\n";
+			echo "			data: new FormData(this),\n";
+			echo "			processData: false,\n";
+			echo "			contentType: false,\n";
+			echo "			cache: false,\n";
+			echo "			success: function(){\n";
+			echo "					document.getElementById('message_reply').reset();\n";
+			if (!http_user_agent('mobile')) {
+				echo "				if ($('#message_new_layer').is(':hidden')) {\n";
+				echo "					$('#message_text').focus();\n";
+				echo "				}\n";
+			}
 
-		//define form submit function
-		echo "	$('#message_reply').submit(function(event) {\n";
-		echo "		event.preventDefault();\n";
-		echo "		$.ajax({\n";
-		echo "			url: $(this).attr('action'),\n";
-		echo "			type: $(this).attr('method'),\n";
-		echo "			data: new FormData(this),\n";
-		echo "			processData: false,\n";
-		echo "			contentType: false,\n";
-		echo "			cache: false,\n";
-		echo "			success: function(){\n";
-		echo "					document.getElementById('message_reply').reset();\n";
-		if (!http_user_agent('mobile')) {
-			echo "				if ($('#message_new_layer').is(':hidden')) {\n";
-			echo "					$('#message_text').focus();\n";
+			//refresh the message thread
+			//echo "					setTimeout(function() {\n";
+			//echo "						refresh_thread()\n";
+			//echo "					}, 1000);\n";
+			//echo "				refresh_thread('".$number."', '".$contact_uuid."', 'true');\n";
+
 			echo "				}\n";
-		}
+			echo "		});\n";
+			echo "	});\n";
+			//enable ctrl+enter to send
+			echo "	$('#message_text').keydown(function (event) {\n";
+			echo "		if ((event.keyCode == 10 || event.keyCode == 13) && event.ctrlKey) {\n";
+			echo "			$('#message_compose').submit();\n";
+			echo "		}\n";
+			echo "	});\n";
 
-		//refresh the message thread
-		//echo "					setTimeout(function() {\n";
-		//echo "						refresh_thread()\n";
-		//echo "					}, 1000);\n";
-		//echo "				refresh_thread('".$number."', '".$contact_uuid."', 'true');\n";
-
-		echo "				}\n";
-		echo "		});\n";
-		echo "	});\n";
-		//enable ctrl+enter to send
-		echo "	$('#message_text').keydown(function (event) {\n";
-		echo "		if ((event.keyCode == 10 || event.keyCode == 13) && event.ctrlKey) {\n";
-		echo "			$('#message_compose').submit();\n";
-		echo "		}\n";
-		echo "	});\n";
-
-		echo "</script>\n";
+			echo "</script>\n";
+		echo "	</div>\n"; //send
 	}
-	echo "	</div>\n"; //send
-	echo "	<div class=\"details\">\n";
-	//echo "		<iframe id=\"messages_frame\" style=\"width: 100%; height: 100%;\" src=\"/app/contacts/contact_view.php?id=&query_string=\" frameborder=\"0\"></iframe>\n";
-	echo "	</div>\n";
+	if (!empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true') {
+		echo "	<div class='details d-none d-md-block'>\n";
+		if (permission_exists('contact_view')) {
+			echo "	<iframe id='contact_frame' style='width: 100%; height: 100%;' src='message_contact.php' frameborder='0'></iframe>\n";
+		}
+		echo "	</div>\n";
+	}
 	echo "</div>\n"; //container
 
+/*
 	echo "<script>\n";
 	echo "	function refresh_thread() {\n";
 	echo "		message_to = parent.document.getElementById('message_to').value;\n";
-	echo "		update_url('messages_frame', '/app/messages/messages_thread.php?number='+message_to);\n";
+	echo "		update_url('messages_frame', 'messages_thread.php?number='+message_to);\n";
 	echo "	}\n";
 
 	echo "</script>\n";
-/*
+
 	echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 	echo "	<tr>\n";
 	echo "		<th width='30%'>".$text['label-contacts']."</th>\n";
@@ -524,9 +533,9 @@
 	echo "	</tr>\n";
 	echo "</table>\n";
 	echo "<input type='hidden' id='contact_current_number' value=''>\n";
-*/
+
 //js to load messages for clicked number
-	//echo "<script>\n";
+	echo "<script>\n";
 
 	/*
 	$refresh_contacts = is_numeric($_SESSION['message']['refresh_contacts']['numeric']) && $_SESSION['message']['refresh_contacts']['numeric'] > 0 ? $_SESSION['message']['refresh_contacts']['numeric'] : 10; //default (seconds)

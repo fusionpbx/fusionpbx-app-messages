@@ -152,8 +152,9 @@
 	echo "<html>\n";
 	echo "<head>\n";
 
-//include main css
-	//echo "<link rel='stylesheet' type='text/css' href='/themes/default/css.php'>\n";
+//include icons
+	echo "<link rel='stylesheet' type='text/css' href='/resources/fontawesome/css/all.min.css.php'>\n";
+	echo "<script language='JavaScript' type='text/javascript' src='/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
 
 //js to load messages for clicked number
 	echo "<script>\n";
@@ -166,15 +167,14 @@
 
 	//update the url
 	echo "	function update_url(id, url) {\n";
-	//echo "			alert(id);\n";
 	//echo "		alert('from: '+parent.document.getElementById('message_from').value);\n";
 	//echo "		alert('to: '+parent.document.getElementById('message_to').value);\n";
 	//echo "		alert('to: '+parent.document.getElementById('message_text').value);\n";
-	echo "		parent.document.getElementById(id).src = url;\n";
 	echo "		parent.document.getElementById(id).onload = function() {\n";
-	echo "			scroll_to_bottom(id);\n";
-	echo "			parent.document.getElementById(id).contentWindow.scrollTo(0, 999999);\n";
+// 	echo "			scroll_to_bottom(id);\n";
+	echo "			this.contentWindow.scrollTo(0, 999999);\n";
 	echo "		}\n";
+	echo "		parent.document.getElementById(id).src = url;\n";
 	//echo "		scroll_to_bottom(id);\n";
 	echo "	}\n";
 	echo "</script>\n";
@@ -182,6 +182,10 @@
 //styles
 	echo "<style>\n";
 	echo "\n";
+
+	echo "	body {\n";
+	echo "		margin: 0 14px 0 0;\n";
+	echo "		}\n";
 
 	echo "	#message_new_layer {\n";
 	echo "		z-index: 999999;\n";
@@ -225,7 +229,7 @@
 	echo "\n";
 
 	echo "	td.contact_selected {\n";
-	echo "		border-right: 5px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
+	echo "		border-right: 5px solid ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0').";\n";
 	echo "		}\n";
 	echo "\n";
 
@@ -243,43 +247,62 @@
 	echo "\n";
 
 	echo "	.row_style0 {\n";
-	echo "		border-bottom: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
-	echo "		background: ".($_SESSION['theme']['form_table_label_background_color']['text'] ?? '#e5e9f0').";\n";
+	echo "		border-top: 1px solid ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0').";\n";
+	echo "		border-bottom: 1px solid ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0').";\n";
+	echo "		border-radius: 4px;\n";
+	echo "		background: ".($_SESSION['theme']['message_bubble_em_background_color']['text'] ?? '#daffd4').";\n";
 	echo "		color: ".($_SESSION['theme']['body_text_color']['text'] ?? '#5f5f5f').";\n";
 	echo "		font-family: ".($_SESSION['theme']['body_text_font']['text'] ?? 'arial').";\n";
 	echo "		font-size: 12px;\n";
 	echo "		text-align: left;\n";
 	echo "		padding: 4px 7px;\n";
+	echo "		padding-top: 8px;\n";
+	echo "		cursor: pointer;\n";
 	echo "		}\n";
 	echo "\n";
 
 	echo "	.row_style1 {\n";
-	echo "		border-bottom: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
-	echo "		/*background: #fff;*/\n";
+	echo "		border-bottom: 1px dashed ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
+	echo "		border-radius: 4px;\n";
 	echo "		color: ".($_SESSION['theme']['body_text_color']['text'] ?? '#5f5f5f').";\n";
 	echo "		font-family: ".($_SESSION['theme']['body_text_font']['text'] ?? 'arial').";\n";
 	echo "		font-size: 12px;\n";
 	echo "		text-align: left;\n";
 	echo "		padding: 4px 7px;\n";
+	echo "		padding-top: 8px;\n";
+	echo "		cursor: pointer;\n";
 	echo "		}\n";
 	echo "\n";
 
+	echo "	.contact_message {\n";
+	echo "		margin-top: 5px;\n";
+	echo "		padding-left: 5px;\n";
+	echo "		}\n";
+
 	echo "	@media (max-width: 121px) {\n";
-	echo "		.contact_message { display: none; }\n";
-	echo "		.contact_image { float: none; margin-left: 20.5%; }\n";
-	echo "		.row_style0, .row_style1 { padding-bottom: 0px; text-align: center; }\n";
+	echo "		.contact_message {\n";
+	echo "			display: none;\n";
+	echo "			}\n";
+	echo "		.contact_image {\n";
+	echo "			float: none;\n";
+	echo "			margin-left: 20.5%;\n";
+	echo "			}\n";
+	echo "		.row_style0, .row_style1 {\n";
+	echo "			padding-bottom: 0px;\n";
+	echo "			text-align: center;\n";
+	echo "			}\n";
 	echo "		}\n";
 
 	echo "</style>\n";
 
 //end the header and start the body
 	echo "</head>\n";
-	echo "<body onload=''>\n";
+	echo "<body>\n";
 
 //contacts list
 	if (!empty($contacts) && @sizeof($contacts) != 0) {
 		echo "<table class='tr_hover' width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-		foreach($contacts as $row) {
+		foreach ($contacts as $row) {
 			$number = $row['number'];
 			$name = $row['name'];
 			$count = $row['count'];
@@ -308,11 +331,14 @@
 				$contact_name = escape($row['name']);
 			}
 			if (!empty($_SESSION['user']['contact_number']) && $_SESSION['user']['contact_number'] == $number) {
-				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='/app/messages/messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', '/app/messages/messages_thread.php?number=".urlencode($number)."');\"><td valign='top' class='row_style0 contact_selected' style='cursor: default;'>\n";
+				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', 'messages_thread.php?number=".urlencode($number)."'); ".(permission_exists('contact_view') && !empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true' ? "parent.document.getElementById('contact_frame').src='message_contact.php?id=".$row['contact_uuid']."';" : null)."\"><td valign='top' class='row_style0 contact_selected'>\n";
+				if (permission_exists('contact_view') && !empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true') {
+					echo "<script>parent.document.getElementById('contact_frame').src='message_contact.php?id=".$row['contact_uuid']."';</script>";
+				}
 				$selected = true;
 			}
 			else {
-				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='/app/messages/messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', '/app/messages/messages_thread.php?number=".urlencode($number)."');\"><td valign='top' class='row_style1'>\n"; // onclick=\"load_thread('".urlencode($number)."', '".$contact[$number]['contact_uuid']."');\"
+				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', 'messages_thread.php?number=".urlencode($number)."'); ".(permission_exists('contact_view') && !empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true' ? "parent.document.getElementById('contact_frame').src='message_contact.php';" : null)."\"><td valign='top' class='row_style1'>\n"; // onclick=\"load_thread('".urlencode($number)."', '".$contact[$number]['contact_uuid']."');\"
 				$selected = false;
 			}
 
@@ -324,29 +350,19 @@
 				//echo "<img id='contact_image_".$row['contact_uuid']."' class='contact_list_image' src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'>\n";
 			}
 			else {
-				if (!empty($contact_name) && is_numeric($contact_name)) {
-					//echo "<div style='width: 80px; height: 80px; border: 2px solid #c4cddd; border-radius: 50%; float: left; text-align: center; vertical-align: middle;'><span style='font-size: 150%; font-weight: 600; color: #c4cddd;'>".substr($contact_name, -1)."</span></div><span style='padding-left: 3px;'/>\n";
-					echo "<div class='contact_image' style='width: 50px; height: 50px; float: left; padding-right: 3px;'>\n";
-					echo "	<img src='resources/images/status_logged_out.png' style=\"width: 50px;\"/>\n";
-					echo "</div>\n";
-				}
-				else {
-					//echo "<div style='width: 80px; height: 80px; border: 2px solid #c4cddd; border-radius: 50%; float: left; text-align: center; vertical-align: middle;'><span style='font-size: 150%; font-weight: 600; color: #c4cddd;'>".substr($contact_name, 0, 1)."</span></div><span style='padding-left: 3px;'/>\n";
-					echo "<div class='contact_image' style='width: 50px; height: 50px; float: left; padding-right: 3px;'>\n";
-					echo "	<img src='resources/images/status_available.png' style=\"width: 50px;\"/>\n";
-					echo "</div>\n";
-				}
+				echo "<div class='contact_image' style='width: 50px; height: 50px; float: left; padding-right: 3px;'>\n";
+				echo "	<i class='fas fa-".(!empty($contact_name) && !is_numeric($contact_name) ? 'user-tie' : 'user')." fa-fw fa-3x' style='margin-top: 4px; color: ".($selected ? ($_SESSION['theme']['message_bubble_em_when_color']['text'] ?? '#52b342') : '#ccc').";'></i>\n";
+				echo "</div>\n";
 			}
 
-			//echo "&nbsp;\n";
-			echo "<span style='padding-left: 3px;'/>\n";
-			echo "	<a href=\"#\" style='text-decoration: none; color: ".$_SESSION['theme']['text_link_color']['text'].";'>\n";
-			echo "		<strong>".escape($contact_name)."</strong>".$count."<br />\n";
+			echo "<div style='padding-left: 3px; margin-bottom: 4px;'>\n";
+			echo "	<a href='view:messages' onclick='event.preventDefault();' style='text-decoration: none; color: ".($_SESSION['theme']['text_link_color']['text'] ?? '#004083').";'>\n";
+			echo "		<strong>".(is_numeric($contact_name) ? format_phone($contact_name) : escape($contact_name))."</strong>".$count."<br />\n";
 			echo "	</a>\n";
-			echo "	<span class='contact_message' style='padding-left: 5px;'/>\n";
-			echo "		".escape($message)."<br />\n";
-			echo "	</span>\n";
-			echo "</span>\n";
+			echo "	<div class='contact_message'>\n";
+			echo "		".(!empty($message) && strlen($message) <= 100 ? escape($message) : substr($message,0,100).'...')."<br />\n";
+			echo "	</div>\n";
+			echo "</div>\n";
 			//if ($selected) {
 			//	echo "<script>$('#contact_current_name').html(\"<a href='callto:".escape($number)."'>".escape(format_phone($number))."</a>\");</script>\n";
 			//}
@@ -372,4 +388,5 @@
 	//echo "	<span id='contacts_refresh_state'><img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; margin-top: 3px; cursor: pointer;' onclick=\"refresh_contacts_stop();\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span> ";
 	//echo "</center>\n";
 
+	echo "</html>\n";
 ?>

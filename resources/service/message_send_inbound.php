@@ -142,7 +142,7 @@
 			//get variables from the array
 			$domain_name = $extension['domain_name'];
 			$extension = $extension['extension'];
-			$number_alias = $extension['number_alias'];
+			$number_alias = $extension['number_alias'] ?? null;
 
 			//user registered get the sip profile
 			//$command = "sofia_contact ".$extension."@".$domain_name;

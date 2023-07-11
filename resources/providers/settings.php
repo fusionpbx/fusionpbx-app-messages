@@ -337,6 +337,18 @@
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_order'] = '';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_enabled'] = 'true';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_description'] = '';
+	$y = 0;
+	$array['providers'][$x]['provider_addresses'][$y]['provider_uuid'] = $provider_uuid;
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_uuid'] = 'a156a8e8-0ea4-4c9e-bedf-c27884dc3ea1';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_cidr'] = '1.2.3.4/32';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_enabled'] = 'false';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_description'] = '';
+	$y++;
+	$array['providers'][$x]['provider_addresses'][$y]['provider_uuid'] = $provider_uuid;
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_uuid'] = '4fd0a1db-19f7-46e1-91cc-b6633201a19f';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_cidr'] = '5.6.7.8/32';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_enabled'] = 'false';
+	$array['providers'][$x]['provider_addresses'][$y]['provider_address_description'] = '';
 	unset($provider_uuid);
 
 //bandwidth.com

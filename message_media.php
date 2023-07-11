@@ -30,8 +30,8 @@
 //get media uuid
 	$message_media_uuid = $_GET['id'];
 	$action = $_GET['action'];
-	if (is_numeric($_GET['width'])) {
-		$width = $_GET['width'];
+	if (!empty($_GET['width']) && is_numeric(str_replace('px','',$_GET['width']))) {
+		$width = str_replace('px','',$_GET['width']);
 	}
 
 //get media
@@ -79,7 +79,7 @@
 
 				header('Content-Description: File Transfer');
 				header('Content-Type: application/octet-stream');
-				header("Content-Disposition: attachment; filename=\"".$media['message_media_name']."\"");
+				header("Content-Disposition: attachment; filename=\"".(strlen($media['message_media_name']) <= 36 ? $media['message_media_name'] : $message_media_uuid.'.'.strtolower($media['message_media_type']))."\"");
 				header('Content-Transfer-Encoding: binary');
 				header('Expires: 0');
 				header('Cache-Control: must-revalidate');

@@ -157,32 +157,49 @@
 	$database->execute($sql, $parameters);
 	unset($sql, $parameters);
 
-//css styles
+//show the content
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+
+//include icons
+	echo "<link rel='stylesheet' type='text/css' href='/resources/fontawesome/css/all.min.css.php'>\n";
+	echo "<script language='JavaScript' type='text/javascript' src='/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
+
+	//css styles
 	echo "<style>\n";
+
+	echo "	body {\n";
+	echo "		margin: 0;\n";
+	echo "		padding: 5px;\n";
+	echo "		padding-top: 15px;\n";
+	echo "		}\n";
+
 	echo "	.message-bubble {\n";
 	echo "		display: table;\n";
 	echo "		padding: 10px;\n";
 	echo "		border: 1px solid;\n";
 	echo "		margin-bottom: 10px;\n";
-	echo "		}\n";
-//$_SESSION['dashboard']['chart_text_color']['text'];
-	echo "	.message-bubble-em {\n";
-	echo "		margin-right: 30%;\n";
-	echo "		border-radius: 0 20px 20px 20px;\n";
-	echo "		border-color: ".$_SESSION['theme']['message_bubble_em_border_color']['text'].";\n";
-	echo "		background-color: ".$_SESSION['theme']['message_bubble_em_background_color']['text'].";\n";
-	echo "		color: ".$_SESSION['theme']['message_bubble_em_text_color']['text'].";\n";
 	echo "		clear: both;\n";
+	echo "		}\n";
+
+	echo "	.message-bubble-em {\n";
+	echo "		padding-right: 15px;\n";
+	echo "		border-radius: ".($_SESSION['theme']['message_bubble_em_border_radius']['text'] ?? '0 20px 20px 20px').";\n";
+	echo "		border-color: ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0').";\n";
+	echo "		background: ".($_SESSION['theme']['message_bubble_em_background_color']['text'] ?? '#daffd4').";\n";
+	echo "		background: linear-gradient(180deg, ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0')." 0%, ".($_SESSION['theme']['message_bubble_em_background_color']['text'] ?? '#daffd4')." 15px);\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_em_text_color']['text'] ?? '#000').";\n";
 	echo "		}\n";
 
 	echo "	.message-bubble-me {\n";
 	echo "		float: right;\n";
-	echo "		margin-left: 30%;\n";
-	echo "		border-radius: 20px 20px 0 20px;\n";
-	echo "		border-color: ".$_SESSION['theme']['message_bubble_me_border_color']['text'].";\n";
-	echo "		background-color: ".$_SESSION['theme']['message_bubble_me_background_color']['text'].";\n";
-	echo "		color: ".$_SESSION['theme']['message_bubble_me_text_color']['text'].";\n";
-	echo "		clear: both;\n";
+	echo "		padding-left: 15px;\n";
+	echo "		border-radius: ".($_SESSION['theme']['message_bubble_me_border_radius']['text'] ?? '20px 20px 0 20px').";\n";
+	echo "		border-color: ".($_SESSION['theme']['message_bubble_me_border_color']['text'] ?? '#a3e1fd').";\n";
+	echo "		background: ".($_SESSION['theme']['message_bubble_me_background_color']['text'] ?? '#cbf0ff').";\n";
+	echo "		background: linear-gradient(180deg, ".($_SESSION['theme']['message_bubble_me_background_color']['text'] ?? '#cbf0ff')." calc(100% - 15px), ".($_SESSION['theme']['message_bubble_me_border_color']['text'] ?? '#a3e1fd')." 100%);\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_me_text_color']['text'] ?? '#000').";\n";
 	echo "		}\n";
 
 	echo "	img.message-bubble-image-em {\n";
@@ -201,60 +218,108 @@
 
 	echo "	div.message-bubble-image-em {\n";
 	echo "		float: left;\n";
-	echo "		margin-right: 15px;\n";
 	echo "		text-align: left;\n";
 	echo "		}\n";
 
 	echo "	div.message-bubble-image-me {\n";
 	echo "		float: right;\n";
-	echo "		margin-left: 15px;\n";
 	echo "		text-align: right;\n";
 	echo "		}\n";
 
-	echo "	.message-text {\n";
-	echo "		padding-bottom: 5px;\n";
-	echo "		font-size: 90%;\n";
+	echo "	.message-bubble-em-text {\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_em_text_color']['text'] ?? 'arial').";\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_em_text_color']['text'] ?? '#000').";\n";
+	echo "		font-size: ".($_SESSION['theme']['message_bubble_em_text_size']['text'] ?? '90%').";\n";
 	echo "		}\n";
 
-	echo "	.message-bubble-when {\n";
-	echo "		font-size: 71%;\n";
-	echo "		font-style: italic;\n";
+	echo "	.message-bubble-me-text {\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_me_text_color']['text'] ?? 'arial').";\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_me_text_color']['text'] ?? '#000').";\n";
+	echo "		font-size: ".($_SESSION['theme']['message_bubble_me_text_size']['text'] ?? '90%').";\n";
 	echo "		}\n";
 
-	echo "	.message-media-link-em {\n";
-	echo "		display: inline-block;\n";
-	echo "		margin: 5px 10px 5px 0;\n";
-	echo "		padding: 8px;\n";
-	echo "		background: #cffec7;\n";
-	echo "		border-radius: 7px;\n";
+	echo "	.message-bubble-when-em {\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_when_font']['text'] ?? 'arial').";\n";
+	echo "		font-size: ".($_SESSION['theme']['message_bubble_when_size']['text'] ?? '71%').";\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_em_when_color']['text'] ?? '#52b342').";\n";
+	echo "		letter-spacing: -0.02em;\n";
+	echo "		float: left;\n";
+	echo "		}\n";
+
+	echo "	.message-bubble-when-me {\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_when_font']['text'] ?? 'arial').";\n";
+	echo "		font-size: ".($_SESSION['theme']['message_bubble_when_size']['text'] ?? '71%').";\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_me_when_color']['text'] ?? '#4593b6').";\n";
+	echo "		letter-spacing: -0.02em;\n";
+	echo "		float: right;\n";
+	echo "		}\n";
+
+	echo "	div.message-media {\n";
+	echo "		margin: 8px 0 8px 0;\n";
 	echo "		text-align: center;\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_when_font']['text'] ?? 'arial').";\n";
+	echo "		font-size: ".($_SESSION['theme']['message_bubble_when_size']['text'] ?? '71%').";\n";
+	echo "		letter-spacing: -0.02em;\n";
+	echo "		white-space: nowrap;\n";
+	echo "		text-decoration: none;\n";
 	echo "		}\n";
 
-	echo "	.message-media-link-me {\n";
-	echo "		display: inline-block;\n";
-	echo "		margin: 5px 10px 5px 0;\n";
-	echo "		padding: 8px;\n";
-	echo "		background: #cbf0ff;\n";
+	echo "	a.message-media-link-me,\n";
+	echo "	a.message-media-link-em {\n";
+	echo "		text-decoration: none;\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-em {\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_em_when_color']['text'] ?? '#52b342').";\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-me {\n";
+	echo "		color: ".($_SESSION['theme']['message_bubble_me_when_color']['text'] ?? '#4593b6').";\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-me:hover,\n";
+	echo "	a.message-media-link-em:hover {\n";
+	echo "		text-decoration: underline;\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-me > img,\n";
+	echo "	a.message-media-link-em > img {\n";
 	echo "		border-radius: 7px;\n";
-	echo "		text-align: center;\n";
+	echo "		margin: 0 auto;\n";
+	echo "		margin-bottom: 3px;\n";
+	echo "		width: 100%;\n";
+	echo "		max-width: ".($_SESSION['theme']['message_bubble_media_width_max']['text'] ?? '300px').";\n";
+	echo "		height: auto;\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-em > img {\n";
+	echo "		border: 2px solid ".($_SESSION['theme']['message_bubble_em_border_color']['text'] ?? '#abefa0').";\n";
+	echo "		}\n";
+
+	echo "	a.message-media-link-me > img {\n";
+	echo "		border: 2px solid ".($_SESSION['theme']['message_bubble_me_border_color']['text'] ?? '#a3e1fd').";\n";
 	echo "		}\n";
 
 	echo "</style>\n";
 
-	//display media
-	echo "<script language='JavaScript' type='text/javascript'>\n";
-	echo "	function display_media(id, src) {\n";
-	echo "		$('#message_media_layer').load('message_media.php?id=' + id + '&src=' + src + '&action=display', function(){\n";
-	echo "			$('#message_media_layer').fadeIn(200);\n";
-	echo "		});\n";
-	echo "	}\n";
-	echo "</script>\n";
+//end the header and start the body
+	echo "</head>\n";
+	echo "<body>\n";
 
-	//message media layer
-	echo "<div id='message_media_layer' style='display: none;'></div>\n";
+// 	//display media
+// 	echo "<script language='JavaScript' type='text/javascript'>\n";
+// 	echo "	function display_media(id, src) {\n";
+// 	echo "		$('#message_media_layer').load('message_media.php?id=' + id + '&src=' + src + '&action=display', function(){\n";
+// 	echo "			$('#message_media_layer').fadeIn(200);\n";
+// 	echo "		});\n";
+// 	echo "	}\n";
+// 	echo "</script>\n";
+//
+// 	//message media layer
+// 	echo "<div id='message_media_layer' style='display: none;'></div>\n";
 
 	if (empty($refresh) || !$refresh) {
-		echo "<div id='thread_messages' style='min-height: 300px; overflow: auto; padding-right: 15px;'>\n";
+		echo "<div id='thread_messages' style='min-height: 300px; overflow: auto;'>\n";
 	}
 
 	//output messages
@@ -289,6 +354,25 @@
 								}
 							}
 						echo "<div style='display: table;'>\n";
+						//attachments
+							if (!empty($message_media[$message['message_uuid']]) && @sizeof($message_media[$message['message_uuid']]) != 0) {
+								foreach ($message_media[$message['message_uuid']] as $media) {
+									if ($media['type'] != 'txt') {
+										echo "<div class='message-media'>\n";
+										if (in_array($media['type'], ['jpg','jpeg','gif','png'])) {
+											echo "<a href='message_media.php?id=".$media['uuid']."&src=".$media_source."&action=download' class='message-media-link-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."' title=\"".$text['label-download']."\">";
+										}
+										echo "<img src='message_media.php?id=".$media['uuid']."&src=".$media_source."&action=thumbnail&width=".($_SESSION['theme']['message_bubble_media_width_max']['text'] ?? '300px')."'><br />\n";
+										//echo "<img src='resources/images/attachment.png' style='width: 16px; height: 16px; border: none; margin-right: 10px;'>";
+										echo strtoupper($media['type']).' &middot; '.strtoupper(byte_convert($media['size']));
+										if (in_array($media['type'], ['jpg','jpeg','gif','png'])) {
+											echo "<i class='fas fa-download fa-xs' style='margin-left: 8px;'></i>";
+											echo "</a>\n";
+										}
+										echo "</div>\n";
+									}
+								}
+							}
 						//message
 							if (!empty($message['message_text'])) {
 								$allowed = ['http', 'https'];
@@ -305,34 +389,22 @@
 									// everything OK
 									$is_url = true;
 								}
+								echo "<div class='message-bubble-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."-text'>\n";
 								if ($is_url) {
-									echo "<div class='message-text'><a href='".$message['message_text']."' target='_blank'>".escape($message['message_text'])."</a></div>\n";
+									echo "<a href='".$message['message_text']."' target='_blank'>".escape($message['message_text'])."</a>\n";
 								}
 								else {
-									echo "<div class='message-text'>".str_replace("\n",'<br />',escape($message['message_text']))."</div>\n";
+									echo str_replace("\n",'<br />',escape($message['message_text']))."\n";
 								}
-							}
-						//attachments
-							if (!empty($message_media[$message['message_uuid']]) && @sizeof($message_media[$message['message_uuid']]) != 0) {
-								foreach ($message_media[$message['message_uuid']] as $media) {
-									if ($media['type'] != 'txt') {
-										if ($media['type'] == 'jpg' || $media['type'] == 'jpeg' || $media['type'] == 'gif' || $media['type'] == 'png') {
-											echo "<a href='message_media.php?id=".$media['uuid']."&src=".$media_source."&action=download' class='message-media-link-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."'>";
-										}
-										echo "<img src='message_media.php?id=".$media['uuid']."&src=".$media_source."&action=thumbnail&width=200' style='border: none; margin-right: 10px;'><br />\n";
-										//echo "<img src='resources/images/attachment.png' style='width: 16px; height: 16px; border: none; margin-right: 10px;'>";
-										echo "<span style='font-size: 85%; white-space: nowrap;'>".strtoupper($media['type']).' &middot; '.strtoupper(byte_convert($media['size']))."</span>";
-										echo "</a>\n";
-									}
-								}
-								echo "<br />\n";
+								echo "</div>\n";
 							}
 						//message when
-							echo "<span class='message-bubble-when'>".(date('m-d-Y') != format_when_local($message['message_date'],'d') ? format_when_local($message['message_date']) : format_when_local($message['message_date'],'t'))."</span>\n";
+							echo "<span class='message-bubble-when-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."'>".(date('m-d-Y') != format_when_local($message['message_date'],'d') ? format_when_local($message['message_date']) : format_when_local($message['message_date'],'t'))."</span>\n";
 						echo "</div>\n";
 					echo "</span>\n";
 			}
-			echo "<span id='thread_bottom'></span>\n";
+// 			echo "<span id='thread_bottom'></span>\n";
+			echo "<a name='bottom'></a>\n";
 		}
 
 		echo "<script>\n";
@@ -346,5 +418,9 @@
 	if (empty($refresh) || !$refresh) {
 		echo "</div>\n";
 	}
+
+
+	echo "</body>\n";
+	echo "</html>\n";
 
 ?>
