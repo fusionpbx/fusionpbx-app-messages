@@ -227,13 +227,13 @@
 	echo "		}\n";
 
 	echo "	.message-bubble-em-text {\n";
-	echo "		font-family: ".($_SESSION['theme']['message_bubble_em_text_color']['text'] ?? 'arial').";\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_em_text_font']['text'] ?? 'arial').";\n";
 	echo "		color: ".($_SESSION['theme']['message_bubble_em_text_color']['text'] ?? '#000').";\n";
 	echo "		font-size: ".($_SESSION['theme']['message_bubble_em_text_size']['text'] ?? '90%').";\n";
 	echo "		}\n";
 
 	echo "	.message-bubble-me-text {\n";
-	echo "		font-family: ".($_SESSION['theme']['message_bubble_me_text_color']['text'] ?? 'arial').";\n";
+	echo "		font-family: ".($_SESSION['theme']['message_bubble_me_text_font']['text'] ?? 'arial').";\n";
 	echo "		color: ".($_SESSION['theme']['message_bubble_me_text_color']['text'] ?? '#000').";\n";
 	echo "		font-size: ".($_SESSION['theme']['message_bubble_me_text_size']['text'] ?? '90%').";\n";
 	echo "		}\n";
