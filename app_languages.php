@@ -379,7 +379,7 @@
 		$text['label-log']['fr-ca'] = 'Enregistrer';
 		$text['label-log']['fr-fr'] = 'Enregistrer';
 		$text['label-log']['he-il'] = 'עֵץ';
-		$text['label-log']['it-it'] = 'Tronco d'albero';
+		$text['label-log']['it-it'] = "Tronco d'albero";
 		$text['label-log']['nl-nl'] = 'Logboek';
 		$text['label-log']['pl-pl'] = 'Dziennik';
 		$text['label-log']['pt-br'] = 'Registro';
