@@ -11,7 +11,7 @@
 
 //debug
 	if ($_SESSION['message']['debug']['boolean'] == 'true') {
-		$debug = $_SESSION['message']['debug']['boolean'];
+		$debug = true;
 	}
 	else {
 		$debug = false;
