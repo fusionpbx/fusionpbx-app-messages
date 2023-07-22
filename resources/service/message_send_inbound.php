@@ -184,7 +184,7 @@
 			$event .= "type: text/plain\n";
 			$event .= "hint: the hint\n";
 			$event .= "replying: true\n";
-			$event .= "sip_profile: ".$sip_profile."\n";
+			$event .= "sip_profile: ".($sip_profile ?? '')."\n";
 			$event .= "_body: ". $message_text;
 			event_socket_request($fp, $event);
 			unset($event);

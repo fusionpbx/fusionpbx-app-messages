@@ -81,7 +81,7 @@
 //create the process id file if the process doesn't exist
 	if (!$pid_exists) {
 		//remove the old pid file
-		if (file_exists($file)) {
+		if (file_exists($pid_file)) {
 			unlink($pid_file);
 		}
 
@@ -92,7 +92,7 @@
 		file_put_contents($pid_file, getmypid());
 	}
 
-//get the messages waiting in the email queue
+//get the messages waiting in the queue
 	while (true) {
 
 		//get the messages that are waiting to send
@@ -159,7 +159,7 @@
 	}
 
 //remove the old pid file
-	if (file_exists($file)) {
+	if (file_exists($pid_file)) {
 		unlink($pid_file);
 	}
 

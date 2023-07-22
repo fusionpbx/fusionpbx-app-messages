@@ -59,19 +59,12 @@
 				file_put_contents($log_file, "unauthorized\n", FILE_APPEND);
 			}
 			openlog('FusionPBX', LOG_NDELAY, LOG_AUTH);
-			syslog(LOG_WARNING, '['.$_SERVER['REMOTE_ADDR']."] authentication failed for ".$_GET['key']);
+			syslog(LOG_WARNING, '['.$_SERVER['REMOTE_ADDR']."] authentication failed for ".($_GET['key'] ?? ''));
 			closelog();
 
 		//send http 403
 			header("HTTP/1.0 403 Forbidden");
 			echo "Forbidden\n";
-			//echo "<html>\n";
-			//echo "<head><title>403 Forbidden/title></head>\n";
-			//echo "<body bgcolor=\"white\">\n";
-			//echo "<center><h1>403 Forbidden</h1></center>\n";
-			//echo "<hr><center>nginx/1.12.1</center>\n";
-			//echo "</body>\n";
-			//echo "</html>\n";
 			exit();
 	}
 
@@ -117,7 +110,7 @@
 		$message_type = strtolower($setting['message_type']);
 	}
 	else {
-		$message_type = is_array($message_media_array) ? 'mms' : 'sms';
+		$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
 	}
 
 //get the raw input data
@@ -174,8 +167,8 @@
 	//	file_put_contents($log_file, print_r($message, true)."\n", FILE_APPEND);
 	//}
 
-//get the content location for the destinaion numer
-	$message_to = $setting['content']['message_to'];
+//get the content location for the destination number
+	$message_to = $setting['content']['message_to'] ?? null;
 
 //debug info
 	if ($debug) {
@@ -259,19 +252,19 @@ if (count($message_content) == 3) {
 		$message_from = get_value($message, $setting['message_from']);
 		$message_to = get_value($message, $setting['message_to']);
 		$message_content = get_value($message, $setting['message_content']);
-		$message_media_array = get_value($message, $setting['message_media_array']);
+		$message_media_array = !empty($setting['message_media_array']) ? get_value($message, $setting['message_media_array']) : null;
 	}
 	if ($content_type == 'post') {
 		$message_from = $_POST[$setting['message_from']];
 		$message_to = $_POST[$setting['message_to']];
 		$message_content = $_POST[$setting['message_content']];
-		$message_media_array = $_POST[$setting['message_media_array']];
+		$message_media_array = !empty($setting['message_media_array']) ? $_POST[$setting['message_media_array']] : null;
 	}
 	if ($content_type == 'get') {
 		$message_from = $_GET[$setting['message_from']];
 		$message_to = $_GET[$setting['message_to']];
 		$message_content = $_GET[$setting['message_content']];
-		$message_media_array = $_GET[$setting['message_media_array']];
+		$message_media_array = !empty($setting['message_media_array']) ? $_POST[$setting['message_media_array']] : null;
 	}
 
 //message to is an array get first number in the array
@@ -339,7 +332,7 @@ if (count($message_content) == 3) {
 */
 
 //set the hostname if it wasn't provided
-	$hostname = system('hostname');
+	$hostname = gethostname();
 
 //get the source phone number
 	$destination_number = preg_replace('{[\D]}', '', $message_to);
@@ -360,7 +353,6 @@ if (count($message_content) == 3) {
 	$parameters['destination_number'] = $destination_number;
 	if ($debug) {
 		file_put_contents($log_file, "sql: ".$sql."\n", FILE_APPEND);
-		echo $sql."\n";
 		file_put_contents($log_file, print_r($parameters, true)."\n", FILE_APPEND);
 	}
 	$database = new database;
@@ -505,19 +497,19 @@ if (count($message_content) == 3) {
 		}
 
 		//get the media type from the URL
-		if (!isset($message_media_type)) {
+		if (!isset($message_media_type) && !empty($message_media_url)) {
 			$message_media_type = pathinfo($message_media_url, PATHINFO_EXTENSION);
 		}
 
 		//get the file extension
-		if (strlen($message_media_type) > 0) {
+		if (!empty($message_media_type)) {
 			if ($message_media_type == 'image/jpeg') { $message_media_type = 'jpg'; }
 			if ($message_media_type == 'image/png') { $message_media_type = 'png'; }
 			if ($message_media_type == 'image/gif') { $message_media_type = 'gif'; }
 		}
 
 		//build the array for the media
-		if (strlen($message_media_url) > 0 && $message_media_type !== 'xml') {
+		if (!empty($message_media_url) && strlen($message_media_url) > 0 && $message_media_type !== 'xml') {
 			$index = 0;
 			$array['message_media'][$index]['message_media_uuid'] = uuid();
 			$array['message_media'][$index]['message_uuid'] = $message_uuid;
@@ -627,5 +619,17 @@ if (count($message_content) == 3) {
 //save the data to the file system
 	//file_put_contents($file, $json."\n");
 	//file_put_contents($file, $array_json."\nfrom: ".$message["from"]." to: ".$message["to"]." text: ".$message["text"]."\n$sql_test\njson: ".$json."\n".$saved_result."\n");
+
+//send response to provider, if defined
+	foreach ($provider_settings as $row) {
+		if ($row['provider_setting_subcategory'] == 'response' && $row['provider_setting_name'] == 'message_content' && !empty($row['provider_setting_value'])) {
+			$message_content = $row['provider_setting_value'];
+			if ($debug) {
+				file_put_contents($log_file, "Response...\n".$row['provider_setting_value']."\n\n", FILE_APPEND);
+			}
+			echo $row['provider_setting_value'];
+			break;
+		}
+	}
 
 ?>

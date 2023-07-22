@@ -262,7 +262,7 @@
 	echo "\n";
 
 	echo "	.row_style1 {\n";
-	echo "		border-bottom: 1px dashed ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
+	echo "		border-bottom: 1px solid ".($_SESSION['theme']['table_row_border_color']['text'] ?? '#c5d1e5').";\n";
 	echo "		border-radius: 4px;\n";
 	echo "		color: ".($_SESSION['theme']['body_text_color']['text'] ?? '#5f5f5f').";\n";
 	echo "		font-family: ".($_SESSION['theme']['body_text_font']['text'] ?? 'arial').";\n";

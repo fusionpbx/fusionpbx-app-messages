@@ -283,8 +283,8 @@
 
 	echo "	div.messages {\n";
 	echo "		grid-area: messages;\n";
-	echo "		border-top: 1px dashed #ccc;\n";
-	echo "		border-bottom: 1px dashed #ccc;\n";
+// 	echo "		border-top: 1px dashed #ccc;\n";
+// 	echo "		border-bottom: 1px dashed #ccc;\n";
 	echo "		}\n";
 
 	echo "	div.send {\n";

@@ -262,23 +262,23 @@
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'content') {
 			if ($row['provider_setting_name'] == 'message_from') {
-				$outbound_array = build_array($outbound_array, $row['provider_setting_value'], $message_from);
+				$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
 			}
 			if ($row['provider_setting_name'] == 'message_to') {
 				if ($row['provider_setting_type'] == 'array') {
 					//send the message to as an array
-					$outbound_array = build_array($outbound_array, $row['provider_setting_value'], explode(",", $message_to));
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
 				}
 				else {
 					//sent the message to as text
-					$outbound_array = build_array($outbound_array, $row['provider_setting_value'], $message_to);
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
 				}
 			}
 			if ($row['provider_setting_name'] == 'message_content') {
-				$outbound_array = build_array($outbound_array, $row['provider_setting_value'], $message_text);
+				$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
 			}
 			if ($row['provider_setting_name'] == 'message_other') {
-				$outbound_array = build_array($outbound_array, explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
+				$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 			}
 
 			if (is_array($message_media) && @sizeof($message_media) != 0) {
@@ -287,16 +287,16 @@
 				if ($row['provider_setting_name'] == 'message_media_other') {
 					//echo __line__."\n";
 					//echo "key".explode('=', $row['provider_setting_value'])[0]." value ".explode('=', $row['provider_setting_value'])[1]."\n";
-					$outbound_array = build_array($outbound_array, explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
+					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 				}
 				foreach($message_media as $index => $media) {
 					if ($row['provider_setting_name'] == 'message_media_url') {
 						//$media['message_media_uuid']
 						//$media['message_media_type']
-						//$outbound_array = build_array($outbound_array, $message_content, 'message_content');
-						//$outbound_array = build_array($outbound_array, 'message_content', $message_text);
-						//$outbound_array = build_array($outbound_array, $row['provider_setting_value'], urldecode($media['message_media_url']));
-						$outbound_array = build_array($outbound_array, $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
+						//$outbound_array = build_array($outbound_array ?? [], $message_content, 'message_content');
+						//$outbound_array = build_array($outbound_array ?? [], 'message_content', $message_text);
+						//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], urldecode($media['message_media_url']));
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
 					}
 				}
 			}
@@ -309,8 +309,8 @@
 			//$value = str_replace("message_to", $message_to, $value);
 			//$value = str_replace("message_content", $message_text, $value);
 
-			//$outbound_array = build_array($outbound_array, $row['provider_setting_subcategory'], $value);
-			//$outbound_array = build_array($outbound_array, $row['provider_setting_name'], $value);
+			//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_subcategory'], $value);
+			//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_name'], $value);
 		}
 	}
 
@@ -355,6 +355,7 @@
 
 		//build the query string
 		$x = 0;
+		$query_string = '';
 		foreach ($outbound_array as $key => $value) {
 			if ($x != 0) { $query_string .= '&'; }
 			$query_string .= $key.'='. urlencode($value);
