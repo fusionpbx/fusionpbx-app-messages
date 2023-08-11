@@ -101,7 +101,11 @@
 	$sql .= "		and ( \n";
 	$sql .= "			user_uuid = :user_uuid \n";
 	$sql .= "			or \n";
-	$sql .= "			group_uuid in (".$group_uuids_in.") \n";
+	$sql .= "			group_uuid in (\n";
+	$sql .= "				select group_uuid from v_destinations \n";
+	$sql .= "				where group_uuid in (".$group_uuids_in.") \n";
+	$sql .= "				and domain_uuid = :domain_uuid \n";
+	$sql .= "			) \n";
 	$sql .= "		)\n";
 	$sql .= "		and message_from ~'^\+?([0-9]+\.?[0-9]*|\.[0-9]+)$' \n";
 	$sql .= "		union \n";
@@ -112,8 +116,12 @@
 	$sql .= "		and ( \n";
 	$sql .= "			user_uuid = :user_uuid \n";
 	$sql .= "			or \n";
-	$sql .= "			group_uuid in (".$group_uuids_in.") \n";
-	$sql .= "		)\n";
+	$sql .= "			group_uuid in (\n";
+	$sql .= "				select group_uuid from v_destinations \n";
+	$sql .= "				where group_uuid in (".$group_uuids_in.") \n";
+	$sql .= "				and domain_uuid = :domain_uuid \n";
+	$sql .= "			) \n";
+	$sql .= "		) \n";
 	$sql .= "		and message_to ~'^\+?([0-9]+\.?[0-9]*|\.[0-9]+)$' \n";
 	$sql .= "	) as nested \n";
 	$sql .= "	where number not in \n";
