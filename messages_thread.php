@@ -375,6 +375,7 @@
 							}
 						//message
 							if (!empty($message['message_text'])) {
+								//$message['message_text'] = str_replace("&NewLine;", "<br />", escape($message['message_text']));
 								$allowed = ['http', 'https'];
 								$scheme = parse_url($message['message_text'], PHP_URL_SCHEME);
 								if ($scheme === false) {
@@ -391,10 +392,10 @@
 								}
 								echo "<div class='message-bubble-".($message['message_direction'] == 'inbound' ? 'em' : 'me')."-text'>\n";
 								if ($is_url) {
-									echo "<a href='".$message['message_text']."' target='_blank'>".escape($message['message_text'])."</a>\n";
+									echo "<a href='".$message['message_text']."' target='_blank'>".$message['message_text']."</a>\n";
 								}
 								else {
-									echo str_replace("\n",'<br />',escape($message['message_text']))."\n";
+									echo str_replace("&NewLine;",'<br />',escape($message['message_text']))."\n";
 								}
 								echo "</div>\n";
 							}
