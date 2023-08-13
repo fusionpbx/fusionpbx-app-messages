@@ -1,5 +1,18 @@
 <?php
 
+/*
+description - message_events service
+- subcribes to get notified for each SIP Message
+- sends messages to external numbers to the message_queue
+- message tests
+	handled messages_events service
+		from 1008 to 1001 (partial loop, no message queue)
+		from 1001 to 1008 (partial loop, no message queue)
+		from 1008 to 2089068227 (runs through entire loop, sends to message queue)
+	handled by message/index
+		from 2089068227 to 1008
+*/
+
 //only allow command line
 	if (defined('STDIN')) {
 		//set the include path
@@ -20,7 +33,6 @@
 	if (!empty($argv[1])) {
 		parse_str($argv[1], $_GET);
 	}
-	//print_r($_GET);
 
 //set the variables
 	if (isset($_GET['hostname'])) {
@@ -29,7 +41,6 @@
 	if (isset($_GET['debug'])) {
 		$debug = $_GET['debug'];
 	}
-	$debug = false;
 
 //set the hostname if it wasn't provided
 	if (!isset($hostname) || (isset($hostname) && strlen($hostname) == 0)) {
@@ -90,7 +101,6 @@
 		file_put_contents($pid_file, getmypid());
 	}
 
-
 //connect to event socket
 	$socket = new event_socket;
 	if (!$socket->connect($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password'])) {
@@ -120,13 +130,13 @@
 	//$cmd = "event json CUSTOM";
 	$result = $socket->request($cmd);
 	while ($socket) {
+		//read events from socket
 		$response = $socket->read_event();
-		//print_r($response);
 
+		//decode the event into an array
 		$array = json_decode($response['$'], true);
-		//$array = json_decode($response['Content'], true);
-		//print_r($array);
 
+		//set variables from the event array
 		$event_name = $array['Event-Name'];
 		$event_type = $array['event_type'];
 		$event_subclass = $array['Event-Subclass'];
@@ -143,9 +153,21 @@
 		$to = $to_user;
 
 		//if the message is from an external number don't relay the message
-		$command = "user_exists id ".$from_user." ".$from_host;
-		$response = event_socket_request($fp, "api ".$command);
-		if ($response == 'false') {
+		$from_command = "user_exists id ".$from_user." ".$from_host;
+		$from_response = event_socket_request($fp, "api ".$from_command);
+
+		$to_command = "user_exists id ".$to_user." ".$to_host;
+		$to_response = event_socket_request($fp, "api ".$to_command);
+
+		if ($debug) {
+			echo "from command: ".$from_command."\n";
+			echo "from response: ".$from_response."\n\n";
+			echo "to command: ".$to_command."\n";
+			echo "to response: ".$to_response."\n\n";
+		}
+
+		//from and to are both local then don't send to the message queue
+		if ($from_response == 'true' && $to_response == 'true') {
 			continue;
 		}
 
@@ -177,11 +199,11 @@
 		*/
 
 		//reconnect to the database
-		if (!database) {
+		if (!$database) {
 			$database = new database;
 		}
 
-		//get the provider uuid
+		//get the provider uuid - needed for sending the message
 		$sql = "SELECT * FROM v_destinations \n";
 		$sql .= "WHERE ( \n";
 		$sql .= "	destination_prefix || destination_area_code || destination_number = :source_number \n";
@@ -203,7 +225,7 @@
 		}
 		unset($parameters);
 
-		//get the user_uuid
+		//get the user_uuid - needed for sending the message
 		$sql = "select user_uuid from v_extension_users \n";
 		$sql .= "where extension_uuid in ( \n";
 		$sql .= "	select extension_uuid \n";
@@ -223,13 +245,9 @@
 		//get the source and destination numbers
 		$from = $destination_prefix.$destination_number;
 
-		//debug
-		//echo "provider_uuid: ".$provider_uuid."\n";
-
-		//build the message array
-		$message_queue_uuid = uuid();
+		//send the message using the message queue
 		$array['message_queue'][0]['domain_uuid'] = $domain_uuid;
-		$array['message_queue'][0]['message_queue_uuid'] = $message_queue_uuid;
+		$array['message_queue'][0]['message_queue_uuid'] = uuid();
 		$array['message_queue'][0]['user_uuid'] = $user_uuid;
 		//$array['message_queue'][0]['contact_uuid'] = $contact_uuid;
 		$array['message_queue'][0]['provider_uuid'] = $provider_uuid;
@@ -262,9 +280,10 @@
 		//save to the data
 		$database->app_name = 'messages';
 		$database->app_uuid = '4a20815d-042c-47c8-85df-085333e79b87';
-		$database->save($array, false);
-		//$message = $database->message;
-		//view_array($message, false);
+		$message = $database->save($array, false);
+		if ($debug) {
+			print_r($message);
+		}
 		unset($array);
 
 		// current memory
