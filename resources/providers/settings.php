@@ -3326,7 +3326,7 @@
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_name'] = 'message_media_url';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_value'] = 'MediaURLs';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_order'] = '';
-	$array['providers'][$x]['provider_settings'][$y]['provider_setting_enabled'] = 'true';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_enabled'] = 'false';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_description'] = 'mms';
 	$y++;
 	$array['providers'][$x]['provider_settings'][$y]['provider_uuid'] = '2b2480be-412e-436f-afc2-34a15a6e05d5';
