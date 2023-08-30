@@ -367,7 +367,7 @@
 		echo "	".$text['label-message_json']."\n";
 		echo "</td>\n";
 		echo "<td class='vtable' style='position: relative;' align='left'>\n";
-		echo "	<input class='formfld' type='text' name='message_json' maxlength='255' value=\"".escape($message_json)."\">\n";
+		echo "	<textarea class='formfld' style='min-width: 40%; height: 100px;' name='message_json'>".escape($message_json)."</textarea>\n";
 		echo "<br />\n";
 		echo $text['description-message_json']."\n";
 		echo "</td>\n";
