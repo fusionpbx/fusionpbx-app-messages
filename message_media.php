@@ -71,6 +71,11 @@
 			case 'zip': $content_type = 'application/zip'; break;
 			default: $content_type = 'application/octet-stream'; break;
 		}
+		
+		//show the image inline when the action is not set
+		if (empty($action) && ($content_type == 'image/jpeg' || $content_type == 'image/png' || $content_type == 'image/gif')) {
+			$action = 'download-inline';
+		}
 
 		switch ($action) {
 			case 'download':
