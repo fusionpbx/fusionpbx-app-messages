@@ -45,6 +45,9 @@
 		$text['title-message']['ru-ru'] = 'Сообщение';
 		$text['title-message']['sv-se'] = 'Meddelande';
 		$text['title-message']['uk-ua'] = 'повідомлення';
+		$text['title-message']['zh-cn'] = '信息';
+		$text['title-message']['ja-jp'] = 'メッセージ';
+		$text['title-message']['ko-kr'] = '메시지';
 
 		$text['title-message_log']['en-us'] = 'Message Log';
 		$text['title-message_log']['en-gb'] = 'Message Log';
