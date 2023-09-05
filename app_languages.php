@@ -21,6 +21,9 @@
 		$text['title-messages']['ru-ru'] = 'Сообщения';
 		$text['title-messages']['sv-se'] = 'Meddelanden';
 		$text['title-messages']['uk-ua'] = 'Повідомлення';
+		$text['title-messages']['zh-cn'] = '留言';
+		$text['title-messages']['ja-jp'] = 'メッセージ';
+		$text['title-messages']['ko-kr'] = '메시지';
 
 		$text['title-message']['en-us'] = 'Message';
 		$text['title-message']['en-gb'] = 'Message';
