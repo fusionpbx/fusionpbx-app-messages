@@ -385,7 +385,9 @@
 		echo button::create(['type'=>'button','label'=>$text['label-new_message'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','onclick'=>"document.getElementById('message_new').reset(); $('#message_new_layer').fadeIn(200); unload_thread();"]);
 		//echo button::create(['type'=>'button','label'=>$text['label-new_message'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','onclick'=>"document.getElementById('message_new').reset();$('#message_new_layer').fadeIn(200); unload_thread();"]);
 	}
-	echo button::create(['type'=>'button','label'=>$text['label-log'],'icon'=>'list','link'=>'message_logs.php']);
+	if (permission_exists('message_log_view')) {
+		echo button::create(['type'=>'button','label'=>$text['label-log'],'icon'=>'list','link'=>'message_logs.php']);
+	}
 	echo "	</div>\n";
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";

@@ -30,7 +30,7 @@
 	require_once "resources/paging.php";
 
 //check permissions
-	if (permission_exists('message_view')) {
+	if (permission_exists('message_log_view')) {
 		//access granted
 	}
 	else {
