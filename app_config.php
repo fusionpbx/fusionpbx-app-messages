@@ -39,6 +39,9 @@
 		$apps[$x]['permissions'][$y]['name'] = 'message_media_delete';
 		$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
 		$y++;
+		$apps[$x]['permissions'][$y]['name'] = 'message_log_view';
+		$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
+		$y++;
 		$apps[$x]['permissions'][$y]['name'] = 'message_key';
 		//$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
 		$y++;
