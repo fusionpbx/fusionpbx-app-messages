@@ -21,6 +21,9 @@
 		$text['title-messages']['ru-ru'] = 'Сообщения';
 		$text['title-messages']['sv-se'] = 'Meddelanden';
 		$text['title-messages']['uk-ua'] = 'Повідомлення';
+		$text['title-messages']['zh-cn'] = '留言';
+		$text['title-messages']['ja-jp'] = 'メッセージ';
+		$text['title-messages']['ko-kr'] = '메시지';
 
 		$text['title-message']['en-us'] = 'Message';
 		$text['title-message']['en-gb'] = 'Message';
@@ -42,6 +45,9 @@
 		$text['title-message']['ru-ru'] = 'Сообщение';
 		$text['title-message']['sv-se'] = 'Meddelande';
 		$text['title-message']['uk-ua'] = 'повідомлення';
+		$text['title-message']['zh-cn'] = '信息';
+		$text['title-message']['ja-jp'] = 'メッセージ';
+		$text['title-message']['ko-kr'] = '메시지';
 
 		$text['title-message_log']['en-us'] = 'Message Log';
 		$text['title-message_log']['en-gb'] = 'Message Log';
@@ -63,6 +69,9 @@
 		$text['title-message_log']['ru-ru'] = 'Журнал сообщений';
 		$text['title-message_log']['sv-se'] = 'Meddelandelogg';
 		$text['title-message_log']['uk-ua'] = 'Журнал повідомлень';
+		$text['title-message_log']['zh-cn'] = '消息日志';
+		$text['title-message_log']['ja-jp'] = 'メッセージログ';
+		$text['title-message_log']['ko-kr'] = '메시지 로그';
 
 		$text['label-message_type']['en-us'] = 'Type';
 		$text['label-message_type']['en-gb'] = 'Type';
@@ -84,6 +93,9 @@
 		$text['label-message_type']['ru-ru'] = 'Тип';
 		$text['label-message_type']['sv-se'] = 'Typ';
 		$text['label-message_type']['uk-ua'] = 'Тип';
+		$text['label-message_type']['zh-cn'] = '类型';
+		$text['label-message_type']['ja-jp'] = 'タイプ';
+		$text['label-message_type']['ko-kr'] = '유형';
 
 		$text['description-message_type']['en-us'] = 'Enter the message type.';
 		$text['description-message_type']['en-gb'] = 'Enter the message type.';
@@ -105,6 +117,9 @@
 		$text['description-message_type']['ru-ru'] = 'Введите тип сообщения.';
 		$text['description-message_type']['sv-se'] = 'Ange meddelandetyp.';
 		$text['description-message_type']['uk-ua'] = 'Введіть тип повідомлення.';
+		$text['description-message_type']['zh-cn'] = '输入消息类型。';
+		$text['description-message_type']['ja-jp'] = 'メッセージの種類を入力します。';
+		$text['description-message_type']['ko-kr'] = '메시지 유형을 입력하세요.';
 
 		$text['label-sms']['en-us'] = 'SMS';
 		$text['label-sms']['en-gb'] = 'SMS';
@@ -125,6 +140,9 @@
 		$text['label-sms']['ru-ru'] = 'SMS';
 		$text['label-sms']['sv-se'] = 'SMS';
 		$text['label-sms']['uk-ua'] = 'SMS';
+		$text['label-sms']['zh-cn'] = 'SMS';
+		$text['label-sms']['ja-jp'] = 'SMS';
+		$text['label-sms']['ko-kr'] = 'SMS';
 
 		$text['label-mms']['en-us'] = 'MMS';
 		$text['label-mms']['en-gb'] = 'MMS';
@@ -145,6 +163,9 @@
 		$text['label-mms']['ru-ru'] = 'MMS';
 		$text['label-mms']['sv-se'] = 'MMS';
 		$text['label-mms']['uk-ua'] = 'MMS';
+		$text['label-mms']['zh-cn'] = 'MMS';
+		$text['label-mms']['ja-jp'] = 'MMS';
+		$text['label-mms']['ko-kr'] = 'MMS';
 
 		$text['label-sms']['en-us'] = 'SMS';
 		$text['label-sms']['en-gb'] = 'SMS';
@@ -165,6 +186,9 @@
 		$text['label-sms']['ru-ru'] = 'SMS';
 		$text['label-sms']['sv-se'] = 'SMS';
 		$text['label-sms']['uk-ua'] = 'SMS';
+		$text['label-sms']['zh-cn'] = 'SMS';
+		$text['label-sms']['ja-jp'] = 'SMS';
+		$text['label-sms']['ko-kr'] = 'SMS';
 
 		$text['label-sip']['en-us'] = 'SIP';
 		$text['label-sip']['en-gb'] = 'SIP';
@@ -185,6 +209,9 @@
 		$text['label-sip']['ru-ru'] = 'SIP';
 		$text['label-sip']['sv-se'] = 'SIP';
 		$text['label-sip']['uk-ua'] = 'SIP';
+		$text['label-sip']['zh-cn'] = 'SIP';
+		$text['label-sip']['ja-jp'] = 'SIP';
+		$text['label-sip']['ko-kr'] = 'SIP';
 
 		$text['label-chat']['en-us'] = 'Chat';
 		$text['label-chat']['en-gb'] = 'Chat';
@@ -205,6 +232,9 @@
 		$text['label-chat']['ru-ru'] = 'Чат';
 		$text['label-chat']['sv-se'] = 'Chatt';
 		$text['label-chat']['uk-ua'] = 'Чат';
+		$text['label-chat']['zh-cn'] = '聊天';
+		$text['label-chat']['ja-jp'] = 'チャット';
+		$text['label-chat']['ko-kr'] = '채팅';
 
 		$text['label-message']['en-us'] = 'Message';
 		$text['label-message']['en-gb'] = 'Message';
@@ -225,6 +255,9 @@
 		$text['label-message']['ru-ru'] = 'Сообщение';
 		$text['label-message']['sv-se'] = 'Meddelande';
 		$text['label-message']['uk-ua'] = 'повідомлення';
+		$text['label-message']['zh-cn'] = '信息';
+		$text['label-message']['ja-jp'] = 'メッセージ';
+		$text['label-message']['ko-kr'] = '메시지';
 
 		$text['label-messages']['en-us'] = 'Messages';
 		$text['label-messages']['en-gb'] = 'Messages';
@@ -245,6 +278,9 @@
 		$text['label-messages']['ru-ru'] = 'Сообщения';
 		$text['label-messages']['sv-se'] = 'Meddelanden';
 		$text['label-messages']['uk-ua'] = 'Повідомлення';
+		$text['label-messages']['zh-cn'] = '留言';
+		$text['label-messages']['ja-jp'] = 'メッセージ';
+		$text['label-messages']['ko-kr'] = '메시지';
 
 		$text['description-username']['en-us'] = '';
 		$text['description-username']['en-gb'] = '';
@@ -266,6 +302,9 @@
 		$text['description-username']['ru-ru'] = '';
 		$text['description-username']['sv-se'] = '';
 		$text['description-username']['uk-ua'] = '';
+		$text['description-username']['zh-cn'] = '';
+		$text['description-username']['ja-jp'] = '';
+		$text['description-username']['ko-kr'] = '';
 
 		$text['label-message_direction']['en-us'] = 'Direction';
 		$text['label-message_direction']['en-gb'] = 'Direction';
@@ -287,6 +326,9 @@
 		$text['label-message_direction']['ru-ru'] = 'Направление';
 		$text['label-message_direction']['sv-se'] = 'Riktning';
 		$text['label-message_direction']['uk-ua'] = 'Напрямок';
+		$text['label-message_direction']['zh-cn'] = '方向';
+		$text['label-message_direction']['ja-jp'] = '方向';
+		$text['label-message_direction']['ko-kr'] = '방향';
 
 		$text['description-message_direction']['en-us'] = 'Enter the message direction.';
 		$text['description-message_direction']['en-gb'] = 'Enter the message direction.';
@@ -308,6 +350,9 @@
 		$text['description-message_direction']['ru-ru'] = 'Введите направление сообщения.';
 		$text['description-message_direction']['sv-se'] = 'Ange meddelanderiktningen.';
 		$text['description-message_direction']['uk-ua'] = 'Введіть напрямок повідомлення.';
+		$text['description-message_direction']['zh-cn'] = '输入消息方向。';
+		$text['description-message_direction']['ja-jp'] = 'メッセージの方向を入力します。';
+		$text['description-message_direction']['ko-kr'] = '메시지 방향을 입력하세요.';
 
 		$text['label-outbound']['en-us'] = 'Outbound';
 		$text['label-outbound']['en-gb'] = 'Outbound';
@@ -328,6 +373,9 @@
 		$text['label-outbound']['ru-ru'] = 'Исходящий';
 		$text['label-outbound']['sv-se'] = 'Utgående';
 		$text['label-outbound']['uk-ua'] = 'Вихідний';
+		$text['label-outbound']['zh-cn'] = '出境';
+		$text['label-outbound']['ja-jp'] = 'アウトバウンド';
+		$text['label-outbound']['ko-kr'] = '배 밖으로';
 
 		$text['label-inbound']['en-us'] = 'Inbound';
 		$text['label-inbound']['en-gb'] = 'Inbound';
@@ -348,6 +396,9 @@
 		$text['label-inbound']['ru-ru'] = 'Входящий';
 		$text['label-inbound']['sv-se'] = 'Inkommande';
 		$text['label-inbound']['uk-ua'] = 'Вхідний';
+		$text['label-inbound']['zh-cn'] = '入境';
+		$text['label-inbound']['ja-jp'] = 'インバウンド';
+		$text['label-inbound']['ko-kr'] = '인바운드';
 
 		$text['label-new_message']['en-us'] = 'New Message';
 		$text['label-new_message']['en-gb'] = 'New Message';
@@ -368,6 +419,9 @@
 		$text['label-new_message']['ru-ru'] = 'Новое сообщение';
 		$text['label-new_message']['sv-se'] = 'Nytt meddelande';
 		$text['label-new_message']['uk-ua'] = 'Нове повідомлення';
+		$text['label-new_message']['zh-cn'] = '新消息';
+		$text['label-new_message']['ja-jp'] = '新しいメッセージ';
+		$text['label-new_message']['ko-kr'] = '새로운 메시지';
 
 		$text['label-log']['en-us'] = 'Log';
 		$text['label-log']['en-gb'] = 'Log';
@@ -388,6 +442,9 @@
 		$text['label-log']['ru-ru'] = 'Бревно';
 		$text['label-log']['sv-se'] = 'Logga';
 		$text['label-log']['uk-ua'] = 'Журнал';
+		$text['label-log']['zh-cn'] = '日志';
+		$text['label-log']['ja-jp'] = 'ログ';
+		$text['label-log']['ko-kr'] = '통나무';
 
 		$text['label-contacts']['en-us'] = 'Contacts';
 		$text['label-contacts']['en-gb'] = 'Contacts';
@@ -408,6 +465,9 @@
 		$text['label-contacts']['ru-ru'] = 'Контакты';
 		$text['label-contacts']['sv-se'] = 'Kontakter';
 		$text['label-contacts']['uk-ua'] = 'Контакти';
+		$text['label-contacts']['zh-cn'] = '联系方式';
+		$text['label-contacts']['ja-jp'] = '連絡先';
+		$text['label-contacts']['ko-kr'] = '콘택트 렌즈';
 
 		$text['label-message_date']['en-us'] = 'Date';
 		$text['label-message_date']['en-gb'] = 'Date';
@@ -429,6 +489,9 @@
 		$text['label-message_date']['ru-ru'] = 'Дата';
 		$text['label-message_date']['sv-se'] = 'Datum';
 		$text['label-message_date']['uk-ua'] = 'Дата';
+		$text['label-message_date']['zh-cn'] = '日期';
+		$text['label-message_date']['ja-jp'] = '日付';
+		$text['label-message_date']['ko-kr'] = '날짜';
 
 		$text['description-message_date']['en-us'] = 'Enter the message date.';
 		$text['description-message_date']['en-gb'] = 'Enter the message date.';
@@ -450,6 +513,9 @@
 		$text['description-message_date']['ru-ru'] = 'Введите дату сообщения.';
 		$text['description-message_date']['sv-se'] = 'Ange meddelandedatum.';
 		$text['description-message_date']['uk-ua'] = 'Введіть дату повідомлення.';
+		$text['description-message_date']['zh-cn'] = '输入消息日期。';
+		$text['description-message_date']['ja-jp'] = 'メッセージの日付を入力します。';
+		$text['description-message_date']['ko-kr'] = '메시지 날짜를 입력하세요.';
 
 		$text['label-message_from']['en-us'] = 'From';
 		$text['label-message_from']['en-gb'] = 'From';
@@ -471,6 +537,9 @@
 		$text['label-message_from']['ru-ru'] = 'От';
 		$text['label-message_from']['sv-se'] = 'Från';
 		$text['label-message_from']['uk-ua'] = 'Від';
+		$text['label-message_from']['zh-cn'] = '从';
+		$text['label-message_from']['ja-jp'] = 'から';
+		$text['label-message_from']['ko-kr'] = '에서';
 
 		$text['description-message_from']['en-us'] = 'Enter the message from.';
 		$text['description-message_from']['en-gb'] = 'Enter the message from.';
@@ -492,6 +561,9 @@
 		$text['description-message_from']['ru-ru'] = 'Введите сообщение от.';
 		$text['description-message_from']['sv-se'] = 'Ange meddelandet från.';
 		$text['description-message_from']['uk-ua'] = 'Введіть повідомлення від.';
+		$text['description-message_from']['zh-cn'] = '输入消息来源。';
+		$text['description-message_from']['ja-jp'] = 'からのメッセージを入力します。';
+		$text['description-message_from']['ko-kr'] = '보낸 메시지를 입력하세요.';
 
 		$text['label-message_to']['en-us'] = 'To';
 		$text['label-message_to']['en-gb'] = 'To';
@@ -513,6 +585,9 @@
 		$text['label-message_to']['ru-ru'] = 'К';
 		$text['label-message_to']['sv-se'] = 'Till';
 		$text['label-message_to']['uk-ua'] = 'до';
+		$text['label-message_to']['zh-cn'] = '到';
+		$text['label-message_to']['ja-jp'] = 'に';
+		$text['label-message_to']['ko-kr'] = '에게';
 
 		$text['description-message_to']['en-us'] = 'Enter the message to.';
 		$text['description-message_to']['en-gb'] = 'Enter the message to.';
@@ -534,6 +609,9 @@
 		$text['description-message_to']['ru-ru'] = 'Введите сообщение для.';
 		$text['description-message_to']['sv-se'] = 'Ange meddelandet till.';
 		$text['description-message_to']['uk-ua'] = 'Введіть повідомлення для.';
+		$text['description-message_to']['zh-cn'] = '输入消息至。';
+		$text['description-message_to']['ja-jp'] = 'へのメッセージを入力してください。';
+		$text['description-message_to']['ko-kr'] = '메시지를 입력하세요.';
 
 		$text['label-message_text']['en-us'] = 'Text';
 		$text['label-message_text']['en-gb'] = 'Text';
@@ -555,6 +633,9 @@
 		$text['label-message_text']['ru-ru'] = 'Текст';
 		$text['label-message_text']['sv-se'] = 'Text';
 		$text['label-message_text']['uk-ua'] = 'текст';
+		$text['label-message_text']['zh-cn'] = '文本';
+		$text['label-message_text']['ja-jp'] = '文章';
+		$text['label-message_text']['ko-kr'] = '텍스트';
 
 		$text['label-message_media']['en-us'] = 'Media';
 		$text['label-message_media']['en-gb'] = 'Media';
@@ -576,6 +657,9 @@
 		$text['label-message_media']['ru-ru'] = 'СМИ';
 		$text['label-message_media']['sv-se'] = 'Media';
 		$text['label-message_media']['uk-ua'] = 'ЗМІ';
+		$text['label-message_media']['zh-cn'] = '媒体';
+		$text['label-message_media']['ja-jp'] = 'メディア';
+		$text['label-message_media']['ko-kr'] = '미디어';
 
 		$text['description-message_text']['en-us'] = 'Enter the message text.';
 		$text['description-message_text']['en-gb'] = 'Enter the message text.';
@@ -597,6 +681,9 @@
 		$text['description-message_text']['ru-ru'] = 'Введите текст сообщения.';
 		$text['description-message_text']['sv-se'] = 'Ange meddelandetexten.';
 		$text['description-message_text']['uk-ua'] = 'Введіть текст повідомлення.';
+		$text['description-message_text']['zh-cn'] = '输入消息文本。';
+		$text['description-message_text']['ja-jp'] = 'メッセージテキストを入力します。';
+		$text['description-message_text']['ko-kr'] = '메시지 텍스트를 입력하세요.';
 
 		$text['label-message_media_type']['en-us'] = 'Media Type';
 		$text['label-message_media_type']['en-gb'] = 'Media Type';
@@ -618,6 +705,9 @@
 		$text['label-message_media_type']['ru-ru'] = 'Тип носителя';
 		$text['label-message_media_type']['sv-se'] = 'Mediatyp';
 		$text['label-message_media_type']['uk-ua'] = 'Тип носія';
+		$text['label-message_media_type']['zh-cn'] = '媒体类型';
+		$text['label-message_media_type']['ja-jp'] = 'メディアタイプ';
+		$text['label-message_media_type']['ko-kr'] = '매체 유형';
 
 		$text['description-message_media_type']['en-us'] = 'Enter the message media type.';
 		$text['description-message_media_type']['en-gb'] = 'Enter the message media type.';
@@ -639,6 +729,9 @@
 		$text['description-message_media_type']['ru-ru'] = 'Введите тип носителя сообщения.';
 		$text['description-message_media_type']['sv-se'] = 'Ange meddelandemediatyp.';
 		$text['description-message_media_type']['uk-ua'] = 'Введіть тип носія повідомлення.';
+		$text['description-message_media_type']['zh-cn'] = '输入消息媒体类型。';
+		$text['description-message_media_type']['ja-jp'] = 'メッセージのメディアタイプを入力します。';
+		$text['description-message_media_type']['ko-kr'] = '메시지 미디어 유형을 입력합니다.';
 
 		$text['label-message_media_url']['en-us'] = 'Media URL';
 		$text['label-message_media_url']['en-gb'] = 'Media URL';
@@ -660,6 +753,9 @@
 		$text['label-message_media_url']['ru-ru'] = 'Медиа URL';
 		$text['label-message_media_url']['sv-se'] = 'Media URL';
 		$text['label-message_media_url']['uk-ua'] = 'URL медіа';
+		$text['label-message_media_url']['zh-cn'] = '媒体网址';
+		$text['label-message_media_url']['ja-jp'] = 'メディアURL';
+		$text['label-message_media_url']['ko-kr'] = '미디어 URL';
 
 		$text['description-message_media_url']['en-us'] = 'Enter the message media url.';
 		$text['description-message_media_url']['en-gb'] = 'Enter the message media url.';
@@ -681,6 +777,9 @@
 		$text['description-message_media_url']['ru-ru'] = 'Введите URL-адрес носителя сообщения.';
 		$text['description-message_media_url']['sv-se'] = 'Ange meddelandets media-url.';
 		$text['description-message_media_url']['uk-ua'] = 'Введіть URL-адресу медіа-повідомлення.';
+		$text['description-message_media_url']['zh-cn'] = '输入消息媒体 URL。';
+		$text['description-message_media_url']['ja-jp'] = 'メッセージメディアのURLを入力します。';
+		$text['description-message_media_url']['ko-kr'] = '메시지 미디어 URL을 입력하세요.';
 
 		$text['label-message_media_content']['en-us'] = 'Message Media Content';
 		$text['label-message_media_content']['en-gb'] = 'Message Media Content';
@@ -702,6 +801,9 @@
 		$text['label-message_media_content']['ru-ru'] = 'Медиаконтент сообщения';
 		$text['label-message_media_content']['sv-se'] = 'Meddelande medieinnehåll';
 		$text['label-message_media_content']['uk-ua'] = 'Медіа-вміст повідомлення';
+		$text['label-message_media_content']['zh-cn'] = '留言媒体内容';
+		$text['label-message_media_content']['ja-jp'] = 'メッセージメディアコンテンツ';
+		$text['label-message_media_content']['ko-kr'] = '메시지 미디어 콘텐츠';
 
 		$text['description-message_media_content']['en-us'] = 'Enter the message media content.';
 		$text['description-message_media_content']['en-gb'] = 'Enter the message media content.';
@@ -723,6 +825,9 @@
 		$text['description-message_media_content']['ru-ru'] = 'Введите медиаконтент сообщения.';
 		$text['description-message_media_content']['sv-se'] = 'Ange meddelandets mediainnehåll.';
 		$text['description-message_media_content']['uk-ua'] = 'Введіть медіаконтент повідомлення.';
+		$text['description-message_media_content']['zh-cn'] = '输入消息媒体内容。';
+		$text['description-message_media_content']['ja-jp'] = 'メッセージメディアの内容を入力します。';
+		$text['description-message_media_content']['ko-kr'] = '메시지 미디어 내용을 입력하세요.';
 
 		$text['label-message_json']['en-us'] = 'JSON';
 		$text['label-message_json']['en-gb'] = 'JSON';
@@ -744,6 +849,9 @@
 		$text['label-message_json']['ru-ru'] = 'JSON';
 		$text['label-message_json']['sv-se'] = 'JSON';
 		$text['label-message_json']['uk-ua'] = 'JSON';
+		$text['label-message_json']['zh-cn'] = 'JSON';
+		$text['label-message_json']['ja-jp'] = 'JSON';
+		$text['label-message_json']['ko-kr'] = 'JSON';
 
 		$text['label-refresh_pause']['en-us'] = "Pause Refresh";
 		$text['label-refresh_pause']['en-gb'] = "Pause Refresh";
@@ -765,6 +873,9 @@
 		$text['label-refresh_pause']['ru-ru'] = "Приостановить обновление";
 		$text['label-refresh_pause']['sv-se'] = "Paus Uppdatera";
 		$text['label-refresh_pause']['uk-ua'] = "пауза Оновити";
+		$text['label-refresh_pause']['zh-cn'] = '暂停刷新';
+		$text['label-refresh_pause']['ja-jp'] = 'リフレッシュの一時停止';
+		$text['label-refresh_pause']['ko-kr'] = '새로고침 일시중지';
 
 		$text['label-refresh_enable']['en-us'] = "Enable Refresh";
 		$text['label-refresh_enable']['en-gb'] = "Enable Refresh";
@@ -786,6 +897,9 @@
 		$text['label-refresh_enable']['ru-ru'] = "Включить обновление";
 		$text['label-refresh_enable']['sv-se'] = "Aktivera Uppdatering";
 		$text['label-refresh_enable']['uk-ua'] = "включити Оновити";
+		$text['label-refresh_enable']['zh-cn'] = '启用刷新';
+		$text['label-refresh_enable']['ja-jp'] = 'リフレッシュを有効にする';
+		$text['label-refresh_enable']['ko-kr'] = '새로 고침 활성화';
 
 		$text['description-enter_response']['en-us'] = 'Enter Response...';
 		$text['description-enter_response']['en-gb'] = 'Enter Response...';
@@ -807,6 +921,9 @@
 		$text['description-enter_response']['ru-ru'] = 'Введите ответ...';
 		$text['description-enter_response']['sv-se'] = 'Ange svar...';
 		$text['description-enter_response']['uk-ua'] = 'Введіть відповідь...';
+		$text['description-enter_response']['zh-cn'] = '输入响应...';
+		$text['description-enter_response']['ja-jp'] = '応答を入力してください...';
+		$text['description-enter_response']['ko-kr'] = '응답 입력...';
 
 		$text['label-ctrl_enter']['en-us'] = 'Ctrl + Enter';
 		$text['label-ctrl_enter']['en-gb'] = 'Ctrl + Enter';
@@ -828,6 +945,9 @@
 		$text['label-ctrl_enter']['ru-ru'] = 'Ctrl + Enter';
 		$text['label-ctrl_enter']['sv-se'] = 'Ctrl + Enter';
 		$text['label-ctrl_enter']['uk-ua'] = 'Ctrl + Enter';
+		$text['label-ctrl_enter']['zh-cn'] = 'Ctrl + Enter';
+		$text['label-ctrl_enter']['ja-jp'] = 'Ctrl + Enter';
+		$text['label-ctrl_enter']['ko-kr'] = 'Ctrl + Enter';
 
 		$text['button-close']['en-us'] = 'Close';
 		$text['button-close']['en-gb'] = 'Close';
@@ -849,6 +969,9 @@
 		$text['button-close']['ru-ru'] = 'Закрывать';
 		$text['button-close']['sv-se'] = 'Stänga';
 		$text['button-close']['uk-ua'] = 'Закрити';
+		$text['button-close']['zh-cn'] = '关闭';
+		$text['button-close']['ja-jp'] = '近い';
+		$text['button-close']['ko-kr'] = '닫다';
 
 		$text['label-view_contact']['en-us'] = 'View Contact';
 		$text['label-view_contact']['en-gb'] = 'View Contact';
@@ -870,6 +993,9 @@
 		$text['label-view_contact']['ru-ru'] = 'Зрительный контакт';
 		$text['label-view_contact']['sv-se'] = 'Visa kontakt';
 		$text['label-view_contact']['uk-ua'] = 'Переглянути контакт';
+		$text['label-view_contact']['zh-cn'] = '查看联系方式';
+		$text['label-view_contact']['ja-jp'] = '連絡先を表示';
+		$text['label-view_contact']['ko-kr'] = '연락처 보기';
 
 		$text['label-send_email']['en-us'] = 'Send Email';
 		$text['label-send_email']['en-gb'] = 'Send Email';
@@ -891,6 +1017,9 @@
 		$text['label-send_email']['ru-ru'] = 'Отправить письмо';
 		$text['label-send_email']['sv-se'] = 'Skicka epost';
 		$text['label-send_email']['uk-ua'] = 'Відправити лист';
+		$text['label-send_email']['zh-cn'] = '发电子邮件';
+		$text['label-send_email']['ja-jp'] = 'メールを送る';
+		$text['label-send_email']['ko-kr'] = '이메일을 보내';
 
 // 		foreach ($text as $name => $langs) { echo $name.' - '.sizeof($langs).'<br>'; }
 
