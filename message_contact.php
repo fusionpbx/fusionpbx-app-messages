@@ -41,10 +41,12 @@
 	$language = new text;
 	$text = $language->get(null, '/app/contacts');
 
-
 //action add or update
 	if (!empty($_REQUEST["id"]) && is_uuid($_REQUEST["id"])) {
 		$contact_uuid = $_REQUEST["id"];
+	}
+	elseif (!empty($_REQUEST["destination"]) ) {
+		$destination = $_REQUEST["destination"];
 	}
 	else {
 		echo '<html><body>&nbsp;</body></html> ';
@@ -52,14 +54,30 @@
 	}
 
 //main contact details
-	$sql = "select * from v_contacts ";
-	$sql .= "where domain_uuid = :domain_uuid ";
-	$sql .= "and contact_uuid = :contact_uuid ";
+	$sql = "select * from v_contacts as c \n";
+	$sql .= "where domain_uuid = :domain_uuid \n";
+	if (!empty($destination)) {
+		$sql .= "and contact_uuid in ( \n";
+		$sql .= " select contact_uuid from v_contact_phones \n";
+		$sql .= " where domain_uuid = :domain_uuid \n";
+		$sql .= " and ( \n";
+		$sql .= "  concat('+',phone_country_code, phone_number) = :destination \n";
+		$sql .= "  or concat(phone_country_code, phone_number) = :destination \n";
+		$sql .= "  or phone_number = :destination \n";
+		$sql .= " ) \n";
+		$sql .= ") \n";
+		$parameters['destination'] = $destination;
+	}
+	if (!empty($contact_uuid)) {
+		$sql .= "and contact_uuid = :contact_uuid ";
+		$parameters['contact_uuid'] = $contact_uuid;
+	}
 	$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
-	$parameters['contact_uuid'] = $contact_uuid;
+
 	$database = new database;
 	$row = $database->select($sql, $parameters, 'row');
 	if (!empty($row)) {
+		$contact_uuid = $row["contact_uuid"];
 		$contact_type = $row["contact_type"];
 		$contact_organization = $row["contact_organization"];
 		$contact_name_prefix = $row["contact_name_prefix"];
@@ -76,69 +94,73 @@
 	}
 	unset($sql, $parameters, $row);
 
-//get the available users for this contact
-	$sql = "select * from v_users ";
-	$sql .= "where domain_uuid = :domain_uuid ";
-	$sql .= "order by username asc ";
-	$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
-	$database = new database;
-	$users = $database->select($sql, $parameters ?? null, 'all');
-	unset($sql, $parameters);
+//check contact permisions if this is set to enabled. default is false
+	if ($_SESSION['contact']['permissions']['boolean'] == "true") {
 
-//determine if contact assigned to a user
-	if (!empty($users)) {
-		foreach ($users as $user) {
-			if ($user['contact_uuid'] == $contact_uuid) {
-				$contact_user_uuid = $user['user_uuid'];
-				break;
+		//get the available users for this contact
+		$sql = "select * from v_users ";
+		$sql .= "where domain_uuid = :domain_uuid ";
+		$sql .= "order by username asc ";
+		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
+		$database = new database;
+		$users = $database->select($sql, $parameters ?? null, 'all');
+		unset($sql, $parameters);
+
+		//determine if contact assigned to a user
+		if (!empty($users)) {
+			foreach ($users as $user) {
+				if ($user['contact_uuid'] == $contact_uuid) {
+					$contact_user_uuid = $user['user_uuid'];
+					break;
+				}
 			}
 		}
-	}
 
-//get the assigned users that can view this contact
-	$sql = "select u.username, u.user_uuid, a.contact_user_uuid from v_contacts as c, v_users as u, v_contact_users as a ";
-	$sql .= "where c.contact_uuid = :contact_uuid ";
-	$sql .= "and c.domain_uuid = :domain_uuid ";
-	$sql .= "and u.user_uuid = a.user_uuid ";
-	$sql .= "and c.contact_uuid = a.contact_uuid ";
-	$sql .= "order by u.username asc ";
-	$parameters['contact_uuid'] = $contact_uuid;
-	$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
-	$database = new database;
-	$contact_users_assigned = $database->select($sql, $parameters, 'all');
-	unset($sql, $parameters);
+		//get the assigned users that can view this contact
+		$sql = "select u.username, u.user_uuid, a.contact_user_uuid from v_contacts as c, v_users as u, v_contact_users as a ";
+		$sql .= "where c.contact_uuid = :contact_uuid ";
+		$sql .= "and c.domain_uuid = :domain_uuid ";
+		$sql .= "and u.user_uuid = a.user_uuid ";
+		$sql .= "and c.contact_uuid = a.contact_uuid ";
+		$sql .= "order by u.username asc ";
+		$parameters['contact_uuid'] = $contact_uuid;
+		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
+		$database = new database;
+		$contact_users_assigned = $database->select($sql, $parameters, 'all');
+		unset($sql, $parameters);
 
-//get the assigned groups that can view this contact
-	$sql = "select g.*, cg.contact_group_uuid ";
-	$sql .= "from v_groups as g, v_contact_groups as cg ";
-	$sql .= "where cg.group_uuid = g.group_uuid ";
-	$sql .= "and cg.domain_uuid = :domain_uuid ";
-	$sql .= "and cg.contact_uuid = :contact_uuid ";
-	$sql .= "and cg.group_uuid <> :group_uuid ";
-	$sql .= "order by g.group_name asc ";
-	$parameters['domain_uuid'] = $domain_uuid;
-	$parameters['contact_uuid'] = $contact_uuid;
-	$parameters['group_uuid'] = $_SESSION["user_uuid"];
-	$database = new database;
-	$contact_groups_assigned = $database->select($sql, $parameters, 'all');
-	if (!empty($contact_groups_assigned)) {
-		foreach ($contact_groups_assigned as $field) {
-			$contact_groups[] = "'".$field['group_uuid']."'";
+		//get the assigned groups that can view this contact
+		$sql = "select g.*, cg.contact_group_uuid ";
+		$sql .= "from v_groups as g, v_contact_groups as cg ";
+		$sql .= "where cg.group_uuid = g.group_uuid ";
+		$sql .= "and cg.domain_uuid = :domain_uuid ";
+		$sql .= "and cg.contact_uuid = :contact_uuid ";
+		$sql .= "and cg.group_uuid <> :group_uuid ";
+		$sql .= "order by g.group_name asc ";
+		$parameters['domain_uuid'] = $domain_uuid;
+		$parameters['contact_uuid'] = $contact_uuid;
+		$parameters['group_uuid'] = $_SESSION["user_uuid"];
+		$database = new database;
+		$contact_groups_assigned = $database->select($sql, $parameters, 'all');
+		if (!empty($contact_groups_assigned)) {
+			foreach ($contact_groups_assigned as $field) {
+				$contact_groups[] = "'".$field['group_uuid']."'";
+			}
 		}
-	}
-	unset($sql, $parameters);
+		unset($sql, $parameters);
 
-//get the available groups for this contact
-	$sql = "select group_uuid, group_name from v_groups ";
-	$sql .= "where (domain_uuid = :domain_uuid or domain_uuid is null) ";
-	if (!empty($contact_groups)) {
-		$sql .= "and group_uuid not in (".implode(',', $contact_groups).") ";
+		//get the available groups for this contact
+		$sql = "select group_uuid, group_name from v_groups ";
+		$sql .= "where (domain_uuid = :domain_uuid or domain_uuid is null) ";
+		if (!empty($contact_groups)) {
+			$sql .= "and group_uuid not in (".implode(',', $contact_groups).") ";
+		}
+		$sql .= "order by group_name asc ";
+		$parameters['domain_uuid'] = $domain_uuid;
+		$database = new database;
+		$contact_groups_available = $database->select($sql, $parameters, 'all');
+		unset($sql, $parameters, $contact_groups);
 	}
-	$sql .= "order by group_name asc ";
-	$parameters['domain_uuid'] = $domain_uuid;
-	$database = new database;
-	$contact_groups_available = $database->select($sql, $parameters, 'all');
-	unset($sql, $parameters, $contact_groups);
 
 //determine title name
 	if ($contact_name_given || $contact_name_family) {

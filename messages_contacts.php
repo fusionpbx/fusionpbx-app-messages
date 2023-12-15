@@ -341,7 +341,7 @@
 			if (!empty($_SESSION['user']['contact_number']) && $_SESSION['user']['contact_number'] == $number) {
 				echo "<tr onclick=\"parent.document.getElementById('message_to').value=".escape($number)."; parent.document.getElementById('contacts_frame').src='messages_contacts.php?number=".urlencode($number)."'; update_url('messages_frame', 'messages_thread.php?number=".urlencode($number)."'); ".(permission_exists('contact_view') && !empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true' ? "parent.document.getElementById('contact_frame').src='message_contact.php?id=".$row['contact_uuid']."';" : null)."\"><td valign='top' class='row_style0 contact_selected'>\n";
 				if (permission_exists('contact_view') && !empty($_SESSION['message']['contact_details']['boolean']) && $_SESSION['message']['contact_details']['boolean'] == 'true') {
-					echo "<script>parent.document.getElementById('contact_frame').src='message_contact.php?id=".$row['contact_uuid']."';</script>";
+					echo "<script>parent.document.getElementById('contact_frame').src='message_contact.php?destination=".urlencode($number)."&id=".$row['contact_uuid']."';</script>";
 				}
 				$selected = true;
 			}
