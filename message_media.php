@@ -37,6 +37,7 @@
 //get media
 	if (is_uuid($message_media_uuid)) {
 
+		//get the media details from the database
 		$sql = "select message_media_name, message_media_type, message_media_url, message_media_content ";
 		$sql .= "from v_message_media ";
 		$sql .= "where message_media_uuid = :message_media_uuid ";
@@ -46,11 +47,12 @@
 		}
 		$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
 		$parameters['message_media_uuid'] = $message_media_uuid;
-		$parameters['domain_uuid'] = $domain_uuid;
+		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$database = new database;
 		$media = $database->select($sql, $parameters, 'row');
 		unset($sql, $parameters);
 
+		//set the content type
 		switch (strtolower($media['message_media_type'])) {
 			case 'jpg': $content_type = 'image/jpeg'; break;
 			case 'jpeg': $content_type = 'image/jpeg'; break;
