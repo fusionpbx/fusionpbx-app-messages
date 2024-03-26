@@ -64,7 +64,7 @@ description - message_events service
 		//check to see if the process is running
 		if (file_exists($file)) {
 			$pid = file_get_contents($file);
-			if (posix_getsid($pid) === false) { 
+			if (posix_getsid($pid) === false) {
 				//process is not running
 				$exists = false;
 			}
@@ -130,6 +130,7 @@ description - message_events service
 	//$cmd = "event json CUSTOM";
 	$result = $socket->request($cmd);
 	while ($socket) {
+
 		//read events from socket
 		$response = $socket->read_event();
 
@@ -168,6 +169,7 @@ description - message_events service
 
 		//from and to are both local then don't send to the message queue
 		if ($from_response == 'true' && $to_response == 'true') {
+			usleep(10000);
 			continue;
 		}
 
@@ -225,6 +227,15 @@ description - message_events service
 		}
 		unset($parameters);
 
+		//get the source and destination numbers
+		$from = $destination_prefix.$destination_number;
+
+		//if any of these are empty then skip the rest of the current loop
+		if (empty($from) || empty($to) || empty($message_content)) {
+			usleep(10000);
+			continue;
+		}
+
 		//get the user_uuid - needed for sending the message
 		$sql = "select user_uuid from v_extension_users \n";
 		$sql .= "where extension_uuid in ( \n";
@@ -241,9 +252,6 @@ description - message_events service
 			$user_uuid = $row["user_uuid"];
 		}
 		unset($parameters);
-
-		//get the source and destination numbers
-		$from = $destination_prefix.$destination_number;
 
 		//send the message using the message queue
 		$array['message_queue'][0]['domain_uuid'] = $domain_uuid;
@@ -295,6 +303,7 @@ description - message_events service
 		//echo 'Current memory: ' . round($memory_usage / 1024) . " KB\n";
 		//echo 'Peak memory: ' . round($memory_peak / 1024) . " KB\n\n";
 
+		//slow down the loop to reduce cpu usage
 		usleep(10000);
 	}
 
