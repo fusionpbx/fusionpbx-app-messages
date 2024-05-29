@@ -365,11 +365,11 @@
 	}
 
 //exchange variable name with their values
-	$setting['http_destination'] = str_replace("\${from}", $message_from, $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_from}", $message_from, $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${to}", $message_to, $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_to}", $message_to, $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_text}", $message_text, $setting['http_destination']);
+	$setting['http_destination'] = str_replace("\${from}", urlencode($message_from), $setting['http_destination']);
+	$setting['http_destination'] = str_replace("\${message_from}", urlencode($message_from), $setting['http_destination']);
+	$setting['http_destination'] = str_replace("\${to}", urlencode($message_to), $setting['http_destination']);
+	$setting['http_destination'] = str_replace("\${message_to}", urlencode($message_to), $setting['http_destination']);
+	$setting['http_destination'] = str_replace("\${message_text}", urlencode($message_text), $setting['http_destination']);
 
 //logging info
 	//view_array($setting, false);
