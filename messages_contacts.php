@@ -140,12 +140,15 @@
 	$sql .= ") as n\n";
 
 	$sql .= "order by \n";
-	$sql .= "case when (number = :number) then 0 end asc,\n";
+	//uncomment below to have the selected message pop up to the top of the list
+	//$sql .= "case when (number = :number) then 0 end asc,\n";
 	$sql .= "date desc\n";
 
 	$parameters['domain_uuid'] = $domain_uuid;
 	$parameters['user_uuid'] = $_SESSION['user']['user_uuid'];
-	$parameters['number'] = $_SESSION['user']['contact_number'] ?? null;
+
+	//uncomment below to have the selected message pop up to the top of the list
+	//$parameters['number'] = $_SESSION['user']['contact_number'] ?? null;
 //echo "<pre>\n";
 //echo $sql;
 //echo "</pre>\n";
