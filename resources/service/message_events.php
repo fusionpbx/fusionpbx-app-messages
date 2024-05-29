@@ -137,6 +137,10 @@ description - message_events service
 		//decode the event into an array
 		$array = json_decode($response['$'], true);
 
+		//initialize variable(s)
+		$user_uuid = '';
+		$message_type = 'sms';
+
 		//set variables from the event array
 		$event_name = $array['Event-Name'];
 		$event_type = $array['event_type'];
@@ -148,10 +152,8 @@ description - message_events service
 		$to_user = $array['to_user'];
 		$to_host = $array['to_host'];
 		$from_sip_ip = $array['from_sip_ip'];
-		$to = $array['to'];
 		$message_content = $array['_body'];
-		$message_type = 'sms';
-		$to = $to_user;
+		$to = $array['to_user'];
 
 		//if the message is from an external number don't relay the message
 		$from_command = "user_exists id ".$from_user." ".$from_host;
@@ -219,13 +221,12 @@ description - message_events service
 		$parameters['source_number'] = $source_number;
 		$row = $database->select($sql, $parameters, 'row');
 		//view_array($row, false);
-		if (is_array($row)) {
-			$domain_uuid = $row["domain_uuid"];
-			$provider_uuid = $row["provider_uuid"];
-			$destination_prefix = $row["destination_prefix"];
-			$destination_number = $row["destination_number"];
-		}
-		unset($parameters);
+		if (empty($row)) { continue; }
+		$domain_uuid = $row["domain_uuid"];
+		$provider_uuid = $row["provider_uuid"];
+		$destination_prefix = $row["destination_prefix"];
+		$destination_number = $row["destination_number"];
+		unset($parameters, $row);
 
 		//get the source and destination numbers
 		$from = $destination_prefix.$destination_number;
@@ -248,7 +249,7 @@ description - message_events service
 		$parameters['domain_uuid'] = $domain_uuid;
 		$row = $database->select($sql, $parameters, 'row');
 		//view_array($row, false);
-		if (is_array($row)) {
+		if (!empty($row)) {
 			$user_uuid = $row["user_uuid"];
 		}
 		unset($parameters);
