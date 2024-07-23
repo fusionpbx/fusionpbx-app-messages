@@ -264,7 +264,7 @@ if (count($message_content) == 3) {
 		$message_from = $_GET[$setting['message_from']];
 		$message_to = $_GET[$setting['message_to']];
 		$message_content = $_GET[$setting['message_content']];
-		$message_media_array = !empty($setting['message_media_array']) ? $_POST[$setting['message_media_array']] : null;
+		$message_media_array = !empty($setting['message_media_array']) ? $_GET[$setting['message_media_array']] : null;
 	}
 
 //message to is an array get first number in the array
