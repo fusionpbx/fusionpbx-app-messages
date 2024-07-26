@@ -482,7 +482,7 @@ if (count($message_content) == 3) {
 				$array['message_media'][$index]['message_media_date'] = 'now()';
 
 				$array['message_media'][$index]['message_media_url'] = $message_media_url;
-				$array['message_media'][$index]['message_media_content'] = base64_encode(file_get_contents($message_media_url));
+				$array['message_media'][$index]['message_media_content'] = base64_encode(url_get_contents($message_media_url));
 			}
 		}
 	}
