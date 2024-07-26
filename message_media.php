@@ -45,9 +45,11 @@
 			$sql .= "and user_uuid = :user_uuid ";
 			$parameters['user_uuid'] = $_SESSION['user_uuid'];
 		}
-		$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+		if (is_uuid($_SESSION['domain_uuid'])) {
+			$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+			$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
+		}
 		$parameters['message_media_uuid'] = $message_media_uuid;
-		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$database = new database;
 		$media = $database->select($sql, $parameters, 'row');
 		unset($sql, $parameters);
