@@ -105,14 +105,6 @@
 		$content_type = strtolower($setting['content_type']);
 	}
 
-//get the message_type options: sms, mms
-	if (isset($setting['message_type'])) {
-		$message_type = strtolower($setting['message_type']);
-	}
-	else {
-		$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
-	}
-
 //get the raw input data
 	//if  ($_SERVER['CONTENT_TYPE'] == 'application/json') {
 		//show the content type
@@ -125,10 +117,10 @@
 		if ($content_type == 'json') {
 			$message_json = file_get_contents("php://input");
 		}
-		if ($content_type == 'get') {
+		elseif ($content_type == 'get') {
 			$message_json = json_encode($_GET);
 		}
-		if ($content_type == 'post') {
+		elseif ($content_type == 'post') {
 			$message_json = json_encode($_POST);
 		}
 
@@ -254,17 +246,25 @@ if (count($message_content) == 3) {
 		$message_content = get_value($message, $setting['message_content']);
 		$message_media_array = !empty($setting['message_media_array']) ? get_value($message, $setting['message_media_array']) : null;
 	}
-	if ($content_type == 'post') {
+	elseif ($content_type == 'post') {
 		$message_from = $_POST[$setting['message_from']];
 		$message_to = $_POST[$setting['message_to']];
 		$message_content = $_POST[$setting['message_content']];
 		$message_media_array = !empty($setting['message_media_array']) ? $_POST[$setting['message_media_array']] : null;
 	}
-	if ($content_type == 'get') {
+	elseif ($content_type == 'get') {
 		$message_from = $_GET[$setting['message_from']];
 		$message_to = $_GET[$setting['message_to']];
 		$message_content = $_GET[$setting['message_content']];
 		$message_media_array = !empty($setting['message_media_array']) ? $_GET[$setting['message_media_array']] : null;
+	}
+
+//get the message_type options: sms, mms
+	if (isset($setting['message_type'])) {
+		$message_type = strtolower($setting['message_type']);
+	}
+	else {
+		$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
 	}
 
 //message to is an array get first number in the array
