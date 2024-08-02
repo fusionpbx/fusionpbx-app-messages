@@ -64,20 +64,18 @@
 	$language = new text;
 	$text = $language->get();
 
+//build a list of groups the user is a member of to be used in a SQL in
+foreach($_SESSION['user']['groups'] as $group) {
+	if (is_uuid($group['group_uuid'])) {
+		$group_uuids[] =  $group['group_uuid'];
+	}
+}
+$group_uuids_in = "'".implode("','", $group_uuids)."'";
+
 //get the message from
 	$sql = "select destination_number from v_destinations ";
 	$sql .= "where domain_uuid = :domain_uuid ";
-	$sql .= "and (user_uuid = :user_uuid OR group_uuid IN (";
-	$i = 0;
-	foreach($_SESSION['user']['groups'] as $k => $v){
-		if($i != 0){
-			$sql .= ",";
-		}
-		$sql .= "'".$v['group_uuid']."'";
-		$i++;
-	}
-	unset($i);
-	$sql .= ")) ";
+	$sql .= "and (user_uuid = :user_uuid OR group_uuid IN (".$group_uuids_in.")) ";
 	$sql .= "and destination_type_text = 1 ";
 	$sql .= "and destination_enabled = 'true' ";
 	$sql .= "order by destination_number asc ";
