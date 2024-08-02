@@ -67,7 +67,17 @@
 //get the message from
 	$sql = "select destination_number from v_destinations ";
 	$sql .= "where domain_uuid = :domain_uuid ";
-	$sql .= "and user_uuid = :user_uuid ";
+	$sql .= "and (user_uuid = :user_uuid OR group_uuid IN (";
+	$i = 0;
+	foreach($_SESSION['user']['groups'] as $k => $v){
+		if($i != 0){
+			$sql .= ",";
+		}
+		$sql .= "'".$v['group_uuid']."'";
+		$i++;
+	}
+	unset($i);
+	$sql .= ")) ";
 	$sql .= "and destination_type_text = 1 ";
 	$sql .= "and destination_enabled = 'true' ";
 	$sql .= "order by destination_number asc ";
