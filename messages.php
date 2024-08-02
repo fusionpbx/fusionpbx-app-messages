@@ -65,12 +65,12 @@
 	$text = $language->get();
 
 //build a list of groups the user is a member of to be used in a SQL in
-foreach($_SESSION['user']['groups'] as $group) {
-	if (is_uuid($group['group_uuid'])) {
-		$group_uuids[] =  $group['group_uuid'];
+	foreach($_SESSION['user']['groups'] as $group) {
+		if (is_uuid($group['group_uuid'])) {
+			$group_uuids[] =  $group['group_uuid'];
+		}
 	}
-}
-$group_uuids_in = "'".implode("','", $group_uuids)."'";
+	$group_uuids_in = "'".implode("','", $group_uuids)."'";
 
 //get the message from
 	$sql = "select destination_number from v_destinations ";
