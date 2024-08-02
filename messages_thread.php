@@ -118,8 +118,7 @@
 			$sql .= "message_media_type, ";
 			$sql .= "length(decode(message_media_content,'base64')) as message_media_size ";
 			$sql .= "from v_message_media ";
-			$sql .= "where user_uuid = :user_uuid ";
-			$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+			$sql .= "where (domain_uuid = :domain_uuid or domain_uuid is null) ";
 			$sql .= "and ( ";
 			foreach ($messages as $index => $message) {
 				$message_uuids[] = "message_uuid = :message_uuid_".$index;
@@ -128,7 +127,6 @@
 			$sql .= implode(' or ', $message_uuids);
 			$sql .= ") ";
 			$sql .= "and message_media_type <> 'txt' ";
-			$parameters['user_uuid'] = $_SESSION['user_uuid'];
 			$parameters['domain_uuid'] = $domain_uuid;
 			$database = new database;
 			$rows = $database->select($sql, $parameters, 'all');
