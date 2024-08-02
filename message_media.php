@@ -34,19 +34,28 @@
 		$width = str_replace('px','',$_GET['width']);
 	}
 
+//build a list of groups the user is a member of to be used in a SQL in
+	foreach($_SESSION['user']['groups'] as $group) {
+		if (is_uuid($group['group_uuid'])) {
+			$group_uuids[] =  $group['group_uuid'];
+		}
+	}
+	$group_uuids_in = "'".implode("','", $group_uuids)."'";
+
 //get media
 	if (is_uuid($message_media_uuid)) {
 
 		//get the media details from the database
-		$sql = "select message_media_name, message_media_type, message_media_url, message_media_content ";
+		$sql = "select v_message_media.message_media_name, v_message_media.message_media_type, v_message_media.message_media_url, v_message_media.message_media_content ";
 		$sql .= "from v_message_media ";
-		$sql .= "where message_media_uuid = :message_media_uuid ";
+		$sql .= "JOIN v_messages ON (v_messages.message_uuid = v_message_media.message_uuid)";
+		$sql .= "where v_message_media.message_media_uuid = :message_media_uuid ";
 		if (is_uuid($_SESSION['user_uuid'])) {
-			$sql .= "and user_uuid = :user_uuid ";
+			$sql .= "and (v_message_media.user_uuid = :user_uuid or v_messages.group_uuid in (".$group_uuids_in."))";
 			$parameters['user_uuid'] = $_SESSION['user_uuid'];
 		}
 		if (is_uuid($_SESSION['domain_uuid'])) {
-			$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+			$sql .= "and (v_message_media.domain_uuid = :domain_uuid or v_message_media.domain_uuid is null) ";
 			$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		}
 		$parameters['message_media_uuid'] = $message_media_uuid;
