@@ -46,16 +46,16 @@
 	if (is_uuid($message_media_uuid)) {
 
 		//get the media details from the database
-		$sql = "select v_message_media.message_media_name, v_message_media.message_media_type, v_message_media.message_media_url, v_message_media.message_media_content ";
-		$sql .= "from v_message_media ";
-		$sql .= "JOIN v_messages ON (v_messages.message_uuid = v_message_media.message_uuid)";
-		$sql .= "where v_message_media.message_media_uuid = :message_media_uuid ";
+		$sql = "select mm.message_media_name, mm.message_media_type, mm.message_media_url, mm.message_media_content ";
+		$sql .= "from v_message_media mm ";
+		$sql .= "JOIN v_messages m ON (m.message_uuid = mm.message_uuid)";
+		$sql .= "where mm.message_media_uuid = :message_media_uuid ";
 		if (is_uuid($_SESSION['user_uuid'])) {
-			$sql .= "and (v_message_media.user_uuid = :user_uuid or v_messages.group_uuid in (".$group_uuids_in."))";
+			$sql .= "and (mm.user_uuid = :user_uuid or m.group_uuid in (".$group_uuids_in."))";
 			$parameters['user_uuid'] = $_SESSION['user_uuid'];
 		}
 		if (is_uuid($_SESSION['domain_uuid'])) {
-			$sql .= "and (v_message_media.domain_uuid = :domain_uuid or v_message_media.domain_uuid is null) ";
+			$sql .= "and (mm.domain_uuid = :domain_uuid or mm.domain_uuid is null) ";
 			$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		}
 		$parameters['message_media_uuid'] = $message_media_uuid;
