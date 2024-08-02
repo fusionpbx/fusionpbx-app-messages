@@ -202,23 +202,35 @@
 	//print_r($provider_settings, false);
 	//echo "\n";
 
-//set default values
-	$http_method = 'POST';
-
 //process the provider settings array
 	foreach ($provider_settings as $row) {
 		//format the phone numbers
 		if ($row['provider_setting_subcategory'] == 'format') {
-			if ($row['provider_setting_name'] == 'message_from') {
-				$message_from = format_string($row['provider_setting_value'], $message_from);
-			}
-			if ($row['provider_setting_name'] == 'message_to') {
-				$message_to = format_string($row['provider_setting_value'], $message_to);
-				if ($row['provider_setting_type'] == 'array') {
-					$message_to_type = 'array';
+			if($message_type == 'sms'){
+				if ($row['provider_setting_name'] == 'message_from') {
+					$message_from = format_string($row['provider_setting_value'], $message_from);
 				}
-				else {
-					$message_to_type = 'text';
+				if ($row['provider_setting_name'] == 'message_to') {
+					$message_to = format_string($row['provider_setting_value'], $message_to);
+					if ($row['provider_setting_type'] == 'array') {
+						$message_to_type = 'array';
+					}
+					else {
+						$message_to_type = 'text';
+					}
+				}
+			}else{
+				if ($row['provider_setting_name'] == 'message_media_message_from') {
+					$message_from = format_string($row['provider_setting_value'], $message_from);
+				}
+				if ($row['provider_setting_name'] == 'message_media_message_to') {
+					$message_to = format_string($row['provider_setting_value'], $message_to);
+					if ($row['provider_setting_type'] == 'array') {
+						$message_to_type = 'array';
+					}
+					else {
+						$message_to_type = 'text';
+					}
 				}
 			}
 		}
@@ -227,12 +239,28 @@
 		$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
 	}
 
-//get the content location for the destinaion numer
+//set http_method
+	$http_method = ($message_type == 'sms') ? $setting['http_method'] : $setting['message_media_http_method'];
+	if (empty($http_method)) {
+		$http_method = 'POST';
+	}
+
+//get the content location for the destination number
 	if (isset($setting['type'])) {
 		$content_type = strtolower($setting['type']);
 	}
-	if (isset($setting['content_type'])) {
-		$content_type = strtolower($setting['content_type']);
+	
+	if($message_type == 'sms'){
+		if (isset($setting['content_type'])) {
+			$content_type = strtolower($setting['content_type']);
+		}
+	}else{
+		if (isset($setting['message_media_content_type'])) {
+			$content_type = strtolower($setting['message_media_content_type']);
+		}
+	}
+	if (empty($content_type)) {
+		$content_type = 'post';
 	}
 
 //send information to the console
@@ -257,62 +285,73 @@
 	//		//$outbound_array = build_array($outbound_array, $row['provider_setting_subcategory'], $value);
 	//		$outbound_array = build_array($outbound_array, $row['provider_setting_name'], $value);
 	//}
-
 //process the provider settings array
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'content') {
-			if ($row['provider_setting_name'] == 'message_from') {
-				$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
-			}
-			if ($row['provider_setting_name'] == 'message_to') {
-				if ($row['provider_setting_type'] == 'array') {
-					//send the message to as an array
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
-				}
-				else {
-					//sent the message to as text
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
+			if ($message_type == 'sms'){
+				if ($row['provider_setting_name'] == 'message_from') { 
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
 				}
 			}
-			if ($row['provider_setting_name'] == 'message_content') {
-				$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
-			}
-			if ($row['provider_setting_name'] == 'message_other') {
-				$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
+			else {
+				if ($row['provider_setting_name'] == 'message_media_message_from') { 
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
+				}
 			}
 
-			if (is_array($message_media) && @sizeof($message_media) != 0) {
-				//echo __line__."\n";
-				//echo "provider_setting_name ".$row['provider_setting_name']. "\n";
-				if ($row['provider_setting_name'] == 'message_media_other') {
-					//echo __line__."\n";
-					//echo "key".explode('=', $row['provider_setting_value'])[0]." value ".explode('=', $row['provider_setting_value'])[1]."\n";
-					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
-				}
-				foreach($message_media as $index => $media) {
-					if ($row['provider_setting_name'] == 'message_media_url') {
-						//$media['message_media_uuid']
-						//$media['message_media_type']
-						//$outbound_array = build_array($outbound_array ?? [], $message_content, 'message_content');
-						//$outbound_array = build_array($outbound_array ?? [], 'message_content', $message_text);
-						//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], urldecode($media['message_media_url']));
-						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
+			if ($message_type == 'sms'){
+				if ($row['provider_setting_name'] == 'message_to') {
+					if ($row['provider_setting_type'] == 'array') {
+						//send the message to as an array
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
+					}
+					else {
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
 					}
 				}
 			}
-			//print_r($outbound_array);
-			//$value = str_replace("\${message_from}", $message_from, $value);
-			//$value = str_replace("\${message_to}", $message_to, $value);
-			//$value = str_replace("\${message_content}", $message_text, $value);
+			else {
+				if ($row['provider_setting_name'] == 'message_media_message_to') {
+					if ($row['provider_setting_type'] == 'array') {
+						//send the message to as an array
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
+					}
+					else {
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
+					}
+				}
+			}
 
-			//$value = str_replace("message_from", $message_from, $value);
-			//$value = str_replace("message_to", $message_to, $value);
-			//$value = str_replace("message_content", $message_text, $value);
+			if ($message_type == 'sms'){
+				if ($row['provider_setting_name'] == 'message_content') { 
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
+				}
+			}else{
+				if ($row['provider_setting_name'] == 'message_media_message_content') { 
+					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
+				}
+			}
 
-			//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_subcategory'], $value);
-			//$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_name'], $value);
+
+			if ($row['provider_setting_name'] == 'message_other') {
+				$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
+			}
+			if (is_array($message_media) && @sizeof($message_media) != 0) { 
+				if ($row['provider_setting_name'] == 'message_media_other') {
+					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
+				}
+
+				if ($row['provider_setting_name'] == 'message_media_url') { 
+					foreach($message_media as $index => $media) {
+						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
+						
+					}	
+				}
+			}
 		}
 	}
+
+
 
 //log info
 	//view_array($provider_settings, false);
@@ -334,42 +373,35 @@
 
 //convert fields into a http get or post query string
 	if ($content_type == 'get' || $content_type == 'post') {
-
-		//process the provider settings array
-		//foreach ($provider_settings as $row) {
-		//	if ($row['provider_setting_subcategory'] == 'content') {
-		//		if ($row['provider_setting_name'] == 'message_from') {
-		//			$url_parameters[$row['provider_setting_value']] = $message_from;
-		//		}
-		//		if ($row['provider_setting_name'] == 'message_to') {
-		//			$url_parameters[$row['provider_setting_value']] = $message_to;
-		//		}
-		//		if ($row['provider_setting_name'] == 'message_content') {
-		//			$url_parameters[$row['provider_setting_value']] = $message_text;
-		//		}
-		//		if ($row['provider_setting_name'] == 'message_other') {
-		//			$url_parameters[explode('=', $row['provider_setting_value'])[0]] = explode('=', $row['provider_setting_value'])[1];
-		//		}
-		//	}
-		//}
-
 		//build the query string
 		$x = 0;
 		$query_string = '';
 		foreach ($outbound_array as $key => $value) {
 			if ($x != 0) { $query_string .= '&'; }
-			$query_string .= $key.'='. urlencode($value);
+			if(is_array($value)){
+				$y = 0;
+				foreach($value as $v){
+					if ($y != 0) { $query_string .= '&'; }
+					$query_string .= $key.'='. urlencode($v);	
+					$y++;
+				}
+			}else{
+				$query_string .= $key.'='. urlencode($value);
+			}
 			$x++;
 		}
+
 		$http_content = $query_string;
 	}
-
 //exchange variable name with their values
-	$setting['http_destination'] = str_replace("\${from}", urlencode($message_from), $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_from}", urlencode($message_from), $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${to}", urlencode($message_to), $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_to}", urlencode($message_to), $setting['http_destination']);
-	$setting['http_destination'] = str_replace("\${message_text}", urlencode($message_text), $setting['http_destination']);
+	$http_destination = ($message_type == 'sms') ? $setting['http_destination'] : $setting['message_media_http_destination'];
+	$http_destination = str_replace("\${from}", urlencode($message_from), $http_destination);
+	$http_destination = str_replace("\${message_from}", urlencode($message_from), $http_destination);
+	$http_destination = str_replace("\${to}", urlencode($message_to), $http_destination);
+	$http_destination = str_replace("\${message_to}", urlencode($message_to), $http_destination);
+	$http_destination = str_replace("\${message_text}", urlencode($message_text), $http_destination);
+	$http_destination = str_replace("\${http_auth_username}", urlencode($setting['http_auth_username']), $http_destination);
+	$http_destination = str_replace("\${http_auth_password}", urlencode($setting['http_auth_password']), $http_destination);
 
 //logging info
 	//view_array($setting, false);
@@ -414,7 +446,7 @@
 
 //send the message - working
 /*
-	$cmd = "curl ".$setting['http_destination']." -X ".$setting['http_method']." ";
+	$cmd = "curl ".	$http_destination;." -X ".$setting['http_method']." ";
 	if (isset($setting['http_auth_username']) && isset($setting['http_auth_password'])) {
 		$cmd .= "-u ".$setting['http_auth_username'].":".$setting['http_auth_password']." ";
 	}
@@ -435,7 +467,7 @@
 
 //prepare the http headers
 	if (isset($setting['http_content_type'])) {
-		$http_headers[] = 'Content-Type: '.$setting['http_content_type'];
+		$http_headers[] = 'Content-Type: '.$setting['http_content_type'];;
 	}
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'header' && $row['provider_setting_name'] != 'http_content_type') {
@@ -446,12 +478,20 @@
 	//echo "headers_array\n";
 	//print_r($http_headers);
 
+	if (isset($debug)) {
+		echo "http_content: ".print_r($http_content, true)."\n";
+		echo "http_destination: $http_destination \n";
+		echo "http_username: {$setting['http_auth_username']} \n";
+		echo "http_token: {$setting['http_auth_password']} \n";
+		echo "http_method: $http_method \n";
+	}
+
 //create the curl resource
 	$ch = curl_init();
 
 //set the curl options
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_URL, $setting['http_destination']);
+	curl_setopt($ch, CURLOPT_URL, $http_destination);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	if (isset($setting['http_auth_username']) && isset($setting['http_auth_password'])) {
 		curl_setopt($ch, CURLOPT_USERPWD, $setting['http_auth_username'] . ':' . $setting['http_auth_password']);
@@ -461,7 +501,7 @@
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
 	}
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $setting['http_method']);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($http_method));
 	curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $http_content); // file_get_contents($file_path.'/'.$file_name));
 	curl_setopt($ch, CURLOPT_POST, 1);

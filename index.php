@@ -7,6 +7,7 @@
 //includes files
 	require_once "resources/require.php";
 	require_once "resources/functions.php";
+	require_once "resources/functions/message_media_builder.php";
 	require_once "resources/pdo.php";
 
 //debug
@@ -25,7 +26,8 @@
 		file_put_contents($log_file, "Remote Address: ".$_SERVER['REMOTE_ADDR']."\n", FILE_APPEND);
 	}
 
-//get the user settings
+
+//get the provider addresses
 	$sql = "select provider_uuid, provider_address_cidr ";
 	$sql .= "from v_provider_addresses ";
 	$sql .= "where provider_address_cidr is not null ";
@@ -100,39 +102,47 @@
 //set the default content type to json
 	$content_type = 'json';
 
-//get the content location for the destinaion numer
+//get the content location for the destination number
 	if (isset($setting['content_type'])) {
 		$content_type = strtolower($setting['content_type']);
 	}
 
-//get the raw input data
-	//if  ($_SERVER['CONTENT_TYPE'] == 'application/json') {
-		//show the content type
-		if ($debug) {
-			file_put_contents($log_file, "Server CONTENT_TYPE ".$_SERVER['CONTENT_TYPE']."\n", FILE_APPEND);
-			file_put_contents($log_file, "content_type ".$content_type."\n", FILE_APPEND);
-		}
+	if ($debug) {
+		file_put_contents($log_file, "Server CONTENT_TYPE ".$_SERVER['CONTENT_TYPE']."\n", FILE_APPEND);
+		file_put_contents($log_file, "content_type: $content_type\n", FILE_APPEND);
+	}
 
-		//get the content
-		if ($content_type == 'json') {
-			$message_json = file_get_contents("php://input");
-		}
-		elseif ($content_type == 'get') {
+//get the content
+	if ($content_type == 'json') {
+		$message_json = file_get_contents("php://input");
+	}
+	elseif ($content_type == 'get') {
+		$message_json = json_encode($_GET);
+	}
+	elseif ($content_type == 'post') {
+		$message_json = json_encode($_POST);
+	}
+	// Used for Providers that send HTTP requests with mixed http method and http variables
+	// For example, a Provider that sends a POST with a query string would populate $_GET, not $_POST
+	elseif ($content_type == 'mixed') {
+		if(!empty($_GET)){
 			$message_json = json_encode($_GET);
-		}
-		elseif ($content_type == 'post') {
+			$content_type = 'get';
+		}elseif(!empty($_POST)){
 			$message_json = json_encode($_POST);
+			$content_type = 'post';
+		}else{
+			$message_json = file_get_contents("php://input");
+			$content_type = 'json';
 		}
+	}
 
-		//write content to the logs
-		if ($debug) {
-			if ($content_type == 'json') {
-				file_put_contents($log_file, $message_json, FILE_APPEND);
-			}
+//write content to the logs
+	if ($debug) {
+		if ($content_type == 'json') {
+			file_put_contents($log_file, $message_json, FILE_APPEND);
 		}
-
-		//$json = json_decode($message_content);
-	//}
+	}
 
 //save the http post to the log
 	if ($debug) {
@@ -245,26 +255,55 @@ if (count($message_content) == 3) {
 		$message_to = get_value($message, $setting['message_to']);
 		$message_content = get_value($message, $setting['message_content']);
 		$message_media_array = !empty($setting['message_media_array']) ? get_value($message, $setting['message_media_array']) : null;
+	
+		//get the message_type options: sms, mms
+		if (isset($setting['message_type'])) {
+			$message_type = strtolower($setting['message_type']);
+		}
+		else {
+			$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
+		}
 	}
 	elseif ($content_type == 'post') {
-		$message_from = $_POST[$setting['message_from']];
-		$message_to = $_POST[$setting['message_to']];
-		$message_content = $_POST[$setting['message_content']];
-		$message_media_array = !empty($setting['message_media_array']) ? $_POST[$setting['message_media_array']] : null;
+		if(!empty($setting['message_media_array']) && isset($_POST[$setting['message_media_array']])){
+			$message_media_array = $_POST[$setting['message_media_array']] ;
+		}
+		else {
+			$message_media_array = message_media_builder($_POST, [$setting['message_media_url'], $setting['message_media_type']]);
+		}
+
+		//get the message_type options: sms, mms
+		if (isset($setting['message_type'])) {
+			$message_type = strtolower($setting['message_type']);
+		}
+		else {
+			$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
+		}
+		$message_from = ($message_type == 'mms') ? $_POST[$setting['message_media_from']] : $_POST[$setting['message_from']];
+		$message_to = ($message_type == 'mms') ? $_POST[$setting['message_media_to']] : $_POST[$setting['message_to']];
+		$message_content = ($message_type == 'mms') ? $_POST[$setting['message_media_content']] : $_POST[$setting['message_content']];
+		$message_content = preg_replace('/<smil[^>]*>([\s\S]*?)<\/smil[^>]*>/', '', $message_content);
+
 	}
 	elseif ($content_type == 'get') {
-		$message_from = $_GET[$setting['message_from']];
-		$message_to = $_GET[$setting['message_to']];
-		$message_content = $_GET[$setting['message_content']];
-		$message_media_array = !empty($setting['message_media_array']) ? $_GET[$setting['message_media_array']] : null;
-	}
+		if(!empty($setting['message_media_array']) && isset($_GET[$setting['message_media_array']])){
+			$message_media_array = $_GET[$setting['message_media_array']] ;
+		}
+		else {
+			$message_media_array = message_media_builder($_GET, [$setting['message_media_url'], $setting['message_media_type']]);
+		}
 
-//get the message_type options: sms, mms
-	if (isset($setting['message_type'])) {
-		$message_type = strtolower($setting['message_type']);
-	}
-	else {
-		$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
+		//get the message_type options: sms, mms
+		if (isset($setting['message_type'])) {
+			$message_type = strtolower($setting['message_type']);
+		}
+		else {
+			$message_type = !empty($message_media_array) && is_array($message_media_array) ? 'mms' : 'sms';
+		}
+		$message_from = ($message_type == 'mms') ? $_GET[$setting['message_media_from']] : $_GET[$setting['message_from']];
+		$message_to = ($message_type == 'mms') ? $_GET[$setting['message_media_to']] : $_GET[$setting['message_to']];
+		$message_content = ($message_type == 'mms') ? $_GET[$setting['message_media_content']] : $_GET[$setting['message_content']];
+		$message_content = preg_replace('/<smil[^>]*>([\s\S]*?)<\/smil[^>]*>/', '', $message_content);
 	}
 
 //message to is an array get first number in the array
@@ -282,11 +321,20 @@ if (count($message_content) == 3) {
 //format the phone numbers
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'format') {
-			if ($row['provider_setting_name'] == 'message_from') {
-				$message_from = format_string($row['provider_setting_value'], $message_from);
-			}
-			if ($row['provider_setting_name'] == 'message_to') {
-				$message_to = format_string($row['provider_setting_value'], $message_to);
+			if ($message_type == 'sms'){
+				if ($row['provider_setting_name'] == 'message_from') {
+					$message_from = format_string($row['provider_setting_value'], $message_from);
+				}
+				if ($row['provider_setting_name'] == 'message_to') {
+					$message_to = format_string($row['provider_setting_value'], $message_to);
+				}
+			}else{
+				if ($row['provider_setting_name'] == 'message_media_message_from') {
+					$message_from = format_string($row['provider_setting_value'], $message_from);
+				}
+				if ($row['provider_setting_name'] == 'message_media_message_to') {
+					$message_to = format_string($row['provider_setting_value'], $message_to);
+				}
 			}
 		}
 	}
@@ -487,7 +535,6 @@ if (count($message_content) == 3) {
 		}
 	}
 	else {
-
 		//get the value out of the array using dot notation
 		if (isset($setting['message_media_url'])) {
 			$message_media_url = get_value($message, $setting['message_media_url']);
@@ -517,7 +564,7 @@ if (count($message_content) == 3) {
 			$array['message_media'][$index]['user_uuid'] = $user_uuid;
 			$array['message_media'][$index]['message_media_type'] = $message_media_type;
 			$array['message_media'][$index]['message_media_url'] = $message_media_url;
-			$array['message_media'][$index]['message_media_content'] = base64_encode(file_get_contents($message_media_url));
+			$array['message_media'][$index]['message_media_content'] = base64_encode(url_get_contents($message_media_url));
 		}
 	}
 	//if ($debug) {
