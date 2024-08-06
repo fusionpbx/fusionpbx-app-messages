@@ -179,7 +179,7 @@ if (!class_exists('messages')) {
 					$domain_uuid = $row['domain_uuid'];
 					$provider_uuid = $row['provider_uuid'];
 					$user_uuid = $row['user_uuid'];
-					$group_uuid = $row['group_uuid']; //TF
+					$group_uuid = $row['group_uuid'];
 					unset($row);
 				}
 				//if (!empty($debug)) {
