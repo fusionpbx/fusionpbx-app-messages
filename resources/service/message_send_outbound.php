@@ -462,7 +462,6 @@
 	}
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $setting['http_method']);
-	curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $http_content); // file_get_contents($file_path.'/'.$file_name));
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);	//The number of seconds to wait while trying to connect.
