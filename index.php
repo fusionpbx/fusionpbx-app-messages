@@ -321,24 +321,31 @@ if (count($message_content) == 3) {
 	}
 
 //format the phone numbers
-	foreach ($provider_settings as $row) {
-		if ($row['provider_setting_subcategory'] == 'format') {
-			if ($message_type == 'sms'){
-				if ($row['provider_setting_name'] == 'message_from') {
-					$message_from = format_string($row['provider_setting_value'], $message_from);
-				}
-				if ($row['provider_setting_name'] == 'message_to') {
-					$message_to = format_string($row['provider_setting_value'], $message_to);
-				}
-			}
-			else {
-				if ($row['provider_setting_name'] == 'message_media_message_from') {
-					$message_from = format_string($row['provider_setting_value'], $message_from);
-				}
-				if ($row['provider_setting_name'] == 'message_media_message_to') {
-					$message_to = format_string($row['provider_setting_value'], $message_to);
-				}
-			}
+	if($message_type == 'mms') {
+		//check if message_media formats are defined and non-empty, and if so, use those instead of default formats
+		if (isset($format['message_media_message_from']) && !empty($format['message_media_message_from'])) {
+			$message_from = format_string($format['message_media_message_from'], $message_from);
+		} 
+		elseif (isset($format['message_from'])) {
+			$message_from = format_string($format['message_from'], $message_from);
+		}
+
+		if (isset($format['message_media_message_to']) && !empty($format['message_media_message_to'])) {
+			$message_to = format_string($format['message_media_message_to'], $message_to);
+		} 
+		elseif (isset($format['message_to'])) {
+			$message_to = format_string($format['message_to'], $message_to);
+		}
+	} 
+	else {
+		//default formats. If setting is defined but format string is left blank, the format_string function 
+		//will return the data as is (No changes made)
+		if (isset($format['message_from'])) {
+			$message_from = format_string($format['message_from'], $message_from);
+		}
+
+		if (isset($format['message_to'])) {
+			$message_to = format_string($format['message_to'], $message_to);
 		}
 	}
 
