@@ -239,7 +239,12 @@
 	}
 
 //set http_method
-	$http_method = ($message_type == 'sms') ? $setting['http_method'] : $setting['message_media_http_method'];
+	if ($message_type == 'mms' && isset($setting['message_media_http_method']) && !empty($setting['message_media_http_method'])) {
+		$http_method = strtolower($setting['message_media_http_method']);
+	}
+	else {
+		$http_method = strtolower($setting['http_method']);
+	}
 	if (empty($http_method)) {
 		$http_method = 'POST';
 	}
@@ -249,16 +254,14 @@
 		$content_type = strtolower($setting['type']);
 	}
 	
-	if ($message_type == 'sms'){
-		if (isset($setting['content_type'])) {
-			$content_type = strtolower($setting['content_type']);
-		}
+//set the content_type
+	if ($message_type == 'mms' && isset($setting['message_media_content_type']) && !empty($setting['message_media_content_type'])) {
+		$content_type = strtolower($setting['message_media_content_type']);
 	}
 	else {
-		if (isset($setting['message_media_content_type'])) {
-			$content_type = strtolower($setting['message_media_content_type']);
-		}
+		$content_type = strtolower($setting['content_type']);
 	}
+
 	if (empty($content_type)) {
 		$content_type = 'post';
 	}
