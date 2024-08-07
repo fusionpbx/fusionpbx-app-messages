@@ -26,7 +26,6 @@
 		file_put_contents($log_file, "Remote Address: ".$_SERVER['REMOTE_ADDR']."\n", FILE_APPEND);
 	}
 
-
 //get the provider addresses
 	$sql = "select provider_uuid, provider_address_cidr ";
 	$sql .= "from v_provider_addresses ";
