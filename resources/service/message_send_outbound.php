@@ -141,52 +141,6 @@
 	//echo "Transcript: ".$array['message']."\n";
 	//echo "Body: ".$email_body."\n";
 
-//send the message
-	/*
-	//json api
-	POST /v2.1/messages HTTP/1.1
-	Content-Type: application/vnd.api+json
-	Accept: application/vnd.api+json
-
-	{
-		"data": {
-		"type": "message",
-		"attributes": {
-			"to": "19511231234",
-			"from": "18441231234",
-			"body": "hey"
-			}
-		}
-	}
-
-	//compact
-	POST /v2.1/messages HTTP/1.1
-	Content-Type: application/vnd.api+json
-	Accept: application/vnd.api+json
-	{
-		"to": "19511231234",
-		"from": "18441231234",
-		"body": "hey"
-	}
-
-	//curl
-	curl https://api.flowroute.com/v2.1/messages \
-	-H "Content-Type: application/vnd.api+json" -X POST -d \
-	'{"to": "19511231234", "from": "18441231234", "body": "hey"}' \
-	-u accessKey:secretKey 
-
-	http.type=/v2.1/messages HTTP/1.1
-	http.content_type=application/vnd.api+json
-	http.accept=application/vnd.api+json
-
-	data.type=message
-	data.attributes.to
-	data.attributes.from
-	data.attributes.body
-
-	//echo __line__."<br />\n";
-	*/
-
 //get the provider settings
 	$sql = "select provider_setting_category, provider_setting_subcategory, provider_setting_type, provider_setting_name, provider_setting_value, provider_setting_order \n";
 	$sql .= "from v_provider_settings \n";
@@ -197,7 +151,10 @@
 	$database = new database;
 	$provider_settings = $database->select($sql, $parameters, 'all');
 	foreach ($provider_settings as $row) {
-        if ($row['provider_setting_subcategory'] == 'format') {
+		if ($row['provider_setting_subcategory'] == 'content') {
+			$content[$row['provider_setting_name']] = $row['provider_setting_value'];
+		}
+		elseif ($row['provider_setting_subcategory'] == 'format') {
 			$format[$row['provider_setting_name']] = $row['provider_setting_value'];
 		}
 		//build the settings array
@@ -274,69 +231,31 @@
 		echo "message_text $message_text\n";
 	}
 
-//process the provider settings array
-	//foreach ($provider_settings as $row) {
-	//	$setting[$row['provider_setting_subcategory']][$row['provider_setting_name']] = $value;
-	//}
+	if ($message_type == 'mms' && isset($content['message_media_message_from']) && !empty($content['message_media_message_from'])) {
+		$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_from'], $message_from);
+	}
+	else {
+		$outbound_array = build_array($outbound_array ?? [], $content['message_from'], $message_from);
+	}
+	
+	if ($message_type == 'mms' && isset($content['message_media_message_to']) && !empty($content['message_media_message_to'])) {
+		//explode is used in case the type is an array
+		$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_to'], explode(",", $message_to));
+	}
+	else {
+		//explode is used in case the type is an array
+		$outbound_array = build_array($outbound_array ?? [], $content['message_to'], explode(",", $message_to));
+	}
 
-//process the provider settings array
-	//foreach ($setting['content'] as $row) {
-	//		$value = $row['provider_setting_value'];
-	//		$value = str_replace("\${message_from}", $message_from, $value);
-	//		$value = str_replace("\${message_to}", $message_to, $value);
-	//		$value = str_replace("\${message_content}", $message_text, $value);
-	//		//$outbound_array = build_array($outbound_array, $row['provider_setting_subcategory'], $value);
-	//		$outbound_array = build_array($outbound_array, $row['provider_setting_name'], $value);
-	//}
-//process the provider settings array
+	if ($message_type == 'mms' && isset($content['message_media_message_content']) && !empty($content['message_media_message_content'])) {
+		$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_content'], $message_text);
+	}
+	else {
+		$outbound_array = build_array($outbound_array ?? [], $content['message_content'], $message_text);
+	}
+
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'content') {
-			if ($message_type == 'sms'){
-				if ($row['provider_setting_name'] == 'message_from') { 
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
-				}
-			}
-			else {
-				if ($row['provider_setting_name'] == 'message_media_message_from') { 
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_from);
-				}
-			}
-
-			if ($message_type == 'sms'){
-				if ($row['provider_setting_name'] == 'message_to') {
-					if ($row['provider_setting_type'] == 'array') {
-						//send the message to as an array
-						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
-					}
-					else {
-						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
-					}
-				}
-			}
-			else {
-				if ($row['provider_setting_name'] == 'message_media_message_to') {
-					if ($row['provider_setting_type'] == 'array') {
-						//send the message to as an array
-						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], explode(",", $message_to));
-					}
-					else {
-						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_to);
-					}
-				}
-			}
-
-			if ($message_type == 'sms'){
-				if ($row['provider_setting_name'] == 'message_content') { 
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
-				}
-			}
-			else {
-				if ($row['provider_setting_name'] == 'message_media_message_content') { 
-					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
-				}
-			}
-
-
 			if ($row['provider_setting_name'] == 'message_other') {
 				$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 			}
@@ -344,23 +263,20 @@
 				if ($row['provider_setting_name'] == 'message_media_other') {
 					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 				}
-
+		
 				if ($row['provider_setting_name'] == 'message_media_url') { 
 					foreach($message_media as $index => $media) {
 						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
-						
 					}	
 				}
 			}
 		}
 	}
 
-
-
 //log info
 	//view_array($provider_settings, false);
 	//echo "value ".$value."\n";
-	//view_array($outbound_array, false);
+	// view_array($outbound_array, false);
 	//view_array($setting, false);
 	/*
 	view_array($outbound_array, false);
