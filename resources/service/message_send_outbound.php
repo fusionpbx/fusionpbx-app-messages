@@ -263,7 +263,7 @@
 				if ($row['provider_setting_name'] == 'message_media_other') {
 					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 				}
-		
+
 				if ($row['provider_setting_name'] == 'message_media_url') { 
 					foreach($message_media as $index => $media) {
 						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
