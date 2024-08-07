@@ -398,7 +398,7 @@
 		$http_content = $query_string;
 	}
 //exchange variable name with their values
-	$http_destination = ($message_type == 'sms') ? $setting['http_destination'] : $setting['message_media_http_destination'];
+	$http_destination = ($message_type == 'mms' && !empty($setting['message_media_http_destination'])) ? $setting['message_media_http_destination'] : $setting['http_destination'];
 	$http_destination = str_replace("\${from}", urlencode($message_from), $http_destination);
 	$http_destination = str_replace("\${message_from}", urlencode($message_from), $http_destination);
 	$http_destination = str_replace("\${to}", urlencode($message_to), $http_destination);
@@ -406,6 +406,7 @@
 	$http_destination = str_replace("\${message_text}", urlencode($message_text), $http_destination);
 	$http_destination = str_replace("\${http_auth_username}", urlencode($setting['http_auth_username']), $http_destination);
 	$http_destination = str_replace("\${http_auth_password}", urlencode($setting['http_auth_password']), $http_destination);
+	$setting['http_destination'] = $http_destination;
 
 //logging info
 	//view_array($setting, false);
@@ -484,7 +485,7 @@
 
 	if (isset($debug)) {
 		echo "http_content: ".print_r($http_content, true)."\n";
-		echo "http_destination: $http_destination \n";
+		echo "http_destination: {$setting['http_destination']} \n";
 		echo "http_username: {$setting['http_auth_username']} \n";
 		echo "http_token: {$setting['http_auth_password']} \n";
 		echo "http_method: $http_method \n";
@@ -495,7 +496,7 @@
 
 //set the curl options
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_URL, $http_destination);
+	curl_setopt($ch, CURLOPT_URL, $setting['http_destination']);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	if (isset($setting['http_auth_username']) && isset($setting['http_auth_password'])) {
 		curl_setopt($ch, CURLOPT_USERPWD, $setting['http_auth_username'] . ':' . $setting['http_auth_password']);
