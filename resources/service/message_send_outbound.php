@@ -206,7 +206,7 @@
 	foreach ($provider_settings as $row) {
 		//format the phone numbers
 		if ($row['provider_setting_subcategory'] == 'format') {
-			if($message_type == 'sms'){
+			if ($message_type == 'sms'){
 				if ($row['provider_setting_name'] == 'message_from') {
 					$message_from = format_string($row['provider_setting_value'], $message_from);
 				}
@@ -219,7 +219,8 @@
 						$message_to_type = 'text';
 					}
 				}
-			}else{
+			}
+			else {
 				if ($row['provider_setting_name'] == 'message_media_message_from') {
 					$message_from = format_string($row['provider_setting_value'], $message_from);
 				}
@@ -250,11 +251,12 @@
 		$content_type = strtolower($setting['type']);
 	}
 	
-	if($message_type == 'sms'){
+	if ($message_type == 'sms'){
 		if (isset($setting['content_type'])) {
 			$content_type = strtolower($setting['content_type']);
 		}
-	}else{
+	}
+	else {
 		if (isset($setting['message_media_content_type'])) {
 			$content_type = strtolower($setting['message_media_content_type']);
 		}
@@ -326,7 +328,8 @@
 				if ($row['provider_setting_name'] == 'message_content') { 
 					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
 				}
-			}else{
+			}
+			else {
 				if ($row['provider_setting_name'] == 'message_media_message_content') { 
 					$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'], $message_text);
 				}
@@ -378,14 +381,15 @@
 		$query_string = '';
 		foreach ($outbound_array as $key => $value) {
 			if ($x != 0) { $query_string .= '&'; }
-			if(is_array($value)){
+			if (is_array($value)){
 				$y = 0;
 				foreach($value as $v){
 					if ($y != 0) { $query_string .= '&'; }
 					$query_string .= $key.'='. urlencode($v);	
 					$y++;
 				}
-			}else{
+			}
+			else {
 				$query_string .= $key.'='. urlencode($value);
 			}
 			$x++;

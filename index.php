@@ -125,13 +125,15 @@
 	// Used for Providers that send HTTP requests with mixed http method and http variables
 	// For example, a Provider that sends a POST with a query string would populate $_GET, not $_POST
 	elseif ($content_type == 'mixed') {
-		if(!empty($_GET)){
+		if(!empty($_GET)) {
 			$message_json = json_encode($_GET);
 			$content_type = 'get';
-		}elseif(!empty($_POST)){
+		}
+		elseif (!empty($_POST)) {
 			$message_json = json_encode($_POST);
 			$content_type = 'post';
-		}else{
+		}
+		else {
 			$message_json = file_get_contents("php://input");
 			$content_type = 'json';
 		}
@@ -265,7 +267,7 @@ if (count($message_content) == 3) {
 		}
 	}
 	elseif ($content_type == 'post') {
-		if(!empty($setting['message_media_array']) && isset($_POST[$setting['message_media_array']])){
+		if (!empty($setting['message_media_array']) && isset($_POST[$setting['message_media_array']])){
 			$message_media_array = $_POST[$setting['message_media_array']] ;
 		}
 		else {
@@ -286,7 +288,7 @@ if (count($message_content) == 3) {
 
 	}
 	elseif ($content_type == 'get') {
-		if(!empty($setting['message_media_array']) && isset($_GET[$setting['message_media_array']])){
+		if (!empty($setting['message_media_array']) && isset($_GET[$setting['message_media_array']])){
 			$message_media_array = $_GET[$setting['message_media_array']] ;
 		}
 		else {
@@ -328,7 +330,8 @@ if (count($message_content) == 3) {
 				if ($row['provider_setting_name'] == 'message_to') {
 					$message_to = format_string($row['provider_setting_value'], $message_to);
 				}
-			}else{
+			}
+			else {
 				if ($row['provider_setting_name'] == 'message_media_message_from') {
 					$message_from = format_string($row['provider_setting_value'], $message_from);
 				}
