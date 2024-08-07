@@ -472,7 +472,7 @@
 
 //prepare the http headers
 	if (isset($setting['http_content_type'])) {
-		$http_headers[] = 'Content-Type: '.$setting['http_content_type'];;
+		$http_headers[] = 'Content-Type: '.$setting['http_content_type'];
 	}
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'header' && $row['provider_setting_name'] != 'http_content_type') {
