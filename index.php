@@ -95,6 +95,9 @@
 		if ($row['provider_setting_subcategory'] == 'content') {
 			$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
 		}
+        elseif ($row['provider_setting_subcategory'] == 'format') {
+			$format[$row['provider_setting_name']] = $row['provider_setting_value'];
+		}
 	}
 	unset($parameters);
 	//view_array($settings, false);

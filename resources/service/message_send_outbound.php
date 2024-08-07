@@ -196,48 +196,46 @@
 	$parameters['provider_uuid'] = $provider_uuid;
 	$database = new database;
 	$provider_settings = $database->select($sql, $parameters, 'all');
+	foreach ($provider_settings as $row) {
+        if ($row['provider_setting_subcategory'] == 'format') {
+			$format[$row['provider_setting_name']] = $row['provider_setting_value'];
+		}
+		//build the settings array
+		$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
+	}
 	unset($parameters);
 	//echo $sql;
 	//print_r($parameters);
 	//print_r($provider_settings, false);
 	//echo "\n";
 
-//process the provider settings array
-	foreach ($provider_settings as $row) {
-		//format the phone numbers
-		if ($row['provider_setting_subcategory'] == 'format') {
-			if ($message_type == 'sms'){
-				if ($row['provider_setting_name'] == 'message_from') {
-					$message_from = format_string($row['provider_setting_value'], $message_from);
-				}
-				if ($row['provider_setting_name'] == 'message_to') {
-					$message_to = format_string($row['provider_setting_value'], $message_to);
-					if ($row['provider_setting_type'] == 'array') {
-						$message_to_type = 'array';
-					}
-					else {
-						$message_to_type = 'text';
-					}
-				}
-			}
-			else {
-				if ($row['provider_setting_name'] == 'message_media_message_from') {
-					$message_from = format_string($row['provider_setting_value'], $message_from);
-				}
-				if ($row['provider_setting_name'] == 'message_media_message_to') {
-					$message_to = format_string($row['provider_setting_value'], $message_to);
-					if ($row['provider_setting_type'] == 'array') {
-						$message_to_type = 'array';
-					}
-					else {
-						$message_to_type = 'text';
-					}
-				}
-			}
+//format the phone numbers
+	if($message_type == 'mms') {
+		//check if message_media formats are defined and non-empty, and if so, use those instead of default formats
+		if (isset($format['message_media_message_from']) && !empty($format['message_media_message_from'])) {
+			$message_from = format_string($format['message_media_message_from'], $message_from);
+		} 
+		elseif (isset($format['message_from'])) {
+			$message_from = format_string($format['message_from'], $message_from);
 		}
 
-		//build the settings array
-		$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
+		if (isset($format['message_media_message_to']) && !empty($format['message_media_message_to'])) {
+			$message_to = format_string($format['message_media_message_to'], $message_to);
+		} 
+		elseif (isset($format['message_to'])) {
+			$message_to = format_string($format['message_to'], $message_to);
+		}
+	} 
+	else {
+		//default formats. If setting is defined but format string is left blank, the format_string function 
+		//will return the data as is (No changes made)
+		if (isset($format['message_from'])) {
+			$message_from = format_string($format['message_from'], $message_from);
+		}
+
+		if (isset($format['message_to'])) {
+			$message_to = format_string($format['message_to'], $message_to);
+		}
 	}
 
 //set http_method
