@@ -179,6 +179,7 @@ if (!class_exists('messages')) {
 					$domain_uuid = $row['domain_uuid'];
 					$provider_uuid = $row['provider_uuid'];
 					$user_uuid = $row['user_uuid'];
+					$group_uuid = $row['group_uuid'];
 					unset($row);
 				}
 				//if (!empty($debug)) {
@@ -234,6 +235,7 @@ if (!class_exists('messages')) {
 				$array['message_queue'][0]['domain_uuid'] = $_SESSION["domain_uuid"];
 				$array['message_queue'][0]['message_queue_uuid'] = $message_queue_uuid;
 				$array['message_queue'][0]['user_uuid'] = $_SESSION["user_uuid"];
+				$array['message_queue'][0]['group_uuid'] = $group_uuid;
 				//$array['message_queue'][0]['contact_uuid'] = $contact_uuid;
 				$array['message_queue'][0]['provider_uuid'] = $provider_uuid;
 				$array['message_queue'][0]['hostname'] = system('hostname');
