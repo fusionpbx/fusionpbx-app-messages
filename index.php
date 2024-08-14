@@ -213,7 +213,6 @@
 */
 
 //version 2
-/*
 	function get_value($data, $path) {
 		$keys = explode('.', $path);
 		foreach ($keys as $key) {
@@ -221,9 +220,9 @@
 		}
 		return $data;
 	}
-*/
 
 //version 1
+	/*
 	function get_value($data, $path) {
 		$keys = explode('.', $path);
 		if (count($keys) == 1) {
@@ -242,6 +241,7 @@
 			return $data[$keys[0]][$keys[1]][$keys[2]][$keys[3]][$keys[4]];
 		}
 	}
+ 	*/
 
 
 /*
