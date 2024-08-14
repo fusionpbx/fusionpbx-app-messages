@@ -243,7 +243,6 @@
 	}
  	*/
 
-
 /*
 if (count($from_array) == 3) {
 	$message_from = $message[$from_array[0]][$from_array[1]][$from_array[2]];
