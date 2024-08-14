@@ -195,6 +195,7 @@
 */
 
 //version 3
+/*
 	function get_value($array, $key) {
 		$keys = explode('.', $key);
 		$segment = array_shift($keys);
@@ -209,6 +210,7 @@
 
 		return $data;
 	}
+*/
 
 //version 2
 /*
@@ -220,7 +222,7 @@
 		return $data;
 	}
 */
-/*
+
 //version 1
 	function get_value($data, $path) {
 		$keys = explode('.', $path);
@@ -240,7 +242,7 @@
 			return $data[$keys[0]][$keys[1]][$keys[2]][$keys[3]][$keys[4]];
 		}
 	}
-*/
+
 
 /*
 if (count($from_array) == 3) {
