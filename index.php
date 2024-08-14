@@ -194,23 +194,24 @@
 	$content_array = explode('.', $setting['message_content']);
 */
 
-//version 3 - not working
-	/*
-	function get_value($array, $index) {
-		$keys = explode('.', $index);
-		foreach ($keys as segment) {
-			if (is_array($array[$key])) {
-				return get_value($array[$key], $key);
-			}
-			else {
-				return $array[$key];
-			}
+//version 3
+	function get_value($array, $key) {
+		$keys = explode('.', $key);
+		$segment = array_shift($keys);
+
+		if (isset($array[$segment]) && is_array($array[$segment])) {
+			$next_key = substr($key, strpos($key, '.') + 1);
+			$data = get_value($array[$segment], $next_key);
 		}
-		//return $data;
+		else {
+			$data = $array[$segment] ?? '';
+		}
+
+		return $data;
 	}
-	*/
 
 //version 2
+/*
 	function get_value($data, $path) {
 		$keys = explode('.', $path);
 		foreach ($keys as $key) {
@@ -218,7 +219,7 @@
 		}
 		return $data;
 	}
-
+*/
 /*
 //version 1
 	function get_value($data, $path) {
@@ -259,7 +260,7 @@ if (count($message_content) == 3) {
 		$message_to = get_value($message, $setting['message_to']);
 		$message_content = get_value($message, $setting['message_content']);
 		$message_media_array = !empty($setting['message_media_array']) ? get_value($message, $setting['message_media_array']) : null;
-	
+
 		//get the message_type options: sms, mms
 		if (isset($setting['message_type'])) {
 			$message_type = strtolower($setting['message_type']);
@@ -327,20 +328,20 @@ if (count($message_content) == 3) {
 		//check if message_media formats are defined and non-empty, and if so, use those instead of default formats
 		if (isset($format['message_media_message_from']) && !empty($format['message_media_message_from'])) {
 			$message_from = format_string($format['message_media_message_from'], $message_from);
-		} 
+		}
 		elseif (isset($format['message_from'])) {
 			$message_from = format_string($format['message_from'], $message_from);
 		}
 
 		if (isset($format['message_media_message_to']) && !empty($format['message_media_message_to'])) {
 			$message_to = format_string($format['message_media_message_to'], $message_to);
-		} 
+		}
 		elseif (isset($format['message_to'])) {
 			$message_to = format_string($format['message_to'], $message_to);
 		}
-	} 
+	}
 	else {
-		//default formats. If setting is defined but format string is left blank, the format_string function 
+		//default formats. If setting is defined but format string is left blank, the format_string function
 		//will return the data as is (No changes made)
 		if (isset($format['message_from'])) {
 			$message_from = format_string($format['message_from'], $message_from);
@@ -380,7 +381,7 @@ if (count($message_content) == 3) {
 				[to] => 12089068227
 				[amount_display] => $0.0040
 				[from] => 12088058985
-				[is_mms] => 
+				[is_mms] =>
 				[message_callback_url] => https://voip.fusionpbx.com/app/messages/index.php
 				[message_type] => longcode
 			)
