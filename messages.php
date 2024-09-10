@@ -34,7 +34,7 @@
 		exit;
 	}
 
-//missing application - app/providers is required 
+//missing application - app/providers is required
 	if (!file_exists($_SERVER["PROJECT_ROOT"].'/app/providers/app_config.php')) {
 		$document['title'] = $text['title-messages'];
 		require_once "resources/header.php";
@@ -85,7 +85,7 @@
 	$rows = $database->select($sql, $parameters, 'all');
 	if (is_array($rows) && @sizeof($rows)) {
 		foreach ($rows as $row) {
-		
+
 			$destinations[] = $row['destination_number'];
 		}
 	}
@@ -400,13 +400,14 @@
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
 
-	echo "<div class='container'>\n";
-	echo "	<div class='contacts'>\n";
-	echo "		<iframe id='contacts_frame' style='width: 100%; height: 100%;' src='messages_contacts.php' frameborder='0'></iframe>\n";
-	echo "	</div>\n";
-	echo "	<div class='messages'>\n";
-	echo "		<iframe id='messages_frame' class='myautoscroll' style='width: 100%; height: 100%;' src='messages_thread.php' frameborder='0'></iframe>\n";
-	echo "	</div>\n";
+	echo "<div class='card'>\n";
+	echo "	<div class='container'>\n";
+	echo "		<div class='contacts'>\n";
+	echo "			<iframe id='contacts_frame' style='width: 100%; height: 100%;' src='messages_contacts.php' frameborder='0'></iframe>\n";
+	echo "		</div>\n";
+	echo "		<div class='messages'>\n";
+	echo "			<iframe id='messages_frame' class='myautoscroll' style='width: 100%; height: 100%;' src='messages_thread.php' frameborder='0'></iframe>\n";
+	echo "		</div>\n";
 
 	if (permission_exists('message_add')) {
 		echo "	<div class='send'>\n";
@@ -518,7 +519,8 @@
 		}
 		echo "	</div>\n";
 	}
-	echo "</div>\n"; //container
+	echo "	</div>\n"; //container
+	echo "</div>\n";
 
 /*
 	echo "<script>\n";
