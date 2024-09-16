@@ -2916,6 +2916,18 @@
 	$y++;
 	$array['providers'][$x]['provider_settings'][$y]['provider_uuid'] = '6a984cf3-fd26-4f5e-ad24-6a8d7d73db40';
 	$array['providers'][$x]['provider_settings'][$y]['application_uuid'] = '4a20815d-042c-47c8-85df-085333e79b87';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_uuid'] = uuid();
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_category'] = 'outbound';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_subcategory'] = 'content';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_type'] = 'text';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_name'] = 'message_from';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_value'] = 'from';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_order'] = '';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_enabled'] = 'true';
+	$array['providers'][$x]['provider_settings'][$y]['provider_setting_description'] = 'sms,mms';
+	$y++;
+	$array['providers'][$x]['provider_settings'][$y]['provider_uuid'] = '6a984cf3-fd26-4f5e-ad24-6a8d7d73db40';
+	$array['providers'][$x]['provider_settings'][$y]['application_uuid'] = '4a20815d-042c-47c8-85df-085333e79b87';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_uuid'] = '25880d30-0869-430f-a9eb-554e911959d7';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_category'] = 'outbound';
 	$array['providers'][$x]['provider_settings'][$y]['provider_setting_subcategory'] = 'content';
