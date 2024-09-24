@@ -20,6 +20,9 @@
 	include "resources/classes/cache.php";
 	include "resources/classes/permissions.php";
 
+//connect to the database
+	$database = new database;
+
 //save the arguments to variables
 	$script_name = $argv[0];
 	if (!empty($argv[1])) {
@@ -55,7 +58,6 @@
 	//$sql .= "and hostname = :hostname ";
 	//$parameters['hostname'] = $hostname;
 	$parameters['message_queue_uuid'] = $message_queue_uuid;
-	$database = new database;
 	$row = $database->select($sql, $parameters, 'row');
 	if (isset($debug)) {
 		view_array($row, false);
@@ -148,17 +150,31 @@
 	$sql .= "and provider_setting_category = 'outbound' \n";
 	$sql .= "and provider_setting_enabled = 'true'; \n";
 	$parameters['provider_uuid'] = $provider_uuid;
-	$database = new database;
 	$provider_settings = $database->select($sql, $parameters, 'all');
 	foreach ($provider_settings as $row) {
+		//set the content array
 		if ($row['provider_setting_subcategory'] == 'content') {
 			$content[$row['provider_setting_name']] = $row['provider_setting_value'];
 		}
-		elseif ($row['provider_setting_subcategory'] == 'format') {
+		
+		//set the format array
+		if ($row['provider_setting_subcategory'] == 'format') {
 			$format[$row['provider_setting_name']] = $row['provider_setting_value'];
 		}
+
 		//build the settings array
 		$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
+
+		//set the message to type
+		if ($row['provider_setting_name'] == 'message_to') {
+			if ($row['provider_setting_type'] == 'array') {
+				$message_to_type = 'array';
+			}
+			else {
+				$message_to_type = 'text';
+			}
+		}
+
 	}
 	unset($parameters);
 	//echo $sql;
@@ -234,17 +250,29 @@
 	if ($message_type == 'mms' && isset($content['message_media_message_from']) && !empty($content['message_media_message_from'])) {
 		$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_from'], $message_from);
 	}
-	else {
+	elseif (isset($content['message_from']) && !empty($content['message_from'])) {
 		$outbound_array = build_array($outbound_array ?? [], $content['message_from'], $message_from);
 	}
-	
+
 	if ($message_type == 'mms' && isset($content['message_media_message_to']) && !empty($content['message_media_message_to'])) {
-		//explode is used in case the type is an array
-		$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_to'], explode(",", $message_to));
+		if ($message_to_type == 'array') {
+			// message to json type: array
+			$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_to'], explode(",", $message_to));
+		}
+		else {
+			// message to json type: text
+			$outbound_array = build_array($outbound_array ?? [], $content['message_media_message_to'], $message_to);
+		}
 	}
 	else {
-		//explode is used in case the type is an array
-		$outbound_array = build_array($outbound_array ?? [], $content['message_to'], explode(",", $message_to));
+		if ($message_to_type == 'array') {
+			// message to json type: array
+			$outbound_array = build_array($outbound_array ?? [], $content['message_to'], explode(",", $message_to));
+		}
+		else {
+			// message to json type: text
+			$outbound_array = build_array($outbound_array ?? [], $content['message_to'], $message_to);
+		}
 	}
 
 	if ($message_type == 'mms' && isset($content['message_media_message_content']) && !empty($content['message_media_message_content'])) {
@@ -494,9 +522,6 @@
 	$parameters['message_queue_uuid'] = $message_queue_uuid;
 	$parameters['message_json'] = $http_content;
 	$parameters['message_debug'] = $message_debug;
-	//echo __line__." ".$sql."\n";
-	//print_r($parameters);
-	$database = new database;
 	$database->execute($sql, $parameters);
 	unset($parameters);
 
