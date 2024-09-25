@@ -35,12 +35,14 @@
 	}
 
 //build a list of groups the user is a member of to be used in a SQL in
-	foreach($_SESSION['user']['groups'] as $group) {
-		if (is_uuid($group['group_uuid'])) {
-			$group_uuids[] =  $group['group_uuid'];
+	if (is_uuid($_SESSION['user_uuid'])) {
+		foreach($_SESSION['user']['groups'] as $group) {
+			if (is_uuid($group['group_uuid'])) {
+				$group_uuids[] =  $group['group_uuid'];
+			}
 		}
+		$group_uuids_in = "'".implode("','", $group_uuids)."'";
 	}
-	$group_uuids_in = "'".implode("','", $group_uuids)."'";
 
 //get media
 	if (is_uuid($message_media_uuid)) {
