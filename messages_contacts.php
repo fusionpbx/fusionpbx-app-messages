@@ -94,7 +94,8 @@
 	$sql .= "from (\n";
 	$sql .= "	select number from \n";
 	$sql .= "	(\n";
-	$sql .= "		select distinct(REPLACE(message_from, '+', '')) as number from v_messages \n";
+	$sql .= "		select distinct(message_from) as number from v_messages \n";
+	//$sql .= "		select distinct(REPLACE(message_from, '+', '')) as number from v_messages \n";
 	$sql .= "		where domain_uuid = :domain_uuid \n";
 	$sql .= "		and message_direction = 'inbound' and message_from is not null \n";
 	//$sql .= "		and user_uuid = :user_uuid \n";
@@ -109,7 +110,8 @@
 	$sql .= "		)\n";
 	$sql .= "		and message_from ~'^\+?([0-9]+\.?[0-9]*|\.[0-9]+)$' \n";
 	$sql .= "		union \n";
-	$sql .= "		select distinct(REPLACE(message_to, '+', '')) as number from v_messages \n";
+	$sql .= "		select distinct(message_to) as number from v_messages \n";
+	//$sql .= "		select distinct(REPLACE(message_to, '+', '')) as number from v_messages \n";
 	$sql .= "		where domain_uuid = :domain_uuid \n";
 	$sql .= "		and message_direction = 'outbound' and message_from is not null \n";
 	//$sql .= "		and user_uuid = :user_uuid ";
