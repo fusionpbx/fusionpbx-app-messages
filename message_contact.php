@@ -215,7 +215,12 @@
 		echo button::create(['type'=>'button','label'=>$text['button-user'],'icon'=>'user','collapse'=>'hide-sm-dn','link'=>'../../core/users/user_edit.php?id='.urlencode($contact_user_uuid)]);
 	}
 	if (permission_exists('contact_edit')) {
-		echo button::create(['type'=>'button','label'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'id'=>'btn_edit','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('../contacts/contact_edit.php?id=".urlencode($contact_uuid)."');"]);
+		if (empty($contact_uuid)) {
+			echo button::create(['type'=>'button','label'=>$text['button-add'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('../contacts/contact_edit.php');"]);
+		}
+		else {
+			echo button::create(['type'=>'button','label'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'id'=>'btn_edit','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('../contacts/contact_edit.php?id=".urlencode($contact_uuid)."');"]);
+		}
 	}
 	echo "	</div>\n";
 	echo "	<div style='clear: both;'></div>\n";
