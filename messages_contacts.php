@@ -38,6 +38,10 @@
 	$language = new text;
 	$text = $language->get();
 
+//connect to the database
+	//connect to the database
+	$database = database::new();
+
 //get selected number/contact
 	if (isset($_GET['number']) && !empty($_GET['number'])) {
 		$_SESSION['user']['contact_number'] = $_GET['number'];
@@ -151,11 +155,10 @@
 
 	//uncomment below to have the selected message pop up to the top of the list
 	//$parameters['number'] = $_SESSION['user']['contact_number'] ?? null;
-//echo "<pre>\n";
-//echo $sql;
-//echo "</pre>\n";
-//view_array($parameters);
-	$database = new database;
+	//echo "<pre>\n";
+	//echo $sql;
+	//echo "</pre>\n";
+	//view_array($parameters);
 	$contacts = $database->select($sql, $parameters, 'all');
 	//view_array($contacts);
 	unset($sql, $parameters);
@@ -402,4 +405,5 @@
 	//echo "</center>\n";
 
 	echo "</html>\n";
+
 ?>

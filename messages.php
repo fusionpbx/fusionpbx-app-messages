@@ -34,6 +34,9 @@
 		exit;
 	}
 
+//connect to the database
+	$database = database::new();
+
 //missing application - app/providers is required
 	if (!file_exists($_SERVER["PROJECT_ROOT"].'/app/providers/app_config.php')) {
 		$document['title'] = $text['title-messages'];
@@ -81,7 +84,6 @@
 	$sql .= "order by destination_number asc ";
 	$parameters['domain_uuid'] = $domain_uuid;
 	$parameters['user_uuid'] = $_SESSION['user']['user_uuid'];
-	$database = new database;
 	$rows = $database->select($sql, $parameters, 'all');
 	if (is_array($rows) && @sizeof($rows)) {
 		foreach ($rows as $row) {
@@ -108,7 +110,6 @@
 		$sql .= "and attachment_primary = 1 ";
 		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$parameters['contact_uuid'] = $_SESSION['user']['contact_uuid'];
-		$database = new database;
 		$row = $database->select($sql, $parameters, 'row');
 		$_SESSION['tmp']['messages']['contact_me'] = $row;
 		unset($sql, $parameters, $row);

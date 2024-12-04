@@ -46,6 +46,8 @@
 
 //get media
 	if (is_uuid($message_media_uuid)) {
+		//connect to the database
+		$database = database::new();
 
 		//get the media details from the database
 		$sql = "select mm.message_media_name, mm.message_media_type, mm.message_media_url, mm.message_media_content ";
@@ -61,7 +63,6 @@
 			$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		}
 		$parameters['message_media_uuid'] = $message_media_uuid;
-		$database = new database;
 		$media = $database->select($sql, $parameters, 'row');
 		unset($sql, $parameters);
 

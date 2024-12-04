@@ -38,6 +38,9 @@
 	$language = new text;
 	$text = $language->get();
 
+//connect to the database
+	$database = database::new();
+
 //santize the contact number, allow the + to support e.164 format
 	if (isset($_GET['number'])) {
 		$number = preg_replace("/[^\+?0-9]/", "", $_GET['number']);
@@ -104,7 +107,6 @@
 	$parameters['domain_uuid'] = $domain_uuid;
 	$parameters['message_number'] = $number ?? null;
 	$parameters['message_limit'] = $message_limit;
-	$database = new database;
 	$messages = $database->select($sql, $parameters, 'all');
 	unset($sql, $parameters);
 
@@ -128,7 +130,6 @@
 			$sql .= ") ";
 			$sql .= "and message_media_type <> 'txt' ";
 			$parameters['domain_uuid'] = $domain_uuid;
-			$database = new database;
 			$rows = $database->select($sql, $parameters, 'all');
 			unset($sql, $parameters, $index);
 
@@ -151,7 +152,6 @@
 	$parameters['user_uuid'] = $_SESSION['user_uuid'];
 	$parameters['domain_uuid'] = $domain_uuid;
 	$parameters['message_number'] = $number ?? null;
-	$database = new database;
 	$database->execute($sql, $parameters);
 	unset($sql, $parameters);
 

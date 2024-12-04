@@ -38,6 +38,9 @@
 		exit;
 	}
 
+//connect to the database
+	$database = database::new();
+
 //add multi-lingual support
 	$language = new text;
 	$text = $language->get();
@@ -97,7 +100,6 @@
 		$parameters['user_uuid'] = $_SESSION['user_uuid'];
 		$parameters['domain_uuid'] = $domain_uuid;
 	}
-	$database = new database;
 	$num_rows = $database->select($sql, $parameters, 'column');
 
 //prepare to page the results
@@ -117,7 +119,6 @@
 	$sql = str_replace('count(*)', '*', $sql);
 	$sql .= "order by message_date desc ";
 	$sql .= limit_offset($rows_per_page, $offset);
-	$database = new database;
 	$messages = $database->select($sql, $parameters, 'all');
 	unset($sql, $parameters);
 

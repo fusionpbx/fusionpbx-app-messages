@@ -10,6 +10,9 @@
 	require_once "resources/functions/message_media_builder.php";
 	require_once "resources/pdo.php";
 
+//connect to the database
+	$database = database::new();
+
 //debug
 	if ($_SESSION['message']['debug']['boolean'] == 'true') {
 		$debug = true;
@@ -32,7 +35,6 @@
 	$sql .= "where provider_address_cidr is not null ";
 	$sql .= "and provider_address_enabled = true ";
 	$parameters = null;
-	$database = new database;
 	$provider_addresses = $database->select($sql, $parameters, 'all');
 
 //default authorized to false
@@ -88,7 +90,6 @@
 	$sql .= "and provider_setting_enabled = 'true' \n";
 	$sql .= "and provider_setting_category = 'inbound' \n";
 	$parameters['provider_uuid'] = $provider_uuid;
-	$database = new database;
 	$provider_settings = $database->select($sql, $parameters, 'all');
 	foreach ($provider_settings as $row) {
 		if ($row['provider_setting_subcategory'] == 'content') {
@@ -417,7 +418,6 @@ if (count($message_content) == 3) {
 		file_put_contents($log_file, "sql: ".$sql."\n", FILE_APPEND);
 		file_put_contents($log_file, print_r($parameters, true)."\n", FILE_APPEND);
 	}
-	$database = new database;
 	$row = $database->select($sql, $parameters, 'row');
 	$domain_uuid = $row['domain_uuid'];
 	$user_uuid = $row['user_uuid'];
@@ -435,7 +435,6 @@ if (count($message_content) == 3) {
 	$sql .= "and c.domain_uuid = :domain_uuid ";
 	$parameters['phone_number'] = $destination_number;
 	$parameters['domain_uuid'] = $domain_uuid;
-	$database = new database;
 	$contact_uuid = $database->select($sql, $parameters, 'column');
 	unset($sql, $parameters);
 
@@ -585,8 +584,7 @@ if (count($message_content) == 3) {
 	//	file_put_contents($log_file, print_r($array, true), FILE_APPEND);
 	//}
 
-//save message to the database
-	$database = new database;
+//save message to the database;
 	$database->app_name = 'messages';
 	$database->app_uuid = '4a20815d-042c-47c8-85df-085333e79b87';
 	$database->save($array, false);
@@ -613,7 +611,6 @@ if (count($message_content) == 3) {
 	$sql .= "and e.domain_uuid = d.domain_uuid ";
 	$sql .= "and e.enabled = 'true' ";
 	$parameters['user_uuid'] = $user_uuid;
-	$database = new database;
 	$extensions = $database->select($sql, $parameters, 'all');
 	unset($sql, $parameters);
 

@@ -37,6 +37,9 @@
 		exit;
 	}
 
+//connect to the database
+	$database = database::new();
+
 //add multi-lingual support
 	$language = new text;
 	$text = $language->get();
@@ -143,7 +146,6 @@
 			$array['messages'][0]['message_uuid'] = $message_uuid;
 
 		//save to the data
-			$database = new database;
 			$database->app_name = 'messages';
 			$database->app_uuid = '4a20815d-042c-47c8-85df-085333e79b87';
 			$database->save($array);
@@ -167,7 +169,6 @@
 		$sql = "select * from v_messages ";
 		$sql .= "where message_uuid = :message_uuid ";
 		$parameters['message_uuid'] = $message_uuid;
-		$database = new database;
 		$row = $database->select($sql, $parameters, 'row');
 		if (!empty($row) && @sizeof($row) != 0) {
 			$user_uuid = $row["user_uuid"];
@@ -191,7 +192,6 @@
 	$sql .= "and user_enabled = 'true' ";
 	$sql .= "order by username asc ";
 	$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
-	$database = new database;
 	$users = $database->select($sql, $parameters, 'all');
 	unset($sql, $parameters);
 
