@@ -114,7 +114,7 @@ description - message_events service
 	$database = new database;
 
 //add the permission
-	$p = new permissions;
+	$p = permissions::new();
 	$p->add('message_queue_add', 'temp');
 
 //example command
@@ -271,7 +271,7 @@ description - message_events service
 		//view_array($array);
 
 		//build message media array (if necessary)
-		//$p = new permissions;
+		//$p = permissions::new();
 		//if (is_array($message_media) && @sizeof($message_media) != 0) {
 		//	foreach($message_media as $index => $media) {
 		//		$array['message_media'][$index]['message_media_uuid'] = $media['uuid'];

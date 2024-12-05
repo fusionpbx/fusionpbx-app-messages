@@ -374,7 +374,7 @@
 	$array['messages'][0]['message_json'] = $http_content;
 
 //add permissions
-	$p = new permissions;
+	$p = permissions::new();
 	$p->add('message_add', 'temp');
 	$p->add('message_edit', 'temp');
 	$p->add('message_media_add', 'temp');
@@ -489,7 +489,7 @@
 
 /*
 //add permissions
-	$p = new permissions;
+	$p = permissions::new();
 	$p->add('message_queue_add', 'temp');
 	$p->add('message_queue_update', 'temp');
 

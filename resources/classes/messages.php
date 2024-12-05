@@ -74,7 +74,7 @@ if (!class_exists('messages')) {
 							if (is_array($array) && @sizeof($array) != 0) {
 
 								//grant temporary permissions
-									$p = new permissions;
+									$p = permissions::new();
 									$p->add('message_media_delete', 'temp');
 
 								//execute delete
@@ -227,7 +227,7 @@ if (!class_exists('messages')) {
 				}
 
 			//add the permission
-				$p = new permissions;
+				$p = permissions::new();
 				$p->add('message_queue_add', 'temp');
 
 			//build the message array

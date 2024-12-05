@@ -485,7 +485,7 @@ if (count($message_content) == 3) {
 	$array['message_queue'][0]['message_json'] = $message_json;
 
 //add the required permission
-	$p = new permissions;
+	$p = permissions::new();
 	$p->add("message_add", "temp");
 	$p->add("message_queue_add", "temp");
 	$p->add("message_media_add", "temp");
