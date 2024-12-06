@@ -342,7 +342,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-phone_numbers']."\"><b class='fas fa-hashtag fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'app/contacts/contact_phones_view.php';
+		require 'core/contacts/contact_phones_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -354,7 +354,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-emails']."\"><b class='fas fa-envelope fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'app/contacts/contact_emails_view.php';
+		require 'core/contacts/contact_emails_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -366,7 +366,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-addresses']."\"><b class='fas fa-map-marker-alt fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'app/contacts/contact_addresses_view.php';
+		require 'core/contacts/contact_addresses_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -378,7 +378,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-urls']."\"><b class='fas fa-link fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_urls_view.php";
+		require "core/contacts/contact_urls_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -390,7 +390,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['header-contact_relations']."\"><b class='fas fa-project-diagram fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_relations_view.php";
+		require "core/contacts/contact_relations_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -402,7 +402,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-attachments']."\"><b class='fas fa-paperclip fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_attachments_view.php";
+		require "core/contacts/contact_attachments_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -414,7 +414,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['header_contact_times']."\"><b class='fas fa-clock fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_times_view.php";
+		require "core/contacts/contact_times_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -426,7 +426,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-contact_extensions']."\"><b class='fas fa-fax fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_extensions_view.php";
+		require "core/contacts/contact_extensions_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -438,7 +438,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-contact_notes']."\"><b class='fas fa-sticky-note fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "app/contacts/contact_notes_view.php";
+		require "core/contacts/contact_notes_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
