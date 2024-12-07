@@ -13,13 +13,11 @@
 //connect to the database
 	$database = database::new();
 
+//initialize database and settings
+	$settings = new settings(['database' => $database, $_SESSION['domain_uuid'] ?? '']);
+
 //debug
-	if ($_SESSION['message']['debug']['boolean'] == 'true') {
-		$debug = true;
-	}
-	else {
-		$debug = false;
-	}
+	$debug = $settings->get('message','debug', false);
 
 //log file
 	$log_file = '/tmp/message.log';
@@ -425,6 +423,8 @@ if (count($message_content) == 3) {
 	if ($debug) {
 		file_put_contents($log_file, print_r($row, true)."\n", FILE_APPEND);
 	}
+	//check if message to email is enabled
+	$destination_email_enabled = $row['destination_email'];
 	unset($sql, $parameters, $row);
 
 //get the contact uuid
@@ -533,6 +533,7 @@ if (count($message_content) == 3) {
 
 			//build the array for the media
 			if ($message_media_type !== 'xml' && strlen($message_media_url) > 0) {
+				//build the message media
 				$array['message_media'][$index]['message_media_uuid'] = uuid();
 				$array['message_media'][$index]['message_uuid'] = $message_uuid;
 				$array['message_media'][$index]['domain_uuid'] = $domain_uuid;
@@ -544,6 +545,13 @@ if (count($message_content) == 3) {
 
 				$array['message_media'][$index]['message_media_url'] = $message_media_url;
 				$array['message_media'][$index]['message_media_content'] = base64_encode(url_get_contents($message_media_url));
+
+				//get email attachments
+				if($destination_email_enabled == 'true'){
+					$email_attachments[$index]['base64'] = $array['message_media'][$index]['message_media_content'];
+					$email_attachments[$index]['name'] = $message_media_name;
+					$email_attachments[$index]['type'] = $message_media_type;
+				}
 			}
 		}
 	}
@@ -570,6 +578,7 @@ if (count($message_content) == 3) {
 
 		//build the array for the media
 		if (!empty($message_media_url) && strlen($message_media_url) > 0 && $message_media_type !== 'xml') {
+			//build the message media array
 			$index = 0;
 			$array['message_media'][$index]['message_media_uuid'] = uuid();
 			$array['message_media'][$index]['message_uuid'] = $message_uuid;
@@ -578,6 +587,13 @@ if (count($message_content) == 3) {
 			$array['message_media'][$index]['message_media_type'] = $message_media_type;
 			$array['message_media'][$index]['message_media_url'] = $message_media_url;
 			$array['message_media'][$index]['message_media_content'] = base64_encode(url_get_contents($message_media_url));
+
+			//prepare the email attachments array
+			if($destination_email_enabled == 'true'){
+				$email_attachments[$index]['base64'] = $array['message_media'][$index]['message_media_content'];
+				$email_attachments[$index]['name'] = $message_media_name;
+				$email_attachments[$index]['type'] = $message_media_type;
+			}
 		}
 	}
 	//if ($debug) {
@@ -666,6 +682,54 @@ if (count($message_content) == 3) {
 			$event .= "_body: ". $message_content;
 			event_socket_request($fp, $event);
 		}
+	}
+
+	if ($destination_email_enabled == 'true') {
+		//get the email template from the database - Category: message; Subcategory:new
+		$sql = "select template_subcategory, template_subject, template_body from v_email_templates ";
+		$sql .= "where (domain_uuid = :domain_uuid or domain_uuid is null) ";
+		$sql .= "and template_language = :template_language ";
+		$sql .= "and template_category = :template_category ";
+		$sql .= "and template_subcategory = :template_subcategory ";
+		$sql .= "and template_enabled = 'true' ";
+		$parameters['domain_uuid'] = $domain_uuid;
+		$parameters['template_language'] = $settings->get('domain','language');
+		$parameters['template_category'] = 'message';
+		$parameters['template_subcategory'] = 'inbound';
+		$message_inbound_template = $database->select($sql, $parameters, 'row');
+		unset($sql, $parameters);
+
+		$email_subject = $message_inbound_template['template_subject'] ?? "";
+		$email_body = $message_inbound_template['template_body']  ?? "";
+
+		//add placeholders as needed
+		$email_subject = str_replace('${message_to}', $message_to, $email_subject);
+		$email_subject = str_replace('${message_from}', $message_from, $email_subject);
+
+		$email_body = str_replace('${message_to}', $message_to, $email_body);
+		$email_body = str_replace('${message_from}', $message_from, $email_body);
+		$email_body = str_replace('${message_text}', $message_content, $email_body);
+
+		$time_zone = $settings->get('domain','time_zone');
+		$dt = new DateTime("now", new DateTimeZone($time_zone)); 
+		$email_body = str_replace('${message_date}', $dt->format('m/d/Y, H:i:s').' '.$time_zone, $email_body);
+
+		$sql = "select user_email from v_users ";
+		$sql .= "where user_uuid = :user_uuid";
+		$parameters['user_uuid'] = $user_uuid;
+		$user_email = $database->select($sql, $parameters, 'column');
+		unset($sql, $parameters);
+
+		$email = new email;
+		$email->domain_uuid = $domain_uuid;
+		$email->recipients = $user_email; 
+		$email->subject = $email_subject; 
+		$email->body = $email_body; 
+		$email->from_address = $settings->get('email','smtp_from');
+		$email->from_name = $settings->get('email','smtp_from_name');
+		$email->debug_level = 3;
+		$email->attachments = $email_attachments;
+		$email->send();
 	}
 
 //set the file
