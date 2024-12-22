@@ -39,7 +39,12 @@
 
 //add multi-lingual support
 	$language = new text;
-	$text = $language->get(null, '/app/contacts');
+	if (file_exists($_SERVER["PROJECT_ROOT"]."/core/contacts/app_config.php")) {
+		$text = $language->get(null, '/core/contacts');
+	}
+	else {
+		$text = $language->get(null, '/app/contacts');
+	}
 
 //connect to the database
 	$database = database::new();
