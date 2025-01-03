@@ -237,7 +237,6 @@ description - message_events service
 		$sql .= "and provider_setting_subcategory = 'format' \n";
 		$sql .= "and provider_setting_enabled = 'true'; \n";
 		$parameters['provider_uuid'] = $provider_uuid;
-		$database = new database;
 		$provider_settings = $database->select($sql, $parameters, 'all');
 		unset($parameters);
 		if (isset($_GET['debug'])) {
