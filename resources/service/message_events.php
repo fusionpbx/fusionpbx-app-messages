@@ -238,14 +238,13 @@ description - message_events service
 		$sql .= "and provider_setting_enabled = 'true'; \n";
 		$parameters['provider_uuid'] = $provider_uuid;
 		$provider_settings = $database->select($sql, $parameters, 'all');
-		unset($parameters);
 		if (isset($_GET['debug'])) {
 			echo $sql;
 			print_r($parameters);
 			print_r($provider_settings);
-			
 			echo "\n";
 		}
+		unset($parameters);
 
 		//process the provider settings array
 		foreach ($provider_settings as $row) {
