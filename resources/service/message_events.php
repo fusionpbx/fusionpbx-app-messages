@@ -208,56 +208,56 @@ description - message_events service
 		}
 
 		//get the provider uuid - needed for sending the message
-			$sql = "SELECT * FROM v_destinations \n";
-			$sql .= "WHERE ( \n";
-			$sql .= "	destination_prefix || destination_area_code || destination_number = :source_number \n";
-			$sql .= "	OR destination_trunk_prefix || destination_area_code || destination_number = :source_number \n";
-			$sql .= "	OR destination_prefix || destination_number = :source_number \n";
-			$sql .= "	OR '+' || destination_prefix || destination_number = :source_number \n";
-			$sql .= "	OR '+' || destination_prefix || destination_area_code || destination_number = :source_number \n";
-			$sql .= "	OR destination_area_code || destination_number = :source_number \n";
-			$sql .= "	OR destination_number = :source_number \n";
-			$sql .= ") \n";
-			$parameters['source_number'] = $source_number;
-			$row = $database->select($sql, $parameters, 'row');
-			//view_array($row, false);
-			if (empty($row)) { continue; }
-			$domain_uuid = $row["domain_uuid"];
-			$provider_uuid = $row["provider_uuid"];
-			$destination_prefix = $row["destination_prefix"];
-			$destination_number = $row["destination_number"];
-			unset($parameters, $row);
+		$sql = "SELECT * FROM v_destinations \n";
+		$sql .= "WHERE ( \n";
+		$sql .= "	destination_prefix || destination_area_code || destination_number = :source_number \n";
+		$sql .= "	OR destination_trunk_prefix || destination_area_code || destination_number = :source_number \n";
+		$sql .= "	OR destination_prefix || destination_number = :source_number \n";
+		$sql .= "	OR '+' || destination_prefix || destination_number = :source_number \n";
+		$sql .= "	OR '+' || destination_prefix || destination_area_code || destination_number = :source_number \n";
+		$sql .= "	OR destination_area_code || destination_number = :source_number \n";
+		$sql .= "	OR destination_number = :source_number \n";
+		$sql .= ") \n";
+		$parameters['source_number'] = $source_number;
+		$row = $database->select($sql, $parameters, 'row');
+		//view_array($row, false);
+		if (empty($row)) { continue; }
+		$domain_uuid = $row["domain_uuid"];
+		$provider_uuid = $row["provider_uuid"];
+		$destination_prefix = $row["destination_prefix"];
+		$destination_number = $row["destination_number"];
+		unset($parameters, $row);
 
 		//get the provider settings
-			$sql = "select provider_setting_category, provider_setting_subcategory, ";
-			$sql .= "provider_setting_name, provider_setting_value, provider_setting_order \n";
-			$sql .= "from v_provider_settings \n";
-			$sql .= "where provider_uuid = :provider_uuid \n";
-			$sql .= "and provider_setting_category = 'outbound' \n";
-			$sql .= "and provider_setting_subcategory = 'format' \n";
-			$sql .= "and provider_setting_enabled = 'true'; \n";
-			$parameters['provider_uuid'] = $provider_uuid;
-			$database = new database;
-			$provider_settings = $database->select($sql, $parameters, 'all');
-			unset($parameters);
-			if (isset($_GET['debug'])) {
-				echo $sql;
-				print_r($parameters);
-				print_r($provider_settings);
-				
-				echo "\n";
-			}
+		$sql = "select provider_setting_category, provider_setting_subcategory, ";
+		$sql .= "provider_setting_name, provider_setting_value, provider_setting_order \n";
+		$sql .= "from v_provider_settings \n";
+		$sql .= "where provider_uuid = :provider_uuid \n";
+		$sql .= "and provider_setting_category = 'outbound' \n";
+		$sql .= "and provider_setting_subcategory = 'format' \n";
+		$sql .= "and provider_setting_enabled = 'true'; \n";
+		$parameters['provider_uuid'] = $provider_uuid;
+		$database = new database;
+		$provider_settings = $database->select($sql, $parameters, 'all');
+		unset($parameters);
+		if (isset($_GET['debug'])) {
+			echo $sql;
+			print_r($parameters);
+			print_r($provider_settings);
+			
+			echo "\n";
+		}
 
 		//process the provider settings array
-			foreach ($provider_settings as $row) {
-				//format the phone numbers
-				if ($row['provider_setting_name'] == 'message_from') {
-					$from = format_string($row['provider_setting_value'], $destination_number);
-				}
-				if ($row['provider_setting_name'] == 'message_to') {
-					$to = format_string($row['provider_setting_value'], $to);
-				}
+		foreach ($provider_settings as $row) {
+			//format the phone numbers
+			if ($row['provider_setting_name'] == 'message_from') {
+				$from = format_string($row['provider_setting_value'], $destination_number);
 			}
+			if ($row['provider_setting_name'] == 'message_to') {
+				$to = format_string($row['provider_setting_value'], $to);
+			}
+		}
 
 		//if any of these are empty then skip the rest of the current loop
 		if (empty($from) || empty($to) || empty($message_content)) {
