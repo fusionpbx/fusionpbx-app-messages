@@ -228,8 +228,34 @@ description - message_events service
 		$destination_number = $row["destination_number"];
 		unset($parameters, $row);
 
-		//get the source and destination numbers
-		$from = $destination_prefix.$destination_number;
+		//get the provider settings
+		$sql = "select provider_setting_category, provider_setting_subcategory, ";
+		$sql .= "provider_setting_name, provider_setting_value, provider_setting_order \n";
+		$sql .= "from v_provider_settings \n";
+		$sql .= "where provider_uuid = :provider_uuid \n";
+		$sql .= "and provider_setting_category = 'outbound' \n";
+		$sql .= "and provider_setting_subcategory = 'format' \n";
+		$sql .= "and provider_setting_enabled = 'true'; \n";
+		$parameters['provider_uuid'] = $provider_uuid;
+		$provider_settings = $database->select($sql, $parameters, 'all');
+		if (isset($_GET['debug'])) {
+			echo $sql;
+			print_r($parameters);
+			print_r($provider_settings);
+			echo "\n";
+		}
+		unset($parameters);
+
+		//process the provider settings array
+		foreach ($provider_settings as $row) {
+			//format the phone numbers
+			if ($row['provider_setting_name'] == 'message_from') {
+				$from = format_string($row['provider_setting_value'], $destination_number);
+			}
+			if ($row['provider_setting_name'] == 'message_to') {
+				$to = format_string($row['provider_setting_value'], $to);
+			}
+		}
 
 		//if any of these are empty then skip the rest of the current loop
 		if (empty($from) || empty($to) || empty($message_content)) {
