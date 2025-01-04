@@ -37,14 +37,19 @@
 		exit;
 	}
 
+//find the location of the contact application
+	$contact_array[] = 'core/contacts');
+	$contact_array[] = 'app/contacts');
+	$contact_path = '';
+	foreach($contact_array as $path) {
+		if (file_exists($_SERVER["PROJECT_ROOT"]."/".$path."/app_config.php")) {
+			$contact_path = $path;
+		}
+	}
+
 //add multi-lingual support
 	$language = new text;
-	if (file_exists($_SERVER["PROJECT_ROOT"]."/core/contacts/app_config.php")) {
-		$text = $language->get(null, '/core/contacts');
-	}
-	else {
-		$text = $language->get(null, '/app/contacts');
-	}
+	$text = $language->get(null, $contact_path);
 
 //connect to the database
 	$database = database::new();
@@ -245,97 +250,98 @@
 	echo "			<div class='box'><b class='fas fa-user fa-fw fa-md'></b></div>\n";
 	echo "			<div class='box'>\n";
 	echo "				<div class='grid' style='grid-template-columns: 70px auto;'>\n";
-		//nickname
-			if ($contact_nickname) {
-				echo "<div class='box contact-details-label'>".$text['label-contact_nickname']."</div>\n";
-				echo "<div class='box'>\"".escape($contact_nickname)."\"</div>\n";
+
+	//nickname
+	if ($contact_nickname) {
+		echo "				<div class='box contact-details-label'>".$text['label-contact_nickname']."</div>\n";
+		echo "				<div class='box'>\"".escape($contact_nickname)."\"</div>\n";
+	}
+	//name
+	if ($contact_name_given) {
+		echo "				<div class='box contact-details-label'>".$text['label-name']."</div>\n";
+		echo "				<div class='box'>".escape($contact_name_given).(!empty($contact_name_family) ? ' '.escape($contact_name_family) : null)."</div>\n";
+	}
+	//contact type
+	if ($contact_type) {
+		echo "				<div class='box contact-details-label'>".$text['label-contact_type']."</div>\n";
+		echo "				<div class='box'>";
+		if (!empty($_SESSION["contact"]["type"])) {
+			sort($_SESSION["contact"]["type"]);
+			foreach ($_SESSION["contact"]["type"] as $type) {
+				if ($contact_type == $type) {
+					echo escape($type);
+				}
 			}
-		//name
-			if ($contact_name_given) {
-				echo "<div class='box contact-details-label'>".$text['label-name']."</div>\n";
-				echo "<div class='box'>".escape($contact_name_given).(!empty($contact_name_family) ? ' '.escape($contact_name_family) : null)."</div>\n";
+		}
+		else if ($text['option-contact_type_'.$contact_type]) {
+			echo $text['option-contact_type_'.$contact_type];
+		}
+		else {
+			echo escape($contact_type);
+		}
+		echo "				</div>\n";
+	}
+	//category
+	if ($contact_category) {
+		echo "				<div class='box contact-details-label'>".$text['label-contact_category']."</div>\n";
+		echo "				<div class='box'>";
+		if (!empty($_SESSION["contact"]["category"])) {
+			sort($_SESSION["contact"]["category"]);
+			foreach ($_SESSION["contact"]["category"] as $category) {
+				if ($contact_category == $category) {
+					echo escape($category);
+					break;
+				}
 			}
-		//contact type
-			if ($contact_type) {
-				echo "<div class='box contact-details-label'>".$text['label-contact_type']."</div>\n";
-				echo "<div class='box'>";
-				if (!empty($_SESSION["contact"]["type"])) {
-					sort($_SESSION["contact"]["type"]);
-					foreach ($_SESSION["contact"]["type"] as $type) {
-						if ($contact_type == $type) {
-							echo escape($type);
-						}
-					}
+		}
+		else {
+			echo escape($contact_category);
+		}
+		echo "				</div>\n";
+	}
+	//role
+	if ($contact_role) {
+		echo "				<div class='box contact-details-label'>".$text['label-contact_role']."</div>\n";
+		echo "				<div class='box'>";
+		if (!empty($_SESSION["contact"]["role"])) {
+			sort($_SESSION["contact"]["role"]);
+			foreach ($_SESSION["contact"]["role"] as $role) {
+				if ($contact_role == $role) {
+					echo escape($role);
+					break;
 				}
-				else if ($text['option-contact_type_'.$contact_type]) {
-					echo $text['option-contact_type_'.$contact_type];
-				}
-				else {
-					echo escape($contact_type);
-				}
-				echo "</div>\n";
 			}
-		//category
-			if ($contact_category) {
-				echo "<div class='box contact-details-label'>".$text['label-contact_category']."</div>\n";
-				echo "<div class='box'>";
-				if (!empty($_SESSION["contact"]["category"])) {
-					sort($_SESSION["contact"]["category"]);
-					foreach ($_SESSION["contact"]["category"] as $category) {
-						if ($contact_category == $category) {
-							echo escape($category);
-							break;
-						}
-					}
-				}
-				else {
-					echo escape($contact_category);
-				}
-				echo "</div>\n";
-			}
-		//role
-			if ($contact_role) {
-				echo "<div class='box contact-details-label'>".$text['label-contact_role']."</div>\n";
-				echo "<div class='box'>";
-				if (!empty($_SESSION["contact"]["role"])) {
-					sort($_SESSION["contact"]["role"]);
-					foreach ($_SESSION["contact"]["role"] as $role) {
-						if ($contact_role == $role) {
-							echo escape($role);
-							break;
-						}
-					}
-				}
-				else {
-					echo escape($contact_role);
-				}
-				echo "</div>\n";
-			}
-		//time_zone
-			if ($contact_time_zone) {
-				echo "<div class='box contact-details-label'>".$text['label-contact_time_zone']."</div>\n";
-				echo "<div class='box'>";
-				echo $contact_time_zone."<br>\n";
-				echo "</div>\n";
-			}
-		//users (viewing contact)
-			if (permission_exists('contact_user_view') && !empty($contact_users_assigned)) {
-				echo "<div class='box contact-details-label'>".$text['label-users']."</div>\n";
-				echo "<div class='box'>";
-				foreach ($contact_users_assigned as $field) {
-					echo escape($field['username'])."<br>\n";
-				}
-				echo "</div>\n";
-			}
-		//groups (viewing contact)
-			if (permission_exists('contact_group_view') && !empty($contact_groups_assigned)) {
-				echo "<div class='box contact-details-label'>".$text['label-groups']."</div>\n";
-				echo "<div class='box'>";
-				foreach ($contact_groups_assigned as $field) {
-					echo escape($field['group_name'])."<br>\n";
-				}
-				echo "</div>\n";
-			}
+		}
+		else {
+			echo escape($contact_role);
+		}
+		echo "				</div>\n";
+	}
+	//time_zone
+	if ($contact_time_zone) {
+		echo "				<div class='box contact-details-label'>".$text['label-contact_time_zone']."</div>\n";
+		echo "				<div class='box'>";
+		echo $contact_time_zone."<br>\n";
+		echo "				</div>\n";
+	}
+	//users (viewing contact)
+	if (permission_exists('contact_user_view') && !empty($contact_users_assigned)) {
+		echo "				<div class='box contact-details-label'>".$text['label-users']."</div>\n";
+		echo "				<div class='box'>";
+		foreach ($contact_users_assigned as $field) {
+			echo escape($field['username'])."<br>\n";
+		}
+		echo "				</div>\n";
+	}
+	//groups (viewing contact)
+	if (permission_exists('contact_group_view') && !empty($contact_groups_assigned)) {
+		echo "				<div class='box contact-details-label'>".$text['label-groups']."</div>\n";
+		echo "				<div class='box'>";
+		foreach ($contact_groups_assigned as $field) {
+			echo escape($field['group_name'])."<br>\n";
+		}
+		echo "				</div>\n";
+	}
 	echo "				</div>\n";
 	echo "			</div>\n";
 	echo "		</div>\n";
@@ -347,7 +353,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-phone_numbers']."\"><b class='fas fa-hashtag fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'core/contacts/contact_phones_view.php';
+		require $contact_path."/contact_phones_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -359,7 +365,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-emails']."\"><b class='fas fa-envelope fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'core/contacts/contact_emails_view.php';
+		require $contact_path."/contact_emails_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -371,7 +377,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-addresses']."\"><b class='fas fa-map-marker-alt fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require 'core/contacts/contact_addresses_view.php';
+		require $contact_path."/contact_addresses_view.php';
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -383,7 +389,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-urls']."\"><b class='fas fa-link fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_urls_view.php";
+		require $contact_path."/contact_urls_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -395,7 +401,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['header-contact_relations']."\"><b class='fas fa-project-diagram fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_relations_view.php";
+		require $contact_path."/contact_relations_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -407,7 +413,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-attachments']."\"><b class='fas fa-paperclip fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_attachments_view.php";
+		require $contact_path."/contact_attachments_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -419,7 +425,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['header_contact_times']."\"><b class='fas fa-clock fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_times_view.php";
+		require $contact_path."/contact_times_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -431,7 +437,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-contact_extensions']."\"><b class='fas fa-fax fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_extensions_view.php";
+		require $contact_path."/contact_extensions_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -443,13 +449,13 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-contact_notes']."\"><b class='fas fa-sticky-note fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require "core/contacts/contact_notes_view.php";
+		require $contact_path."/contact_notes_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
 	}
 
-	echo "</div>\n";
+echo "	</div>\n";
 echo "</body>\n";
 echo "</html>\n";
 
