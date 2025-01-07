@@ -4,6 +4,15 @@
 if (!class_exists('messages')) {
 	class messages {
 
+						/**
+		* declare public variables
+		*/
+		public $destinations;
+		public $domain_uuid;
+		public $message_date_begin;
+		public $message_date_end;
+		public $quick_select;
+
 		/**
 		 * declare private variables
 		 */
@@ -13,11 +22,19 @@ if (!class_exists('messages')) {
 		private $list_page;
 		private $table;
 		private $uuid_prefix;
+		private $settings;
 
 		/**
 		 * called when the object is created
 		 */
-		public function __construct() {
+		public function __construct($settings = null) {
+			if (is_null($this->domain_uuid)) {
+				$this->domain_uuid = $_SESSION['domain_uuid'];
+			}
+
+			if (!isset($settings)) {
+				$this->settings = new settings();
+			}
 
 			//assign private variables
 				$this->app_name = 'messages';
@@ -167,11 +184,11 @@ if (!class_exists('messages')) {
 				$sql .= "and provider_uuid is not null ";
 				$sql .= "and destination_enabled = 'true'; ";
 				$parameters['destination_number'] = $message_from;
-				if (!empty($debug)) {
-					file_put_contents($log_file, "sql: ".$sql."\n", FILE_APPEND);
-					//echo $sql."\n";
-					file_put_contents($log_file, print_r($parameters, true)."\n", FILE_APPEND);
-				}
+				// if (!empty($debug)) {
+				// 	file_put_contents($log_file, "sql: ".$sql."\n", FILE_APPEND);
+				// 	//echo $sql."\n";
+				// 	file_put_contents($log_file, print_r($parameters, true)."\n", FILE_APPEND);
+				// }
 				$database = new database;
 				$row = $database->select($sql, $parameters, 'row');
 				//view_array($row, false);
@@ -183,7 +200,7 @@ if (!class_exists('messages')) {
 					unset($row);
 				}
 				//if (!empty($debug)) {
-					view_array($row,false);
+					// view_array($row,false);
 					//file_put_contents($log_file, print_r($row, true)."\n", FILE_APPEND);
 				//}
 				unset($sql, $parameters);
@@ -289,6 +306,147 @@ if (!class_exists('messages')) {
 				$p->delete('message_queue_add', 'temp');
 				$p->delete('message_media_add', 'temp');
 
+		} //method
+
+		public function message_summary() {
+			//set the time zone
+				if (!empty($this->settings->get('domain', 'time_zone'))) {
+					$time_zone = $this->settings->get('domain', 'time_zone');
+				}
+				else {
+					$time_zone = date_default_timezone_get();
+				}
+
+			//set the time zone for php
+				date_default_timezone_set($time_zone);
+				
+			//build the date range
+				if (!empty($this->message_date_begin) || !empty($this->message_date_end)) {
+					unset($this->quick_select);
+					if (strlen($this->message_date_begin) > 0 && !empty($this->message_date_end)) {
+						$sql_date_range = " and message_date between :message_date_begin::timestamptz and :message_date_end::timestamptz \n";
+						$parameters['message_date_begin'] = $this->message_date_begin.':00.000 '.$time_zone;
+						$parameters['message_date_end'] = $this->message_date_end.':59.999 '.$time_zone;
+					}
+					else {
+						if (!empty($this->message_date_begin)) {
+							$sql_date_range = "and message_date >= :message_date_begin::timestamptz \n";
+							$parameters['message_date_begin'] = $this->message_date_begin.':00.000 '.$time_zone;
+						}
+						if (!empty($this->message_date_end)) {
+							$sql_date_range .= "and message_date <= :message_date_end::timestamptz \n";
+							$parameters['message_date_end'] = $this->message_date_end.':59.999 '.$time_zone;
+						}
+					}
+				}
+				else {
+					switch ($this->quick_select) {
+						case 1: $sql_date_range = "and message_date >= '".date('Y-m-d H:i:s.000', strtotime("-1 week"))." ".$time_zone."'::timestamptz \n"; break; //last 7 days
+						case 2: $sql_date_range = "and message_date >= '".date('Y-m-d H:i:s.000', strtotime("-1 hour"))." ".$time_zone."'::timestamptz \n"; break; //last hour
+						case 3: $sql_date_range = "and message_date >= '".date('Y-m-d')." "."00:00:00.000 ".$time_zone."'::timestamptz \n"; break; //today
+						case 4: $sql_date_range = "and message_date between '".date('Y-m-d',strtotime("-1 day"))." "."00:00:00.000 ".$time_zone."'::timestamptz and '".date('Y-m-d',strtotime("-1 day"))." "."23:59:59.999 ".$time_zone."'::timestamptz \n"; break; //yesterday
+						case 5: $sql_date_range = "and message_date >= '".date('Y-m-d',strtotime("this week"))." "."00:00:00.000 ".$time_zone."' \n"; break; //this week
+						case 6: $sql_date_range = "and message_date >= '".date('Y-m-')."01 "."00:00:00.000 ".$time_zone."'::timestamptz \n"; break; //this month
+						case 7: $sql_date_range = "and message_date >= '".date('Y-')."01-01 "."00:00:00.000 ".$time_zone."'::timestamptz \n"; break; //this year
+					}
+				}
+
+				$sql  = "with \n"; 
+				$sql .= "message_inbound as ( \n";
+				$sql .= "select \n"; 
+				$sql .= "m.domain_uuid as domain_uuid, \n";
+				$sql .= "d.destination_uuid as destination_uuid, \n";
+				$sql .= "m.message_to as destination, \n";
+
+				//message_read
+				$sql .= "count(*) \n";
+				$sql .= "filter (where m.message_read IS TRUE) \n";
+				$sql .= "as message_read, \n";
+
+				//message_unread
+				$sql .= "count(*) \n";
+				$sql .= "filter (where m.message_read IS NOT TRUE) \n";
+				$sql .= "as message_unread, \n";
+
+				//message_received
+				$sql .= "count(*) \n";
+				$sql .= "as message_received, \n";
+
+				$sql .= "0 as message_sent \n";
+
+				$sql .= "from v_messages m, v_destinations d \n";
+				
+				if (!(!empty($_GET['show']) && $_GET['show'] === 'all' && permission_exists('message_summary_all'))) {
+					$sql .= "where m.domain_uuid = :domain_uuid \n";
+				}
+				else {
+					$sql .= "where true \n";
+				}
+				$sql .= $sql_date_range ?? '';
+				$sql .= "and m.message_direction = 'inbound' \n";
+				$sql .= "and m.message_to in (d.destination_number, concat(d.destination_prefix, d.destination_number), concat('+', d.destination_prefix, d.destination_number)) \n";
+				$sql .= "group by m.domain_uuid, d.destination_uuid, m.message_to \n";
+
+				$sql .= "), message_outbound as ( \n";
+
+				$sql .= "select \n"; 
+				$sql .= "m.domain_uuid as domain_uuid, \n";
+				$sql .= "d.destination_uuid as destination_uuid, \n";
+				$sql .= "m.message_from as destination, \n"; 
+				$sql .= "0 as message_read, \n";
+				$sql .= "0 as message_unread, \n";
+				$sql .= "0 as message_received, \n";
+
+				//message_sent
+				$sql .= "count(*) \n";
+				$sql .= "as message_sent \n";
+
+				$sql .= "from v_messages m, v_destinations d \n";
+				if (!(!empty($_GET['show']) && $_GET['show'] === 'all' && permission_exists('message_summary_all'))) {
+					$sql .= "where m.domain_uuid = :domain_uuid \n";
+				}
+				else {
+					$sql .= "where true \n";
+				}
+				$sql .= $sql_date_range ?? '';
+				$sql .= "and m.message_direction = 'outbound' \n";
+				$sql .= "and m.message_from in (d.destination_number, concat(d.destination_prefix, d.destination_number), concat('+', d.destination_prefix, d.destination_number)) \n";
+				$sql .= "group by m.domain_uuid, d.destination_uuid, m.message_from \n";
+				$sql .= ") \n";
+
+				$sql .= "select \n";
+				$sql .= "n.domain_uuid, \n"; 
+				$sql .= "d.destination_uuid, \n";
+				$sql .= "d.destination_description, \n";
+				$sql .= "n.domain_name, \n"; 
+				$sql .= "t.destination, \n"; 
+				$sql .= "sum(t.message_read) as message_read, \n"; 
+				$sql .= "sum(t.message_unread) as message_unread, \n"; 
+				$sql .= "sum(t.message_received) as message_received, \n"; 
+				$sql .= "sum(t.message_sent) as message_sent \n"; 
+				$sql .= "from ( \n";
+				$sql .= "select * from message_inbound \n";
+				$sql .= "union \n";
+				$sql .= "select * from message_outbound \n";
+				$sql .= ") as t, v_domains n, v_destinations d \n";
+				$sql .= "where \n";
+				$sql .= "n.domain_uuid = t.domain_uuid \n";
+				$sql .= "and d.destination_uuid = t.destination_uuid \n";
+				$sql .= "group by n.domain_uuid, d.destination_uuid, d.destination_description, n.domain_name, t.destination \n";
+				$sql .= "order by t.destination asc \n";
+
+				if (!(!empty($_GET['show']) && $_GET['show'] === 'all' && permission_exists('message_summary_all'))) {
+					$parameters['domain_uuid'] = $this->domain_uuid;
+				}
+
+				$database = database::new();
+				$summary = $database->select($sql, $parameters, 'all');
+				unset($parameters);
+				//view_array($database->message); 
+				
+				//return the array
+				return $summary;
+				
 		} //method
 		
 	} //class
