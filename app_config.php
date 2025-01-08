@@ -45,6 +45,12 @@
 		$apps[$x]['permissions'][$y]['name'] = 'message_key';
 		//$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
 		$y++;
+		$apps[$x]['permissions'][$y]['name'] = 'message_summary_all';
+		$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
+		$y++;
+		$apps[$x]['permissions'][$y]['name'] = 'message_search';
+		$apps[$x]['permissions'][$y]['groups'][] = 'superadmin';
+		$y++;
 
 	//default settings
 		$y=0;
