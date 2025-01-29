@@ -38,8 +38,8 @@
 	}
 
 //find the location of the contact application
-	$contact_array[] = 'core/contacts');
-	$contact_array[] = 'app/contacts');
+	$contact_array[] = 'core/contacts';
+	$contact_array[] = 'app/contacts';
 	$contact_path = '';
 	foreach($contact_array as $path) {
 		if (file_exists($_SERVER["PROJECT_ROOT"]."/".$path."/app_config.php")) {
@@ -195,7 +195,7 @@
 
 	echo "<link rel='stylesheet' type='text/css' href='".PROJECT_PATH."/resources/fontawesome/css/all.min.css.php'>\n";
 	echo "<link rel='stylesheet' type='text/css' href='".PROJECT_PATH."/resources/bootstrap/css/bootstrap.min.css.php'>\n";
-	echo "<script language='JavaScript' type='text/javascript' src='".PROJECT_PATH."/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
+	// echo "<script language='JavaScript' type='text/javascript' src='".PROJECT_PATH."/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
 	echo "<script language='JavaScript' type='text/javascript' src='".PROJECT_PATH."/resources/bootstrap/js/bootstrap.min.js.php'></script>\n";
 
 //css
@@ -224,10 +224,10 @@
 	}
 	if (permission_exists('contact_edit')) {
 		if (empty($contact_uuid)) {
-			echo button::create(['type'=>'button','label'=>$text['button-add'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('../contacts/contact_edit.php');"]);
+			echo button::create(['type'=>'button','label'=>$text['button-add'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('".PROJECT_PATH."/".$contact_path."/contact_edit.php');"]);
 		}
 		else {
-			echo button::create(['type'=>'button','label'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'id'=>'btn_edit','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('../contacts/contact_edit.php?id=".urlencode($contact_uuid)."');"]);
+			echo button::create(['type'=>'button','label'=>$text['button-edit'],'icon'=>$_SESSION['theme']['button_icon_edit'],'id'=>'btn_edit','style'=>'margin-left: 15px; margin-right: 0;','onclick'=>"window.open('".PROJECT_PATH."/".$contact_path."/contact_edit.php?id=".urlencode($contact_uuid)."');"]);
 		}
 	}
 	echo "	</div>\n";
@@ -240,9 +240,8 @@
 	else {
 		echo $contact_note."\n";
 	}
-	echo "<br />\n";
 
-	echo "<div class='grid' style='grid-gap: 10px; grid-template-columns: auto;'>\n";
+	echo "<div class='grid' style='margin-top: 10px; grid-gap: 10px; grid-template-columns: auto;'>\n";
 
 //general info
 	echo "	<div class='box contact-details'>\n";
@@ -353,7 +352,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-phone_numbers']."\"><b class='fas fa-hashtag fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require $contact_path."/contact_phones_view.php';
+		require $contact_path."/contact_phones_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -365,7 +364,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-emails']."\"><b class='fas fa-envelope fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require $contact_path."/contact_emails_view.php';
+		require $contact_path."/contact_emails_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";
@@ -377,7 +376,7 @@
 		echo "		<div class='grid contact-details'>\n";
 		echo "			<div class='box' title=\"".$text['label-addresses']."\"><b class='fas fa-map-marker-alt fa-fw fa-lg'></b></div>\n";
 		echo "			<div class='box'>\n";
-		require $contact_path."/contact_addresses_view.php';
+		require $contact_path."/contact_addresses_view.php";
 		echo "			</div>\n";
 		echo "		</div>\n";
 		echo "	</div>\n";

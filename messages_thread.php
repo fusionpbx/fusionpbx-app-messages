@@ -162,7 +162,7 @@
 
 //include icons
 	echo "<link rel='stylesheet' type='text/css' href='/resources/fontawesome/css/all.min.css.php'>\n";
-	echo "<script language='JavaScript' type='text/javascript' src='/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
+	// echo "<script language='JavaScript' type='text/javascript' src='/resources/fontawesome/js/solid.min.js.php' defer></script>\n";
 
 	//css styles
 	echo "<style>\n";
