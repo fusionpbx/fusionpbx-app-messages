@@ -49,7 +49,6 @@ description - message_events service
 
 //includes
 	require_once "resources/require.php";
-	include "resources/classes/permissions.php";
 
 //define the process id file
 	$pid_file = "/var/run/fusionpbx/".basename( $argv[0], ".php") .".pid";

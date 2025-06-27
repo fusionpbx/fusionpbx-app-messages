@@ -40,7 +40,6 @@
 
 //includes
 	require_once "resources/require.php";
-	include "resources/classes/permissions.php";
 
 //define the process id file
 	$pid_file = "/var/run/fusionpbx/".basename( $argv[0], ".php") .".pid";
@@ -55,7 +54,7 @@
 		//check to see if the process is running
 		if (file_exists($file)) {
 			$pid = file_get_contents($file);
-			if (posix_getsid($pid) === false) { 
+			if (posix_getsid($pid) === false) {
 				//process is not running
 				$exists = false;
 			}
@@ -188,5 +187,3 @@
 
 //how to use this feature
 	// cd /var/www/fusionpbx && /usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_queue.php
-
-?>

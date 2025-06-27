@@ -1,12 +1,12 @@
 <?php
 
 //define the messages classs
-if (!class_exists('messages')) {
+
 	class messages {
 
-						/**
-		* declare public variables
-		*/
+		/**
+		 * declare public variables
+		 */
 		public $destinations;
 		public $domain_uuid;
 		public $message_date_begin;
@@ -319,7 +319,7 @@ if (!class_exists('messages')) {
 
 			//set the time zone for php
 				date_default_timezone_set($time_zone);
-				
+
 			//build the date range
 				if (!empty($this->message_date_begin) || !empty($this->message_date_end)) {
 					unset($this->quick_select);
@@ -351,9 +351,9 @@ if (!class_exists('messages')) {
 					}
 				}
 
-				$sql  = "with \n"; 
+				$sql  = "with \n";
 				$sql .= "message_inbound as ( \n";
-				$sql .= "select \n"; 
+				$sql .= "select \n";
 				$sql .= "m.domain_uuid as domain_uuid, \n";
 				$sql .= "d.destination_uuid as destination_uuid, \n";
 				$sql .= "m.message_to as destination, \n";
@@ -375,7 +375,7 @@ if (!class_exists('messages')) {
 				$sql .= "0 as message_sent \n";
 
 				$sql .= "from v_messages m, v_destinations d \n";
-				
+
 				if (!(!empty($_GET['show']) && $_GET['show'] === 'all' && permission_exists('message_summary_all'))) {
 					$sql .= "where m.domain_uuid = :domain_uuid \n";
 				}
@@ -389,10 +389,10 @@ if (!class_exists('messages')) {
 
 				$sql .= "), message_outbound as ( \n";
 
-				$sql .= "select \n"; 
+				$sql .= "select \n";
 				$sql .= "m.domain_uuid as domain_uuid, \n";
 				$sql .= "d.destination_uuid as destination_uuid, \n";
-				$sql .= "m.message_from as destination, \n"; 
+				$sql .= "m.message_from as destination, \n";
 				$sql .= "0 as message_read, \n";
 				$sql .= "0 as message_unread, \n";
 				$sql .= "0 as message_received, \n";
@@ -415,15 +415,15 @@ if (!class_exists('messages')) {
 				$sql .= ") \n";
 
 				$sql .= "select \n";
-				$sql .= "n.domain_uuid, \n"; 
+				$sql .= "n.domain_uuid, \n";
 				$sql .= "d.destination_uuid, \n";
 				$sql .= "d.destination_description, \n";
-				$sql .= "n.domain_name, \n"; 
-				$sql .= "t.destination, \n"; 
-				$sql .= "sum(t.message_read) as message_read, \n"; 
-				$sql .= "sum(t.message_unread) as message_unread, \n"; 
-				$sql .= "sum(t.message_received) as message_received, \n"; 
-				$sql .= "sum(t.message_sent) as message_sent \n"; 
+				$sql .= "n.domain_name, \n";
+				$sql .= "t.destination, \n";
+				$sql .= "sum(t.message_read) as message_read, \n";
+				$sql .= "sum(t.message_unread) as message_unread, \n";
+				$sql .= "sum(t.message_received) as message_received, \n";
+				$sql .= "sum(t.message_sent) as message_sent \n";
 				$sql .= "from ( \n";
 				$sql .= "select * from message_inbound \n";
 				$sql .= "union \n";
@@ -442,14 +442,11 @@ if (!class_exists('messages')) {
 				$database = database::new();
 				$summary = $database->select($sql, $parameters, 'all');
 				unset($parameters);
-				//view_array($database->message); 
-				
+				//view_array($database->message);
+
 				//return the array
 				return $summary;
-				
-		} //method
-		
-	} //class
-}
 
-?>
+		} //method
+
+	} //class

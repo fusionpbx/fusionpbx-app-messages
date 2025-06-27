@@ -26,12 +26,9 @@
 
 //includes files
 	require_once dirname(__DIR__, 2) . "/resources/require.php";
-	include "resources/classes/cache.php";
 
 //get the last message in the cache
 	if (is_uuid($_GET['id'])) {
 		$cache = new cache;
 		echo $cache->get("messages:user:last_message:".$_GET['id']);
 	}
-
-?>
