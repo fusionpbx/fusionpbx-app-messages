@@ -17,11 +17,9 @@
 
 //includes files
 	require_once "resources/require.php";
-	include "resources/classes/cache.php";
-	include "resources/classes/permissions.php";
 
 //connect to the database
-	$database = new database;
+	$database = database::new();
 
 //save the arguments to variables
 	$script_name = $argv[0];
@@ -156,7 +154,7 @@
 		if ($row['provider_setting_subcategory'] == 'content') {
 			$content[$row['provider_setting_name']] = $row['provider_setting_value'];
 		}
-		
+
 		//set the format array
 		if ($row['provider_setting_subcategory'] == 'format') {
 			$format[$row['provider_setting_name']] = $row['provider_setting_value'];
@@ -194,13 +192,13 @@
 
 		if (isset($format['message_media_message_to']) && !empty($format['message_media_message_to'])) {
 			$message_to = format_string($format['message_media_message_to'], $message_to);
-		} 
+		}
 		elseif (isset($format['message_to'])) {
 			$message_to = format_string($format['message_to'], $message_to);
 		}
-	} 
+	}
 	else {
-		//default formats. If setting is defined but format string is left blank, the format_string function 
+		//default formats. If setting is defined but format string is left blank, the format_string function
 		//will return the data as is (No changes made)
 		if (isset($format['message_from'])) {
 			$message_from = format_string($format['message_from'], $message_from);
@@ -226,7 +224,7 @@
 	if (isset($setting['type'])) {
 		$content_type = strtolower($setting['type']);
 	}
-	
+
 //set the content_type
 	if ($message_type == 'mms' && isset($setting['message_media_content_type']) && !empty($setting['message_media_content_type'])) {
 		$content_type = strtolower($setting['message_media_content_type']);
@@ -287,15 +285,15 @@
 			if ($row['provider_setting_name'] == 'message_other') {
 				$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 			}
-			if (is_array($message_media) && @sizeof($message_media) != 0) { 
+			if (is_array($message_media) && @sizeof($message_media) != 0) {
 				if ($row['provider_setting_name'] == 'message_media_other') {
 					$outbound_array = build_array($outbound_array ?? [], explode('=', $row['provider_setting_value'])[0], explode('=', $row['provider_setting_value'])[1]);
 				}
 
-				if ($row['provider_setting_name'] == 'message_media_url') { 
+				if ($row['provider_setting_name'] == 'message_media_url') {
 					foreach($message_media as $index => $media) {
 						$outbound_array = build_array($outbound_array ?? [], $row['provider_setting_value'].".".$index, urldecode($media['message_media_url']));
-					}	
+					}
 				}
 			}
 		}
@@ -330,7 +328,7 @@
 				$y = 0;
 				foreach($value as $v){
 					if ($y != 0) { $query_string .= '&'; }
-					$query_string .= $key.'='. urlencode($v);	
+					$query_string .= $key.'='. urlencode($v);
 					$y++;
 				}
 			}
@@ -550,5 +548,3 @@
 
 //how to use it
 	// php /var/www/fusionpbx/app/messages/resources/service/message_send_outbound.php message_queue_uuid=39402652-1475-49f8-8366-7889335edd6f&hostname=voip.fusionpbx.com
-
-?>

@@ -17,8 +17,6 @@
 
 //include files
 	require_once "resources/require.php";
-	include "resources/classes/cache.php";
-	include "resources/classes/permissions.php";
 
 //save the arguments to variables
 	$script_name = $argv[0];
@@ -206,8 +204,6 @@
 //set the last message in the cache
 	$cache = new cache;
 	$cache->set("messages:user:last_message:".$user_uuid, date('r'));
- 
+
 //how to use it
 	// php /var/www/fusionpbx/app/messages/resources/service/message_send_inbound.php message_queue_uuid=39402652-1475-49f8-8366-7889335edd6f&hostname=voip.fusionpbx.com
-
-?>
