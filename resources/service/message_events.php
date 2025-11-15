@@ -131,6 +131,15 @@ description - message_events service
 	$result = $socket->request($cmd);
 	while ($socket) {
 
+		//connect to the database if needed
+		if (!$database->is_connected()) {
+			$database->connect();
+			if (!$database->is_connected()) {
+				sleep(3);
+				continue;
+			}
+		}
+
 		//read events from socket
 		$response = $socket->read_event();
 
@@ -201,11 +210,6 @@ description - message_events service
 		[Content-Length] => 4
 		[_body] => nova
 		*/
-
-		//reconnect to the database
-		if (!$database) {
-			$database = new database;
-		}
 
 		//get the provider uuid - needed for sending the message
 		$sql = "SELECT * FROM v_destinations \n";
