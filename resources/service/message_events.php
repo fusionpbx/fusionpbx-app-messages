@@ -49,7 +49,6 @@ description - message_events service
 
 //includes
 	require_once "resources/require.php";
-	include "resources/classes/permissions.php";
 
 //define the process id file
 	$pid_file = "/var/run/fusionpbx/".basename( $argv[0], ".php") .".pid";
@@ -78,6 +77,23 @@ description - message_events service
 		return $exists;
 	}
 
+	/**
+	 * Reconnect to database to a max of "$tries". If the reconnect fails the script will exit with a non-zero status code
+	 * @global database $database
+	 * @param int $tries
+	 * @return bool True when successfully reconnected and false when it failed
+	 */
+	function reconnected(int $tries = 3): bool {
+		global $database;
+		$count = 0;
+		while (!$database->is_connected() && $count++ < $tries) {
+			sleep(3);
+			//reconnect to the database
+			$database->connect();
+		}
+		return $database->is_connected();
+	}
+
 //check to see if the process exists
 	$pid_exists = process_exists($pid_file);
 
@@ -101,17 +117,24 @@ description - message_events service
 		file_put_contents($pid_file, getmypid());
 	}
 
-//connect to event socket
-	$socket = new event_socket;
-	if (!$socket->connect($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password'])) {
-		echo "Unable to connect to event socket\n";
-	}
-
-//connect to event socket
-	$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
+//create the config
+	$config = config::load();
 
 //create the database connection
-	$database = new database;
+	$database = database::new();
+
+//get the global default settings
+	$settings = new settings(['database' => $database]);
+
+	$event_socket_ip_address = $settings->get('switch', 'event_socket_ip_address', '127.0.0.1');
+	$event_socket_port = $settings->get('switch', 'event_socket_port', '8021');
+	$event_socket_password = $settings->get('switch', 'event_socket_password', 'ClueCon');
+
+//connect to event socket
+	$socket = new event_socket;
+	if (!$socket->connect($event_socket_ip_address, $event_socket_port, $event_socket_password)) {
+		echo "Unable to connect to event socket\n";
+	}
 
 //add the permission
 	$p = permissions::new();
@@ -129,7 +152,7 @@ description - message_events service
 	$cmd = "event json MESSAGE";
 	//$cmd = "event json CUSTOM";
 	$result = $socket->request($cmd);
-	while ($socket) {
+	while ($socket->is_connected()) {
 
 		//connect to the database if needed
 		if (!$database->is_connected()) {
@@ -151,25 +174,20 @@ description - message_events service
 		$message_type = 'sms';
 
 		//set variables from the event array
-		$event_name = $array['Event-Name'];
-		$event_type = $array['event_type'];
-		$event_subclass = $array['Event-Subclass'];
 		$from = $array['from'];
-		$from_array = explode("@", $from);
 		$from_user = $array['from_user'];
 		$from_host = $array['from_host'];
 		$to_user = $array['to_user'];
 		$to_host = $array['to_host'];
-		$from_sip_ip = $array['from_sip_ip'];
 		$message_content = $array['_body'];
 		$to = $array['to_user'];
 
 		//if the message is from an external number don't relay the message
 		$from_command = "user_exists id ".$from_user." ".$from_host;
-		$from_response = event_socket_request($fp, "api ".$from_command);
+		$from_response = $socket->request("api ".$from_command);
 
 		$to_command = "user_exists id ".$to_user." ".$to_host;
-		$to_response = event_socket_request($fp, "api ".$to_command);
+		$to_response = $socket->request("api ".$to_command);
 
 		if ($debug) {
 			echo "from command: ".$from_command."\n";
@@ -205,11 +223,11 @@ description - message_events service
 		[from] => 1005@voip.fusionpbx.com
 		[from_user] => 1005
 		[from_host] => voip.fusionpbx.com
-		[to_user] => 12088058985
+		[to_user] => 12088005880
 		[to_host] => voip.fusionpbx.com
 		[from_sip_ip] => 96.18.173.64
 		[from_sip_port] => 14395
-		[to] => 12088058985@voip.fusionpbx.com
+		[to] => 12088005880@voip.fusionpbx.com
 		[subject] => SIMPLE MESSAGE
 		[context] => public
 		[type] => text/plain
@@ -223,6 +241,15 @@ description - message_events service
 		[_body] => nova
 		*/
 
+		//reconnect to the database
+		if (!$database->is_connected()) {
+				if (!reconnected()) {
+						echo "Unable to connect to database. Exiting...\n";
+						//exit with non-zero status
+						exit(1);
+        }
+		}
+      
 		//get the provider uuid
 		$provider_uuid = $settings->get('providers', 'provider_uuid', null);
 
@@ -385,9 +412,7 @@ description - message_events service
 	$p->delete('message_queue_add', 'temp');
 
 //remove the old pid file
-	if (file_exists($file)) {
-		unlink($pid_file);
-	}
+	@unlink($pid_file);
 
 //save output to
 	//$fp = fopen(sys_get_temp_dir()."/mailer-app.log", "a");
@@ -422,5 +447,3 @@ description - message_events service
 
 //how to use this feature
 	// cd /var/www/fusionpbx && /usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_events.php >> /dev/null 2>&1 &
-
-?>
