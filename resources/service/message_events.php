@@ -240,36 +240,27 @@ description - message_events service
 		[Content-Length] => 4
 		[_body] => nova
 		*/
-
-		//reconnect to the database
-		if (!$database->is_connected()) {
-				if (!reconnected()) {
-						echo "Unable to connect to database. Exiting...\n";
-						//exit with non-zero status
-						exit(1);
-        }
-		}
       
 		//get the provider uuid
 		$provider_uuid = $settings->get('providers', 'provider_uuid', null);
 
 		//get the destination prefix
-		if (!empty($provider_uuid) && !empty($domain_uuid)) {
-			$sql = "SELECT * FROM v_destinations \n";
-			$sql .= "WHERE domain_uuid = :domain_uuid \n";
-			$sql .= "AND length(destination_prefix) > 0 \n";
-			$parameters['domain_uuid'] = $domain_uuid;
-			$row = $database->select($sql, $parameters, 'row');
-			if ($debug) {
-				echo $sql;
-				print_r($parameters);
-				print_r($provider_settings);
-				echo "\n";
-			}
-			//view_array($row, false);
-			$destination_prefix = $row["destination_prefix"];
-			unset($parameters, $row);
-		}
+		// if (!empty($provider_uuid) && !empty($domain_uuid)) {
+		// 	$sql = "SELECT * FROM v_destinations \n";
+		// 	$sql .= "WHERE domain_uuid = :domain_uuid \n";
+		// 	$sql .= "AND length(destination_prefix) > 0 \n";
+		// 	$parameters['domain_uuid'] = $domain_uuid;
+		// 	$row = $database->select($sql, $parameters, 'row');
+		// 	if ($debug) {
+		// 		echo $sql;
+		// 		print_r($parameters);
+		// 		print_r($provider_settings);
+		// 		echo "\n";
+		// 	}
+		// 	//view_array($row, false);
+		// 	//$destination_prefix = $row["destination_prefix"];
+		// 	unset($parameters, $row);
+		// }
 	
 		//get the provider uuid - needed for sending the message
 		if (empty($provider_uuid)) {
@@ -297,8 +288,7 @@ description - message_events service
 				$domain_uuid = $row["domain_uuid"];
 			}
 			$provider_uuid = $row["provider_uuid"];
-			$destination_prefix = $row["destination_prefix"];
-			$destination_number = $row["destination_number"];
+			//$destination_prefix = $row["destination_prefix"];
 			unset($parameters, $row);
 		}
 
