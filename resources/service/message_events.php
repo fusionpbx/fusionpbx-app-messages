@@ -154,6 +154,15 @@ description - message_events service
 	$result = $socket->request($cmd);
 	while ($socket->is_connected()) {
 
+		//connect to the database if needed
+		if (!$database->is_connected()) {
+			$database->connect();
+			if (!$database->is_connected()) {
+				sleep(3);
+				continue;
+			}
+		}
+
 		//read events from socket
 		$response = $socket->read_event();
 
@@ -193,11 +202,23 @@ description - message_events service
 			continue;
 		}
 
+		//get the domain_uuid
+		if ($from_response == 'true') {
+			$command = "user_data ".$from_user."@".$from_host." var domain_uuid";
+			$domain_uuid = event_socket_request($fp, "api ".$command);
+			if ($debug) {
+				echo "command: ".$command."\n";
+				echo "domain_uuid: ".$domain_uuid."\n";
+			}
+		}
+
 		//get the from user's external number
 		$command = "user_data ".$from_user."@".$from_host." var outbound_caller_id_number";
-		//echo $command."\n";
-		$source_number = $socket->request("api ".$command);
-
+		$source_number = event_socket_request($fp, "api ".$command);
+		if ($debug) {
+			echo "command: ".$command."\n";
+			echo "source_number: ".$source_number."\n";
+		}
 		/*
 		[from] => 1005@voip.fusionpbx.com
 		[from_user] => 1005
@@ -222,33 +243,64 @@ description - message_events service
 
 		//reconnect to the database
 		if (!$database->is_connected()) {
-			if (!reconnected()) {
-				echo "Unable to connect to database. Exiting...\n";
-				//exit with non-zero status
-				exit(1);
-			}
+				if (!reconnected()) {
+						echo "Unable to connect to database. Exiting...\n";
+						//exit with non-zero status
+						exit(1);
+        }
 		}
+      
+		//get the provider uuid
+		$provider_uuid = $settings->get('providers', 'provider_uuid', null);
 
+		//get the destination prefix
+		if (!empty($provider_uuid) && !empty($domain_uuid)) {
+			$sql = "SELECT * FROM v_destinations \n";
+			$sql .= "WHERE domain_uuid = :domain_uuid \n";
+			$sql .= "AND length(destination_prefix) > 0 \n";
+			$parameters['domain_uuid'] = $domain_uuid;
+			$row = $database->select($sql, $parameters, 'row');
+			if ($debug) {
+				echo $sql;
+				print_r($parameters);
+				print_r($provider_settings);
+				echo "\n";
+			}
+			//view_array($row, false);
+			$destination_prefix = $row["destination_prefix"];
+			unset($parameters, $row);
+		}
+	
 		//get the provider uuid - needed for sending the message
-		$sql = "SELECT * FROM v_destinations \n";
-		$sql .= "WHERE ( \n";
-		$sql .= "	destination_prefix || destination_area_code || destination_number = :source_number \n";
-		$sql .= "	OR destination_trunk_prefix || destination_area_code || destination_number = :source_number \n";
-		$sql .= "	OR destination_prefix || destination_number = :source_number \n";
-		$sql .= "	OR '+' || destination_prefix || destination_number = :source_number \n";
-		$sql .= "	OR '+' || destination_prefix || destination_area_code || destination_number = :source_number \n";
-		$sql .= "	OR destination_area_code || destination_number = :source_number \n";
-		$sql .= "	OR destination_number = :source_number \n";
-		$sql .= ") \n";
-		$parameters['source_number'] = $source_number;
-		$row = $database->select($sql, $parameters, 'row');
-		//view_array($row, false);
-		if (empty($row)) { continue; }
-		$domain_uuid = $row["domain_uuid"];
-		$provider_uuid = $row["provider_uuid"];
-		$destination_prefix = $row["destination_prefix"];
-		$destination_number = $row["destination_number"];
-		unset($parameters, $row);
+		if (empty($provider_uuid)) {
+			$sql = "SELECT * FROM v_destinations \n";
+			$sql .= "WHERE ( \n";
+			$sql .= "	destination_prefix || destination_area_code || destination_number = :source_number \n";
+			$sql .= "	OR destination_trunk_prefix || destination_area_code || destination_number = :source_number \n";
+			$sql .= "	OR destination_prefix || destination_number = :source_number \n";
+			$sql .= "	OR '+' || destination_prefix || destination_number = :source_number \n";
+			$sql .= "	OR '+' || destination_prefix || destination_area_code || destination_number = :source_number \n";
+			$sql .= "	OR destination_area_code || destination_number = :source_number \n";
+			$sql .= "	OR destination_number = :source_number \n";
+			$sql .= ") \n";
+			$parameters['source_number'] = $source_number;
+			$row = $database->select($sql, $parameters, 'row');
+			if ($debug) {
+				echo $sql;
+				print_r($parameters);
+				print_r($provider_settings);
+				echo "\n";
+			}
+			//view_array($row, false);
+			if (empty($row)) { continue; }
+			if (empty($domain_uuid)) {
+				$domain_uuid = $row["domain_uuid"];
+			}
+			$provider_uuid = $row["provider_uuid"];
+			$destination_prefix = $row["destination_prefix"];
+			$destination_number = $row["destination_number"];
+			unset($parameters, $row);
+		}
 
 		//get the provider settings
 		$sql = "select provider_setting_category, provider_setting_subcategory, ";
@@ -260,7 +312,7 @@ description - message_events service
 		$sql .= "and provider_setting_enabled = 'true'; \n";
 		$parameters['provider_uuid'] = $provider_uuid;
 		$provider_settings = $database->select($sql, $parameters, 'all');
-		if (isset($_GET['debug'])) {
+		if ($debug) {
 			echo $sql;
 			print_r($parameters);
 			print_r($provider_settings);
@@ -272,7 +324,7 @@ description - message_events service
 		foreach ($provider_settings as $row) {
 			//format the phone numbers
 			if ($row['provider_setting_name'] == 'message_from') {
-				$from = format_string($row['provider_setting_value'], $destination_number);
+				$from = format_string($row['provider_setting_value'], $source_number);
 			}
 			if ($row['provider_setting_name'] == 'message_to') {
 				$to = format_string($row['provider_setting_value'], $to);

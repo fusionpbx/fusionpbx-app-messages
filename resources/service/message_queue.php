@@ -94,6 +94,15 @@
 //get the messages waiting in the queue
 	while (true) {
 
+		//connect to the database if needed
+		if (!$database->is_connected()) {
+			$database->connect();
+			if (!$database->is_connected()) {
+				sleep(3);
+				continue;
+			}
+		}
+
 		//get the messages that are waiting to send
 		$sql = "select message_queue_uuid, message_direction, hostname from v_message_queue ";
 		$sql .= "where message_status = 'waiting' ";
@@ -110,10 +119,7 @@
 		else {
 			$parameters['hostname'] = gethostname();
 		}
-		//print_r($parameters);
-		$database = new database;
 		$message_queue = $database->select($sql, $parameters, 'all');
-		//view_array($message_queue, false);
 		unset($parameters);
 
 		//process the messages
@@ -142,7 +148,7 @@
 					}
 					else {
 						//starts process rapidly doesn't wait for previous process to finish (used for production)
-						$handle = popen($command." > /dev/null &", 'r'); 
+						$handle = popen($command." > /dev/null &", 'r');
 						echo "'$handle'; " . gettype($handle) . "\n";
 						$read = fread($handle, 2096);
 						echo $read;
