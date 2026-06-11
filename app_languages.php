@@ -49,25 +49,25 @@
 		$text['title-message']['ja-jp'] = 'メッセージ';
 		$text['title-message']['ko-kr'] = '메시지';
 
-		$text['title-message_log']['en-us'] = 'Message Log';
-		$text['title-message_log']['en-gb'] = 'Message Log';
-		$text['title-message_log']['ar-eg'] = 'سجل الرسائل';
-		$text['title-message_log']['de-at'] = 'Nachrichtenprotokoll';
-		$text['title-message_log']['de-ch'] = 'Nachrichtenprotokoll';
-		$text['title-message_log']['de-de'] = 'Nachrichtenprotokoll';
-		$text['title-message_log']['es-cl'] = 'Registro de mensajes';
-		$text['title-message_log']['es-mx'] = 'Registro de mensajes';
-		$text['title-message_log']['fr-ca'] = 'Journal des messages';
-		$text['title-message_log']['fr-fr'] = 'Journal des messages';
+		$text['title-message_log']['en-us'] = 'Message Logs';
+		$text['title-message_log']['en-gb'] = 'Message Logs';
+		$text['title-message_log']['ar-eg'] = 'سجلات الرسائل';
+		$text['title-message_log']['de-at'] = 'Nachrichtenprotokolle';
+		$text['title-message_log']['de-ch'] = 'Nachrichtenprotokolle';
+		$text['title-message_log']['de-de'] = 'Nachrichtenprotokolle';
+		$text['title-message_log']['es-cl'] = 'Registros de mensajes';
+		$text['title-message_log']['es-mx'] = 'Registros de mensajes';
+		$text['title-message_log']['fr-ca'] = 'Journaux des messages';
+		$text['title-message_log']['fr-fr'] = 'Journaux des messages';
 		$text['title-message_log']['he-il'] = 'יומן הודעות';
 		$text['title-message_log']['it-it'] = 'Registro dei messaggi';
-		$text['title-message_log']['nl-nl'] = 'Boodschap log';
+		$text['title-message_log']['nl-nl'] = 'Boodschappen log';
 		$text['title-message_log']['pl-pl'] = 'Dziennik wiadomości';
-		$text['title-message_log']['pt-br'] = 'Log de mensagens';
-		$text['title-message_log']['pt-pt'] = 'Log de mensagens';
+		$text['title-message_log']['pt-br'] = 'Logs de mensagens';
+		$text['title-message_log']['pt-pt'] = 'Logs de mensagens';
 		$text['title-message_log']['ro-ro'] = 'Jurnalul de mesaje';
 		$text['title-message_log']['ru-ru'] = 'Журнал сообщений';
-		$text['title-message_log']['sv-se'] = 'Meddelandelogg';
+		$text['title-message_log']['sv-se'] = 'Meddelandeloggar';
 		$text['title-message_log']['uk-ua'] = 'Журнал повідомлень';
 		$text['title-message_log']['zh-cn'] = '消息日志';
 		$text['title-message_log']['ja-jp'] = 'メッセージログ';
@@ -400,25 +400,25 @@
 		$text['label-new_message']['ja-jp'] = '新しいメッセージ';
 		$text['label-new_message']['ko-kr'] = '새로운 메시지';
 
-		$text['label-log']['en-us'] = 'Log';
-		$text['label-log']['en-gb'] = 'Log';
-		$text['label-log']['ar-eg'] = 'سجل';
-		$text['label-log']['de-at'] = 'Protokoll';
-		$text['label-log']['de-ch'] = 'Protokoll';
-		$text['label-log']['de-de'] = 'Protokoll';
-		$text['label-log']['es-mx'] = 'Registro';
-		$text['label-log']['fr-ca'] = 'Enregistrer';
-		$text['label-log']['fr-fr'] = 'Enregistrer';
-		$text['label-log']['he-il'] = 'עֵץ';
-		$text['label-log']['it-it'] = "Tronco d'albero";
-		$text['label-log']['nl-nl'] = 'Logboek';
-		$text['label-log']['pl-pl'] = 'Dziennik';
-		$text['label-log']['pt-br'] = 'Registro';
-		$text['label-log']['pt-pt'] = 'Registro';
-		$text['label-log']['ro-ro'] = 'Buturuga';
-		$text['label-log']['ru-ru'] = 'Бревно';
-		$text['label-log']['sv-se'] = 'Logga';
-		$text['label-log']['uk-ua'] = 'Журнал';
+		$text['label-log']['en-us'] = 'Logs';
+		$text['label-log']['en-gb'] = 'Logs';
+		$text['label-log']['ar-eg'] = 'سجلات';
+		$text['label-log']['de-at'] = 'Protokolle';
+		$text['label-log']['de-ch'] = 'Protokolle';
+		$text['label-log']['de-de'] = 'Protokolle';
+		$text['label-log']['es-mx'] = 'Registros';
+		$text['label-log']['fr-ca'] = 'Enregistrements';
+		$text['label-log']['fr-fr'] = 'Enregistrements';
+		$text['label-log']['he-il'] = 'עֵצִים';
+		$text['label-log']['it-it'] = 'Tronchi d’albero';
+		$text['label-log']['nl-nl'] = 'Logboeken';
+		$text['label-log']['pl-pl'] = 'Dzienniki';
+		$text['label-log']['pt-br'] = 'Registros';
+		$text['label-log']['pt-pt'] = 'Registros';
+		$text['label-log']['ro-ro'] = 'Buturugi';
+		$text['label-log']['ru-ru'] = 'Бревна';
+		$text['label-log']['sv-se'] = 'Loggar';
+		$text['label-log']['uk-ua'] = 'Журнали';
 		$text['label-log']['zh-cn'] = '日志';
 		$text['label-log']['ja-jp'] = 'ログ';
 		$text['label-log']['ko-kr'] = '통나무';
@@ -1078,7 +1078,7 @@
 		$text['label-message_read']['zh-cn'] = "已读";
 		$text['label-message_read']['ja-jp'] = "読了";
 		$text['label-message_read']['ko-kr'] = "읽음";
-		
+
 		$text['label-message_unread']['en-us'] = "Unread";
 		$text['label-message_unread']['en-gb'] = "Unread";
 		$text['label-message_unread']['ar-eg'] = "غير مقروء";
@@ -1105,7 +1105,7 @@
 		$text['label-message_unread']['zh-cn'] = "未读";
 		$text['label-message_unread']['ja-jp'] = "未読";
 		$text['label-message_unread']['ko-kr'] = "읽지 않음";
-		
+
 		$text['label-message_received']['en-us'] = "Received";
 		$text['label-message_received']['en-gb'] = "Received";
 		$text['label-message_received']['ar-eg'] = "تم الاستلام";
@@ -1132,7 +1132,7 @@
 		$text['label-message_received']['zh-cn'] = "已接收";
 		$text['label-message_received']['ja-jp'] = "受信";
 		$text['label-message_received']['ko-kr'] = "수신됨";
-		
+
 		$text['label-message_sent']['en-us'] = "Sent";
 		$text['label-message_sent']['en-gb'] = "Sent";
 		$text['label-message_sent']['ar-eg'] = "مرسل";
@@ -1159,7 +1159,7 @@
 		$text['label-message_sent']['zh-cn'] = "已发送";
 		$text['label-message_sent']['ja-jp'] = "送信済み";
 		$text['label-message_sent']['ko-kr'] = "보낸";
-		
+
 		$text['label-message_description']['en-us'] = "Description";
 		$text['label-message_description']['en-gb'] = "Description";
 		$text['label-message_description']['ar-eg'] = "الوصف";
