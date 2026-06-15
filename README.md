@@ -8,3 +8,5 @@ git clone https://github.com/fusionpbx/fusionpbx-app-messages.git messages
 chown -R www-data:www-data /var/www/fusionpbx
 php /var/www/fusionpbx/core/upgrade/upgrade.php
 ```
+
+Requires the install of [https://github.com/fusionpbx/fusionpbx-app-providers](https://github.com/fusionpbx/fusionpbx-app-providers)
