@@ -164,7 +164,7 @@
 		$setting[$row['provider_setting_name']] = $row['provider_setting_value'];
 
 		//set the message to type
-		if ($row['provider_setting_name'] == 'message_to') {
+		if ($row['provider_setting_subcategory'] == 'content' && $row['provider_setting_name'] == 'message_to') {
 			if ($row['provider_setting_type'] == 'array') {
 				$message_to_type = 'array';
 			}
