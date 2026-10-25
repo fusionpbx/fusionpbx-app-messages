@@ -44,6 +44,16 @@
 	$language = new text;
 	$text = $language->get();
 
+//build a list of groups the user is a member of (used for owner scoping)
+	$group_uuids = [];
+	$group_uuids_in = "''";
+	if (is_uuid($_SESSION['user_uuid'] ?? '')) {
+		foreach($_SESSION['user']['groups'] ?? [] as $group) {
+			if (is_uuid($group['group_uuid'])) { $group_uuids[] = $group['group_uuid']; }
+		}
+		$group_uuids_in = "'".implode("','", $group_uuids)."'" ;
+	}
+
 //action add or update
 	if (!empty($_REQUEST["id"]) && is_uuid($_REQUEST["id"])) {
 		$action = "update";
@@ -133,6 +143,33 @@
 				$message_uuid = uuid();
 			}
 
+		//restrict which messages this user can create or modify
+			if (!permission_exists('message_all')) {
+				if ($action == 'add') {
+					//a normal user may only create a message attributed to themselves
+					$user_uuid = $_SESSION['user_uuid'];
+				}
+				elseif ($action == 'update' && is_uuid($message_uuid)) {
+					//verify the caller owns the message before allowing the update
+					$sql = "select user_uuid, group_uuid from v_messages where message_uuid = :message_uuid and (domain_uuid = :domain_uuid or domain_uuid is null)";
+					$parameters['message_uuid'] = $message_uuid;
+					$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
+					$owner = $database->select($sql, $parameters, 'row');
+					unset($sql, $parameters);
+					$can_edit = !empty($owner) && (
+						($owner['user_uuid'] ?? null) === $_SESSION['user_uuid']
+						|| (is_uuid($owner['group_uuid'] ?? '') && in_array($owner['group_uuid'], $group_uuids, true))
+					);
+					if (!$can_edit) {
+						message::add($text['message-access_denied'] ?? 'Access denied', 'negative');
+						header('Location: message_logs.php');
+						exit;
+					}
+					//do not allow re-attributing the message to another user
+					$user_uuid = $owner['user_uuid'];
+				}
+			}
+
 		//prepare the array
 			$array['messages'][0]['domain_uuid'] = $_SESSION["domain_uuid"];;
 			$array['messages'][0]['user_uuid'] = $user_uuid;
@@ -168,7 +205,13 @@
 		$message_uuid = $_GET["id"];
 		$sql = "select * from v_messages ";
 		$sql .= "where message_uuid = :message_uuid ";
+		$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+		if (!permission_exists('message_all')) {
+			$sql .= "and (user_uuid = :user_uuid or group_uuid in (".$group_uuids_in.")) ";
+			$parameters['user_uuid'] = $_SESSION['user_uuid'];
+		}
 		$parameters['message_uuid'] = $message_uuid;
+		$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		$row = $database->select($sql, $parameters, 'row');
 		if (!empty($row) && @sizeof($row) != 0) {
 			$user_uuid = $row["user_uuid"];

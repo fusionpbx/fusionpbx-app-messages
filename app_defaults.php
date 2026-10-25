@@ -1,5 +1,11 @@
 <?php
 
+//block direct web access to this metadata file
+	if (isset($_SERVER['SCRIPT_FILENAME']) && realpath($_SERVER['SCRIPT_FILENAME']) === realpath(__FILE__)) {
+		http_response_code(403);
+		exit;
+	}
+
 //add fax email templates
 	if ($domains_processed == 1) {
 
@@ -73,6 +79,44 @@
 
 		//remove the array
 		unset($array);
+
+		//seed a unique secret used to sign the time-limited media capability urls
+		//check if the setting already exists
+		$sql = "select default_setting_uuid from v_default_settings ";
+		$sql .= "where default_setting_category = 'message' ";
+		$sql .= "and default_setting_subcategory = 'media_secret' ";
+		$media_secret = $database->select($sql, null, 'row');
+		unset($sql);
+
+		//generate a unique secret when the setting is missing
+		if (empty($media_secret)) {
+
+			//build the array
+			$x = 0;
+			$array['default_settings'][$x]['default_setting_uuid'] = uuid();
+			$array['default_settings'][$x]['app_uuid'] = '4a20815d-042c-47c8-85df-085333e79b87';
+			$array['default_settings'][$x]['default_setting_category'] = 'message';
+			$array['default_settings'][$x]['default_setting_subcategory'] = 'media_secret';
+			$array['default_settings'][$x]['default_setting_name'] = 'text';
+			$array['default_settings'][$x]['default_setting_value'] = bin2hex(random_bytes(32));
+			$array['default_settings'][$x]['default_setting_enabled'] = 'true';
+			$array['default_settings'][$x]['default_setting_description'] = 'Secret used to sign the time-limited media capability urls. A unique value is generated on install; it can be overridden globally with message.media.secret in the config file.';
+			$x++;
+
+			//add the temporary permission
+			$p = new permissions;
+			$p->add("default_setting_add", 'temp');
+
+			//save the data
+			$database->app_name = 'default_settings';
+			$database->app_uuid = '4a20815d-042c-47c8-85df-085333e79b87';
+			$database->save($array);
+			unset($array);
+
+			//remove the temporary permission
+			$p->delete("default_setting_add", 'temp');
+		}
+		unset($media_secret);
 
 	}
 

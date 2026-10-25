@@ -26,9 +26,10 @@
 
 //includes files
 	require_once dirname(__DIR__, 2) . "/resources/require.php";
+	require_once "resources/check_auth.php";
 
-//get the last message in the cache
-	if (is_uuid($_GET['id'])) {
+//only allow the caller to read their own last-message timestamp
+	if (is_uuid($_GET['id']) && in_array($_GET['id'], [$_SESSION['user_uuid'] ?? null, $_SESSION['user']['user_uuid'] ?? null], true)) {
 		$cache = new cache;
 		echo $cache->get("messages:user:last_message:".$_GET['id']);
 	}

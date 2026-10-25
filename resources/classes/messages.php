@@ -1,5 +1,8 @@
 <?php
 
+//includes files
+	require_once __DIR__ . "/../functions/message_media_sign.php";
+
 //define the messages classs
 
 	class messages {
@@ -77,14 +80,48 @@
 				//delete multiple records
 					if (is_array($records) && @sizeof($records) != 0) {
 
-						//build the delete array
-							foreach ($records as $x => $record) {
+						//collect the checked candidate message uuids
+							$candidates = [];
+							foreach ($records as $record) {
 								if ($record['checked'] == 'true' && is_uuid($record['uuid'])) {
-									$array[$this->table][$x][$this->uuid_prefix.'uuid'] = $record['uuid'];
-									$array[$this->table][$x]['domain_uuid'] = $_SESSION['domain_uuid'];
-									$array['message_media'][$x][$this->uuid_prefix.'uuid'] = $record['uuid'];
-									$array['message_media'][$x]['domain_uuid'] = $_SESSION['domain_uuid'];
+									$candidates[] = $record['uuid'];
 								}
+							}
+
+						//unless the caller can manage all messages, only allow deleting
+						//messages they own (or that belong to a group they are a member of)
+							if (is_array($candidates) && count($candidates) != 0 && !permission_exists('message_all')) {
+								$database = new database;
+								$group_uuids = [];
+								foreach($_SESSION['user']['groups'] ?? [] as $group) {
+									if (is_uuid($group['group_uuid'])) { $group_uuids[] = $group['group_uuid']; }
+								}
+								$group_uuids_in = (!empty($group_uuids)) ? "'".implode("','", $group_uuids)."'" : "''";
+								$placeholders = [];
+								$parameters = [];
+								foreach ($candidates as $i => $cand) {
+									$ph = ':cand_'.$i;
+									$placeholders[] = $ph;
+									$parameters[$ph] = $cand;
+								}
+								$sql = "select message_uuid from v_messages where message_uuid in (" . implode(',', $placeholders) . ") ";
+								$sql .= "and (domain_uuid = :domain_uuid or domain_uuid is null) ";
+								$sql .= "and (user_uuid = :user_uuid or group_uuid in (" . $group_uuids_in . ")) ";
+								$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
+								$parameters['user_uuid'] = $_SESSION['user_uuid'];
+								$owned = $database->select($sql, $parameters, 'column');
+								$candidates = array_values(array_intersect($candidates, is_array($owned) ? $owned : []));
+								unset($sql, $parameters, $owned, $group_uuids, $placeholders);
+							}
+
+						//build the delete array from the allowed uuids
+							$x = 0;
+							foreach ($candidates as $uuid) {
+								$array[$this->table][$x][$this->uuid_prefix.'uuid'] = $uuid;
+								$array[$this->table][$x]['domain_uuid'] = $_SESSION['domain_uuid'];
+								$array['message_media'][$x][$this->uuid_prefix.'uuid'] = $uuid;
+								$array['message_media'][$x]['domain_uuid'] = $_SESSION['domain_uuid'];
+								$x++;
 							}
 
 						//delete the checked rows
@@ -269,9 +306,23 @@
 				$media_exists = false;
 				if (is_array($message_media) && @sizeof($message_media) != 0) {
 					$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+
+					//secret + ttl used to sign time-limited media capability URLs
+					global $config;
+					$media_secret = message_media_secret();
+					$media_ttl = (int) $config->get('message.media.ttl', 86400);
+
 					foreach($message_media as $index => $media) {
-						//create the media path
-						$media_url = $protocol.$_SERVER['HTTP_HOST'].'/app/messages/media/'.$media['uuid'].'/'.$media['name'];
+						//create a time-limited, signed capability URL for the carrier to fetch.
+						//the uuid is unguessable; the HMAC signature + expiry bind the link to the
+						//download action and cap how long a leaked link remains valid.
+						$media_exp = time() + $media_ttl;
+						$media_sig = message_media_sign($media['uuid'], 'download', $media_exp, $media_secret);
+						$media_url = $protocol.$_SERVER['HTTP_HOST'].'/app/messages/message_media.php'
+							.'?id='.urlencode($media['uuid'])
+							.'&action=download'
+							.'&exp='.$media_exp
+							.'&sig='.urlencode($media_sig);
 
 						//add the media to the array
 						$array['message_media'][$index]['message_media_uuid'] = $media['uuid'];

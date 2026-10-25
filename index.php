@@ -8,6 +8,7 @@
 	require_once "resources/require.php";
 	require_once "resources/functions.php";
 	require_once "resources/functions/message_media_builder.php";
+	require_once __DIR__ . "/resources/functions/remote_url.php";
 	require_once "resources/pdo.php";
 
 //connect to the database
@@ -56,17 +57,22 @@
 	}
 	else {
 		//log the failed auth attempt to the system, to be available for fail2ban.
-			if ($debug) {
-				file_put_contents($log_file, "unauthorized\n", FILE_APPEND);
-			}
-			openlog('FusionPBX', LOG_NDELAY, LOG_AUTH);
-			syslog(LOG_WARNING, '['.$_SERVER['REMOTE_ADDR']."] authentication failed for ".($_GET['key'] ?? ''));
-			closelog();
+		if ($debug) {
+			file_put_contents($log_file, "unauthorized\n", FILE_APPEND);
+		}
+		openlog('FusionPBX', LOG_NDELAY, LOG_AUTH);
+
+		//strip CR/LF/tabs from the untrusted key to prevent log injection
+		$failed_key = preg_replace('/[\r\n\t]/', '', $_GET['key'] ?? '');
+
+		//send the failed auth attempt to the system log
+		syslog(LOG_WARNING, '['.$_SERVER['REMOTE_ADDR'].'] authentication failed for '.$failed_key);
+		closelog();
 
 		//send http 403
-			header("HTTP/1.0 403 Forbidden");
-			echo "Forbidden\n";
-			exit();
+		header("HTTP/1.0 403 Forbidden");
+		echo "Forbidden\n";
+		exit();
 	}
 
 //check if string is url encoded
@@ -531,8 +537,13 @@ if (count($message_content) == 3) {
 				file_put_contents($log_file, "message_media_type: ".$message_media_type."\n", FILE_APPEND);
 			}
 
+			//SSRF protection: log and skip any media URL that resolves to a private address
+			if ($message_media_type !== 'xml' && strlen($message_media_url) > 0 && !is_safe_remote_url($message_media_url)) {
+				syslog(LOG_WARNING, "[messages] blocked unsafe inbound media URL: ".preg_replace('/[\r\n\t]/', '', $message_media_url));
+			}
+
 			//build the array for the media
-			if ($message_media_type !== 'xml' && strlen($message_media_url) > 0) {
+			if ($message_media_type !== 'xml' && strlen($message_media_url) > 0 && is_safe_remote_url($message_media_url)) {
 				//build the message media
 				$array['message_media'][$index]['message_media_uuid'] = uuid();
 				$array['message_media'][$index]['message_uuid'] = $message_uuid;
@@ -576,8 +587,13 @@ if (count($message_content) == 3) {
 			if ($message_media_type == 'image/gif') { $message_media_type = 'gif'; }
 		}
 
+		//SSRF protection: log and skip any media URL that resolves to a private address
+		if (!empty($message_media_url) && $message_media_type !== 'xml' && !is_safe_remote_url($message_media_url)) {
+			syslog(LOG_WARNING, "[messages] blocked unsafe inbound media URL: ".preg_replace('/[\r\n\t]/', '', $message_media_url));
+		}
+
 		//build the array for the media
-		if (!empty($message_media_url) && strlen($message_media_url) > 0 && $message_media_type !== 'xml') {
+		if (!empty($message_media_url) && strlen($message_media_url) > 0 && $message_media_type !== 'xml' && is_safe_remote_url($message_media_url)) {
 			//build the message media array
 			$index = 0;
 			$array['message_media'][$index]['message_media_uuid'] = uuid();

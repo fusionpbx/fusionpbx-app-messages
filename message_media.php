@@ -26,12 +26,37 @@
 
 //includes files
 	require_once dirname(__DIR__, 2) . "/resources/require.php";
+	require_once __DIR__ . "/resources/functions/message_media_sign.php";
 
 //get media uuid
 	$message_media_uuid = $_GET['id'];
 	$action = $_GET['action'];
 	if (!empty($_GET['width']) && is_numeric(str_replace('px','',$_GET['width']))) {
 		$width = str_replace('px','',$_GET['width']);
+	}
+
+//the signing secret for time-limited capability URLs
+	$media_secret = message_media_secret();
+
+//is this request from an authenticated user, or an external (provider) fetch?
+	$is_authenticated = is_uuid($_SESSION['user_uuid'] ?? '');
+
+//external fetch: the link IS the authorization, so require a valid, un-expired
+//HMAC signature that binds the media uuid, the requested action and the expiry.
+	if (!$is_authenticated) {
+		$exp = $_GET['exp'] ?? '';
+		$sig = $_GET['sig'] ?? '';
+		if (
+			!is_uuid($_GET['id'] ?? '') ||
+			$media_secret === '' ||
+			!ctype_digit($exp) ||
+			(int) $exp < time() ||
+			$sig === '' ||
+			!hash_equals(message_media_sign($_GET['id'], $action, $exp, $media_secret), $sig)
+		) {
+			http_response_code(403);
+			exit;
+		}
 	}
 
 //build a list of groups the user is a member of to be used in a SQL in
@@ -58,13 +83,19 @@
 			$sql .= "and (mm.user_uuid = :user_uuid or m.group_uuid in (".$group_uuids_in."))";
 			$parameters['user_uuid'] = $_SESSION['user_uuid'];
 		}
-		if (is_uuid($_SESSION['domain_uuid'])) {
+		if ($is_authenticated && is_uuid($_SESSION['domain_uuid'] ?? '')) {
 			$sql .= "and (mm.domain_uuid = :domain_uuid or mm.domain_uuid is null) ";
 			$parameters['domain_uuid'] = $_SESSION['domain_uuid'];
 		}
 		$parameters['message_media_uuid'] = $message_media_uuid;
 		$media = $database->select($sql, $parameters, 'row');
 		unset($sql, $parameters);
+
+		//no matching / authorized media -> deny
+		if (empty($media) || !isset($media['message_media_type'])) {
+			http_response_code(403);
+			exit;
+		}
 
 		//set the content type
 		switch (strtolower($media['message_media_type'])) {
@@ -87,7 +118,7 @@
 			case 'zip': $content_type = 'application/zip'; break;
 			default: $content_type = 'application/octet-stream'; break;
 		}
-		
+
 		//show the image inline when the action is not set
 		if (empty($action) && ($content_type == 'image/jpeg' || $content_type == 'image/png' || $content_type == 'image/gif')) {
 			$action = 'download-inline';
@@ -124,7 +155,7 @@
 				echo base64_decode($media['message_media_content']);
 				break;
 			case 'thumbnail':
-				if ($content_type = 'image/jpeg' || $content_type = 'image/png' || $content_type = 'image/gif') {
+				if (in_array($content_type, ['image/jpeg', 'image/png', 'image/gif'], true)) {
 
 					//get the image size
 					$image_size = getimagesize('data://application/octet-stream;base64,' . $media['message_media_content']);
@@ -155,14 +186,14 @@
 					//imagesavealpha($img_dest, true);
 					if ($destination_image !== false) {
 						imagecopyresampled($destination_image, $source_image, 0, 0, 0, 0, $destination_width, $destination_height, $source_width, $source_height);
-						if ($content_type = 'image/jpeg') {
+						if ($content_type == 'image/jpeg') {
 							imagejpeg($destination_image);
 						}
-						if ($content_type = 'image/png') {
-							imagejpeg($destination_image);
+						if ($content_type == 'image/png') {
+							imagepng($destination_image);
 						}
-						if ($content_type = 'image/gif') {
-							imagejpeg($destination_image);
+						if ($content_type == 'image/gif') {
+							imagegif($destination_image);
 						}
 					}
 				}

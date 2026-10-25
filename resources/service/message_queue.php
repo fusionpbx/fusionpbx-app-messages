@@ -128,14 +128,14 @@
 				//direction inbound, send SIP messages to registered phones
 				if ($row['message_direction'] == 'inbound') {
 					$command = "/usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_send_inbound.php ";
-					$command .= "'message_queue_uuid=".$row['message_queue_uuid']."&hostname=".$row['hostname']."'";
+					$command .= escapeshellarg('message_queue_uuid='.$row['message_queue_uuid'].'&hostname='.$row['hostname']);
 				}
 
 				//direction outbound, send message to the provider
 				if ($row['message_direction'] == 'outbound') {
 					// /usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_send_outbound.php action=send&message_queue_uuid=&hostname=voip.fusionpbx.com
 					$command = "/usr/bin/php /var/www/fusionpbx/app/messages/resources/service/message_send_outbound.php ";
-					$command .= "'message_queue_uuid=".$row['message_queue_uuid']."&hostname=".$row['hostname']."'";
+					$command .= escapeshellarg('message_queue_uuid='.$row['message_queue_uuid'].'&hostname='.$row['hostname']);
 				}
 
 				//send the command

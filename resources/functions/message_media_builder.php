@@ -8,7 +8,7 @@
 
     // This is used for inbound message media array
 
-    // Example usage: 
+    // Example usage:
     //      $keys = ['message_media_url', 'message_media_type'];
     //      $arr = message_media_builder($_POST, $keys);
 
@@ -39,6 +39,6 @@ function message_media_builder($searchArray, $keys){
         $mediaArray[] = $tmp;
         $index++;
     }
-    return $mediaArray;	
+    return $mediaArray;
 }
 ?>
