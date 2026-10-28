@@ -115,7 +115,7 @@
 	}
 
 //get the list of extensions using the user_uuid
-	$sql = "select * from v_domains as d, v_extensions as e ";
+	$sql = "select d.domain_name, e.extension from v_domains as d, v_extensions as e ";
 	$sql .= "where extension_uuid in ( ";
 	$sql .= "	select extension_uuid ";
 	$sql .= "	from v_extension_users ";
@@ -131,62 +131,32 @@
 
 //send the sip message
 	if (is_array($extensions) && @sizeof($extensions) != 0) {
-		//echo "\n".__line__."\n";
-		//create the event socket connection
-		$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
+		foreach ($extensions as $row) {
+			$contacts = trim(event_socket_request(null, "api sofia_contact ".$row['extension']."@".$row['domain_name']));
+			if (isset($debug)) {
+				echo $row['extension']."@".$row['domain_name']." contacts: ".$contacts."\n";
+			}
+			if (empty($contacts) || substr($contacts, 0, 6) == 'error/') {
+				continue;
+			}
 
-		//loop through assigned extensions
-		foreach ($extensions as $extension) {
-			//get variables from the array
-			$domain_name = $extension['domain_name'];
-			$extension = $extension['extension'];
-			$number_alias = $extension['number_alias'] ?? null;
+			//freeswitch drops a MESSAGE addressed to user@domain when the registered contact has fs_nat params, so address each contact directly
+			foreach (explode(',', $contacts) as $contact) {
+				[, $sip_profile, $contact_uri] = explode('/', $contact, 3);
+				$from = $message_from.'@'.$row['domain_name'];
 
-			//user registered get the sip profile
-			//$command = "sofia_contact ".$extension."@".$domain_name;
-			//if (isset($debug)) {
-			//	echo $command."\n";
-			//}
-			//$response = trim(event_socket_request($fp, "api ".$command));
-			//if ($response != 'error/user_not_registered') {
-			//	echo $extension." registered\n";
-			//	$sip_profile = explode("/", $response)[1];
-			//}
-
-			//user not registered skip the rest of code in the loop
-			//if ($response == 'error/user_not_registered') {
-			//	echo $extension." not registered\n";
-			//	continue;
-			//}
-
-			//original number with the domain name
-			$message_from = $message_from .'@'.$domain_name;
-
-			//send to the assigned extension(s)
-			$message_to = $extension . '@'.$domain_name;
-			//$message_to = '1005@voip.fusionpbx.com';
-
-			//add debug info to the message
-			//$message_content = $message_content . ' - ' .$message_to_orig;
-
-			//send the SIP message  (working)
-			$event = "sendevent CUSTOM\n";
-			$event .= "Event-Subclass: SMS::SEND_MESSAGE\n";
-			$event .= "proto: sip\n";
-			$event .= "dest_proto: sip\n";
-			$event .= "from: ".$message_from."\n";
-			$event .= "from_full: sip:".$message_from."\n";
-			$event .= "to: ".$message_to."\n";
-			$event .= "subject: sip:".$message_to."\n";
-			//$event .= "type: text/html\n";
-			$event .= "type: text/plain\n";
-			$event .= "hint: the hint\n";
-			$event .= "replying: true\n";
-			$event .= "sip_profile: ".($sip_profile ?? '')."\n";
-			$event .= "_body: ". $message_text;
-			event_socket_request($fp, $event);
-			unset($event);
-
+				$event = "sendevent CUSTOM\n";
+				$event .= "Event-Subclass: SMS::SEND_MESSAGE\n";
+				$event .= "proto: sip\n";
+				$event .= "dest_proto: sip\n";
+				$event .= "from: ".$from."\n";
+				$event .= "from_full: sip:".$from."\n";
+				$event .= "to: ".$sip_profile."/".$contact_uri."\n";
+				$event .= "type: text/plain\n";
+				$event .= "sip_profile: ".$sip_profile."\n";
+				$event .= "_body: ".$message_text;
+				event_socket_request(null, $event);
+			}
 		}
 	}
 

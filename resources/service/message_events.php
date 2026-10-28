@@ -94,6 +94,16 @@ description - message_events service
 		return $database->is_connected();
 	}
 
+	function format_first_matching_number(string $format, array $numbers): string {
+		$length = substr_count($format, 'x') + substr_count($format, 'R') + substr_count($format, 'r');
+		foreach ($numbers as $number) {
+			if (strlen($number) == $length) {
+				return format_string($format, $number);
+			}
+		}
+		return $numbers[0];
+	}
+
 //check to see if the process exists
 	$pid_exists = process_exists($pid_file);
 
@@ -171,10 +181,11 @@ description - message_events service
 
 		//initialize variable(s)
 		$user_uuid = '';
+		$domain_uuid = '';
+		$destination_prefix = '';
 		$message_type = 'sms';
 
 		//set variables from the event array
-		$from = $array['from'];
 		$from_user = $array['from_user'];
 		$from_host = $array['from_host'];
 		$to_user = $array['to_user'];
@@ -215,6 +226,8 @@ description - message_events service
 		//get the from user's external number
 		$command = "user_data ".$from_user."@".$from_host." var outbound_caller_id_number";
 		$source_number = event_socket_request($fp, "api ".$command);
+		$source_numbers = [$source_number];
+		$from = $source_number;
 		if ($debug) {
 			echo "command: ".$command."\n";
 			echo "source_number: ".$source_number."\n";
@@ -274,7 +287,13 @@ description - message_events service
 			$sql .= "	OR destination_area_code || destination_number = :source_number \n";
 			$sql .= "	OR destination_number = :source_number \n";
 			$sql .= ") \n";
+			$sql .= "and provider_uuid is not null \n";
+			$sql .= "and destination_enabled = 'true' \n";
 			$parameters['source_number'] = $source_number;
+			if (is_uuid($domain_uuid)) {
+				$sql .= "order by domain_uuid = :domain_uuid desc \n";
+				$parameters['domain_uuid'] = $domain_uuid;
+			}
 			$row = $database->select($sql, $parameters, 'row');
 			if ($debug) {
 				echo $sql;
@@ -288,7 +307,8 @@ description - message_events service
 				$domain_uuid = $row["domain_uuid"];
 			}
 			$provider_uuid = $row["provider_uuid"];
-			//$destination_prefix = $row["destination_prefix"];
+			$destination_prefix = $row["destination_prefix"];
+			$source_numbers[] = $row["destination_prefix"].$row["destination_area_code"].$row["destination_number"];
 			unset($parameters, $row);
 		}
 
@@ -314,10 +334,11 @@ description - message_events service
 		foreach ($provider_settings as $row) {
 			//format the phone numbers
 			if ($row['provider_setting_name'] == 'message_from') {
-				$from = format_string($row['provider_setting_value'], $source_number);
+				$from = format_first_matching_number($row['provider_setting_value'], $source_numbers);
 			}
 			if ($row['provider_setting_name'] == 'message_to') {
-				$to = format_string($row['provider_setting_value'], $to);
+				$to_digits = preg_replace('/\D/', '', $to);
+				$to = format_first_matching_number($row['provider_setting_value'], [$to, $to_digits, $destination_prefix.$to_digits]);
 			}
 		}
 
