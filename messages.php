@@ -390,25 +390,35 @@
 	echo "<div class='action_bar' id='action_bar'>\n";
 	echo "	<div class='heading'><b>".$text['title-messages']."</b></div>\n";
 	echo "	<div class='actions'>\n";
-	if (permission_exists('message_add')) {
-		echo button::create(['type'=>'button','label'=>$text['label-new_message'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','onclick'=>"document.getElementById('message_new').reset(); $('#message_new_layer').fadeIn(200); unload_thread();"]);
-		//echo button::create(['type'=>'button','label'=>$text['label-new_message'],'icon'=>$_SESSION['theme']['button_icon_add'],'id'=>'btn_add','onclick'=>"document.getElementById('message_new').reset();$('#message_new_layer').fadeIn(200); unload_thread();"]);
-	}
 	if (permission_exists('message_log_view')) {
 		echo button::create(['type'=>'button','label'=>$text['label-log'],'icon'=>'list','link'=>'message_logs.php']);
 	}
 	echo "	</div>\n";
 	echo "	<div style='clear: both;'></div>\n";
 	echo "</div>\n";
-
 	echo "<div class='card'>\n";
 	echo "	<div class='container'>\n";
-	echo "		<div class='contacts'>\n";
-	echo "			<iframe id='contacts_frame' style='width: 100%; height: 100%;' src='messages_contacts.php' frameborder='0'></iframe>\n";
-	echo "		</div>\n";
-	echo "		<div class='messages'>\n";
-	echo "			<iframe id='messages_frame' class='myautoscroll' style='width: 100%; height: 100%;' src='messages_thread.php' frameborder='0'></iframe>\n";
-	echo "		</div>\n";
+	echo "        <div class='contacts'>\n";
+
+	if (permission_exists('message_add')) {
+	    echo "            <div style='padding:10px;'>\n";
+	    echo button::create([
+	        'type'=>'button',
+	        'label'=>$text['label-new_message'],
+	        'icon'=>$_SESSION['theme']['button_icon_add'],
+	        'id'=>'btn_add',
+	        'style'=>'min-width:120px; max-width:120px; margin:0;',
+	        'onclick'=>"document.getElementById('message_new').reset(); $('#message_new_layer').fadeIn(200); unload_thread();"
+	    ]);
+	    echo "            </div>\n";
+	}
+
+	echo "            <iframe id='contacts_frame'
+	                    style='width:100%; height:calc(100% - 60px);'
+	                    src='messages_contacts.php'
+	                    frameborder='0'></iframe>\n";
+
+	echo "        </div>\n";
 
 	if (permission_exists('message_add')) {
 		echo "	<div class='send'>\n";
